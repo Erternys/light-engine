@@ -1,0 +1,24 @@
+{
+  "name": "light-engine",
+  "version": "1.0.0",
+  "description": "Light Engine is a game engine by Light Studio",
+  "main": "index.js",
+  "repository": "https://github.com/Light-Studio-OS/light-engine",
+  "author": "ashikuri",
+  "license": "CC0-1.0",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -w -c rollup.dev.config.js",
+    "publish": "npm build & npm publish"
+  },
+  "devDependencies": {
+    "rollup": "^2.10.9",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^6.0.1",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.3"
+  }
+}
