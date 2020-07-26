@@ -1,0 +1,6 @@
+export { default as Rectangle } from "./Rectangle"
+export { default as Circle } from "./Circle"
+export { default as Image } from "./Image"
+export { default as Sprite } from "./Sprite"
+export { default as Text } from "./Text"
+export { default as Camera } from "./Camera"

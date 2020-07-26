@@ -1,19 +1,19 @@
 {
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "target": "ES5",
-        "module": "commonjs",
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "outDir": "./lib",
-        "rootDir": "./src",
-        "lib": [ "es5", "dom" ],
-        "noEmitOnError": true
-    },
-    "include": [ "src/**/*" ],
-    "exclude": [ "node_modules" ]
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "ES5",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "lib": ["ES2020", "dom"],
+    "noEmitOnError": true
+  },
+  "include": ["src/**/*"]
+  // "exclude": [ "node_modules" ]
 }

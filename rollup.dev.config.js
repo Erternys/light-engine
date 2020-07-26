@@ -13,7 +13,7 @@ export default {
 		builder("iife", "light.iife.js")
 	],
 	plugins: [
-		resolve({preferBuiltins: true}),
+		resolve({preferBuiltins: false}),
 		builtins(),
 		typescript(),
 		commonjs({extensions: [".ts", ".js"]})
