@@ -28,7 +28,7 @@ export default class EntityManager extends EventEmitter {
     this.list = [
       ...this.list,
       ...entities.map((entity) => {
-        if (entity instanceof Entity) return entity.setManager(this)
+        if (!(entity instanceof Function)) return entity.setManager(this)
         return new entity(this.scene, 0, 0).setManager(this)
       }),
     ].sort((a, b) => a.zindex - b.zindex)
