@@ -1,17 +1,17 @@
 {
   "name": "light-engine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Light Engine is a game engine by Grozzlo",
-  "main": "lib/light.js",
+  "main": "lib/light.cjs.js",
   "typings": "types/index.d.ts",
   "jsdelivr": "lib/light.min.js",
-  "repository": "https://github.com/Light-Studio-OS/light-engine",
+  "repository": "https://github.com/Grozzlo/light-engine",
   "author": "ashikuri",
   "license": "CC0-1.0",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -w -c rollup.dev.config.js",
-    "publish": "npm build & npm publish"
+    "publish": "npm run build & npm publish"
   },
   "devDependencies": {
     "builtin-modules": "^3.1.0",
