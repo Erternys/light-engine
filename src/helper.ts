@@ -179,6 +179,9 @@ export function debugCenter(context: any, x: number, y: number) {
 export function isDefined(v: any) {
   return v !== undefined && v !== null
 }
+export function isChromium() {
+  return navigator.vendor === "Google Inc."
+}
 export function typeOf(type: any): string {
   if (typeof type === "object" || typeof type === "undefined") {
     if (type === null || type === undefined) return "undefined"

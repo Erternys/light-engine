@@ -1,5 +1,5 @@
 import { EventEmitter } from "./EventEmitter"
-import { Errors, stringToPixelNum, StateEnum, isDefined } from "./helper"
+import { Errors, stringToPixelNum, StateEnum, isDefined, isChromium } from "./helper"
 import { Scene, Entity } from "./objects"
 import FpsCtrl from "./FpsController"
 import { EntityManager, SceneManager } from "./managers"
@@ -66,7 +66,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           this.canvas.height = stringToPixelNum(h, p.clientHeight)
       })
 
-    if (config.pixel) this.canvas.style.imageRendering = "pixelated"
+    if (config.pixel) this.canvas.style.imageRendering = isChromium() ? "pixelated" : "crisp-edges"
 
     this.context = this.canvas.getContext("2d")
     this.sceneManager = config.scene(this)
