@@ -1,6 +1,6 @@
 {
   "name": "light-engine",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Light Engine is a game engine by Grozzlo",
   "main": "lib/light.cjs.js",
   "typings": "types/index.d.ts",
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -w -c rollup.dev.config.js",
-    "publish": "npm run build & npm publish"
+    "for-publish": "npm run build & npm publish"
   },
   "devDependencies": {
     "builtin-modules": "^3.1.0",

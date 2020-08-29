@@ -351,6 +351,12 @@ export namespace Objects {
     public activation(value: boolean): void
   }
 }
+export namespace Loaders{
+  export function Image(link: string): Promise<LoadEntityTypes>
+  export function Audio(link: string): Promise<LoadEntityTypes>
+  export function Text(content: string): Promise<LoadEntityTypes>
+  export function DOM(element: HTMLElement): Promise<LoadEntityTypes>
+}
 
 export class Game<S = { [x: string]: any }> extends EventEmitter {
   public canvas: HTMLCanvasElement
