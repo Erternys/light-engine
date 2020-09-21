@@ -62,3 +62,11 @@ export interface TextStyle {
     family?: string
   }
 }
+export interface StateSaveInterface {
+  entityProperties: string[]
+  over: { [x: string]: any }
+  exclude: {
+    scenes: string[]
+    entities: string[]
+  }
+}

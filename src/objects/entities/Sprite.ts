@@ -35,8 +35,8 @@ export default class Sprite extends Image {
         image,
         this.sprite.x,
         this.sprite.y,
-        this.sprite.width,
-        this.sprite.height,
+        this.sprite.width * this.cropw,
+        this.sprite.height * this.croph,
         this.x,
         this.y,
         this.width * this.scalex,
@@ -45,5 +45,12 @@ export default class Sprite extends Image {
     }
     context.setTransform(1, 0, 0, 1, 0, 0)
     if (this.scene.game.debug) debugCenter(context, this.x, this.y)
+  }
+  fromSave() {}
+  toJSON(entityProperties: string[]) {
+    return {
+      ...super.toJSON(entityProperties),
+      sprite: this.sprite,
+    }
   }
 }

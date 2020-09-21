@@ -1,6 +1,11 @@
 import { EventEmitter } from "../EventEmitter"
 import { Game } from "../app"
-import { SceneOption, int, TextStyle } from "../../types/private"
+import {
+  SceneOption,
+  int,
+  TextStyle,
+  StateSaveInterface,
+} from "../../types/private"
 import { SceneManager, EntityManager, AudioManager } from "../managers"
 import { Entity } from "."
 import World from "./World"
@@ -135,5 +140,34 @@ export default class Scene extends EventEmitter {
   setManager(value: SceneManager) {
     this.manager = value
     return this
+  }
+  fromSave(setter: { entities: { [x: string]: any }[]; [x: string]: any }) {
+    for (const key in setter) {
+      if (Object.prototype.hasOwnProperty.call(setter, key)) {
+        if (key === "entities")
+          this.entities.getAll().map((entity) => {
+            const finded = setter.entities.find((v) => v.name === entity.name)
+            if (finded) entity.fromSave(finded)
+          })
+        else if (key === "camera") this.camera.fromSave(setter[key])
+        else if (key === "world") this.world.fromSave(setter[key])
+        else (this as any)[key] = setter[key]
+      }
+    }
+  }
+  toJSON(getter: StateSaveInterface) {
+    return {
+      name: this.name,
+      world: this.world,
+      camera: this.camera,
+      alpha: this.alpha,
+      entities: this.entities
+        .getAll()
+        .filter((entity) => {
+          if (typeof getter !== "object") return true
+          return !getter.exclude.entities.includes(entity.name)
+        })
+        .map((entity) => entity.toJSON(getter.entityProperties || [])),
+    }
   }
 }

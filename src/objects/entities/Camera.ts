@@ -44,4 +44,25 @@ export default class Camera extends Rectangle {
     else this.target = entity
     return this
   }
+  fromSave(setter: { entities: { [x: string]: any }[]; [x: string]: any }) {
+    for (const key in setter) {
+      if (Object.prototype.hasOwnProperty.call(setter, key)) {
+        if (key === "targetName")
+          this.target = this.manager.getEntity(setter[key])
+        else if (key === "center") this.center.fromSave(setter[key])
+        else (this as any)[key] = setter[key]
+      }
+    }
+  }
+  toJSON() {
+    return {
+      x: this.x,
+      y: this.y,
+      name: this.name,
+      width: this.width,
+      height: this.height,
+      targetName: this.target?.name,
+      center: this.center,
+    }
+  }
 }

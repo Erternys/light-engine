@@ -213,4 +213,5 @@ export enum Warning {
 export enum Errors {
   Load,
   Audio,
+  ClientKey,
 }

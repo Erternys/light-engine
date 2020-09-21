@@ -27,6 +27,10 @@ export default class Image extends Rectangle {
       }
       context.drawImage(
         image,
+        0,
+        0,
+        this.width * this.cropw,
+        this.height * this.croph,
         this.x - this.scene.camera.x,
         this.y - this.scene.camera.y,
         this.width * this.scalex,

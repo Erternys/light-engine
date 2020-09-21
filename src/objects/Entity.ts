@@ -25,11 +25,11 @@ export default class Entity extends EventEmitter {
   public use: string
   public name = ""
   public lineWidth = 1
-  public originX = 0
-  public originY = 0
   public alpha = 1
   public zindex = 0
 
+  protected originX = 0
+  protected originY = 0
   protected scalex = 1
   protected scaley = 1
   private vx = 0
@@ -173,6 +173,26 @@ export default class Entity extends EventEmitter {
     }
   }
 
+  setOrigineX(value: number) {
+    if (this.originX !== value) this.originX = value
+    return this
+  }
+  setOrigineY(value: number) {
+    if (this.originY !== value) this.originY = value
+    return this
+  }
+  setOrigine(vx: number, vy?: number) {
+    this.setOrigineX(vx)
+    this.setOrigineY(vy ?? vx)
+    return this
+  }
+  getOrigine(): { x?: number; y?: number } {
+    return {
+      x: this.originX,
+      y: this.originY,
+    }
+  }
+
   setVelocityX(value: number) {
     if (this.vx !== value) this.vx = value
     return this
@@ -277,5 +297,29 @@ export default class Entity extends EventEmitter {
       rect1.y - rect1.height / 2 > rect2.getHeight() + rect2.getY() ||
       rect2.getY() > rect1.height + rect1.y
     )
+  }
+  fromSave(setter: { [x: string]: any }) {
+    for (const key in setter) {
+      if (Object.prototype.hasOwnProperty.call(setter, key)) {
+        if (key === "box") {
+          if (this.box) this.box.fromSave(setter[key])
+        } else (this as any)[key] = setter[key]
+      }
+    }
+  }
+  toJSON(entityProperties: string[]): object {
+    const properties: { [x: string]: any } = {}
+    entityProperties.forEach((property) => {
+      properties[property] = property in this ? (this as any)[property] : null
+    })
+    return {
+      x: this.x,
+      y: this.y,
+      box: this.box,
+      name: this.name,
+      width: this.width,
+      height: this.height,
+      ...properties,
+    }
   }
 }

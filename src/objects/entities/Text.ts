@@ -109,4 +109,11 @@ export default class Text extends Rectangle {
     context.setTransform(1, 0, 0, 1, 0, 0)
     if (this.scene.game.debug) debugCenter(context, this.x, this.y)
   }
+  fromSave() {}
+  toJSON(entityProperties: string[]) {
+    return {
+      ...super.toJSON(entityProperties),
+      content: this.content,
+    }
+  }
 }

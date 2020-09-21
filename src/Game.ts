@@ -1,9 +1,15 @@
 import { EventEmitter } from "./EventEmitter"
-import { Errors, stringToPixelNum, StateEnum, isDefined, isChromium } from "./helper"
+import {
+  Errors,
+  stringToPixelNum,
+  StateEnum,
+  isDefined,
+  isChromium,
+} from "./helper"
 import { Scene, Entity } from "./objects"
 import FpsCtrl from "./FpsController"
 import { EntityManager, SceneManager } from "./managers"
-import { ConfigOption } from "../types/private"
+import { ConfigOption, StateSaveInterface } from "../types/private"
 import Mouse from "./objects/Mouse"
 import Keyboard from "./objects/Keyboard"
 import Gamepad from "./objects/Gamepad"
@@ -66,7 +72,10 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           this.canvas.height = stringToPixelNum(h, p.clientHeight)
       })
 
-    if (config.pixel) this.canvas.style.imageRendering = isChromium() ? "pixelated" : "crisp-edges"
+    if (config.pixel)
+      this.canvas.style.imageRendering = isChromium()
+        ? "pixelated"
+        : "crisp-edges"
 
     this.context = this.canvas.getContext("2d")
     this.sceneManager = config.scene(this)
@@ -87,7 +96,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
         .then((media) => EntityManager.addMedia(name, media))
         .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
     })
-    this.sceneManager.play(0)
+    if (!this.currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()
     this.mouse = new Mouse(this)
@@ -111,6 +120,75 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       this.playedWithOpacity = []
     }
     return this.currentScene
+  }
+  getStateSave(getter?: StateSaveInterface): string {
+    const dGetter = Object.assign(
+      {},
+      {
+        entityProperties: [],
+        over: {},
+        exclude: {},
+      },
+      getter
+    )
+    dGetter.exclude = Object.assign(
+      {},
+      {
+        scenes: [],
+        entities: [],
+      },
+      getter?.exclude
+    )
+    return JSON.stringify({
+      kle_id: navigator.platform + ":" + navigator.productSub,
+      over: dGetter.over,
+      scenes: {
+        played: this.currentScene.toJSON(dGetter),
+        opacity: this.playedWithOpacity
+          .filter((scene) => !dGetter.exclude.scenes.includes(scene.name))
+          .map((scene) => scene.toJSON(dGetter)),
+        not_played: this.sceneManager
+          .getScenes(
+            (scene) =>
+              !scene.played && !dGetter.exclude.scenes.includes(scene.name)
+          )
+          .map((scene) => scene.toJSON(dGetter)),
+      },
+    })
+  }
+  setStateSave(setter?: string, kleValide = false) {
+    const setter_obj = JSON.parse(setter)
+    if (
+      kleValide &&
+      setter_obj.kle_id === navigator.platform + ":" + navigator.productSub
+    )
+      this.globals.emit(
+        "e" + Errors.ClientKey,
+        "the kle_id doesn't match with the client instance"
+      )
+    const current = this.sceneManager
+      .getScenes()
+      .find((scene) => scene.name === setter_obj.scenes.played.name)
+    if (current) {
+      this.playScene(current)
+      current.fromSave(setter_obj.scenes.played)
+      this.sceneManager
+        .getScenes((s) => s !== current)
+        .forEach((scene) => {
+          const findedO = (setter_obj.scenes.opacity as any[]).find(
+            (s: { name: string }) => s.name === scene.name
+          )
+          if (findedO) {
+            this.sceneManager.playWithOpacity(scene, findedO.alpha)
+            scene.fromSave(findedO)
+            return null
+          }
+          const findedN = (setter_obj.scenes.not_played as any[]).find(
+            (s: { name: string }) => s.name === scene.name
+          )
+          if (findedN) scene.fromSave(findedN)
+        })
+    }
   }
   private initScene(entities: Entity[], scene: Scene) {
     if (!this.inited.includes(scene.init)) {

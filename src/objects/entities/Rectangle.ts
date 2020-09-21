@@ -3,6 +3,8 @@ import { Scene } from ".."
 import { isDefined, debugCenter } from "../../helper"
 
 export default class Rectangle extends Entity {
+  protected cropw = 1
+  protected croph = 1
   public get [Symbol.toStringTag]() {
     return "Rectangle"
   }
@@ -34,11 +36,31 @@ export default class Rectangle extends Entity {
       context.strokeRect(
         this.x,
         this.y,
-        this.width * this.scalex,
-        this.height * this.scaley
+        this.width * this.scalex * this.cropw,
+        this.height * this.scaley * this.croph
       )
     }
     context.setTransform(1, 0, 0, 1, 0, 0)
     if (this.scene.game.debug) debugCenter(context, this.x, this.y)
+  }
+
+  setCropW(value: number) {
+    if (this.cropw !== value) this.cropw = value
+    return this
+  }
+  setCropH(value: number) {
+    if (this.croph !== value) this.croph = value
+    return this
+  }
+  setCrop(vw = 1, vh = 1) {
+    this.setCropW(vw)
+    this.setCropH(vh)
+    return this
+  }
+  getCrop(): { h?: number; w?: number } {
+    return {
+      w: this.cropw,
+      h: this.croph,
+    }
   }
 }

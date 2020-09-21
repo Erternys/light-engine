@@ -26,10 +26,10 @@ export default class SceneManager extends EventEmitter {
     return this.game.playScene(this.getScene(name))
   }
   public playWithOpacity(
-    name: string | number,
+    name: string | number | Scene,
     opacity: string | number
   ): Scene {
-    const scene = this.getScene(name)
+    const scene = typeof name === "object" ? name : this.getScene(name)
     scene.played = true
     scene.isPlayed = "opacity"
     scene.alpha = stringToPixelNum(opacity, 1)
@@ -51,5 +51,8 @@ export default class SceneManager extends EventEmitter {
       )
     }
     return this.list[0]
+  }
+  public getScenes(filter = (scene: Scene) => true) {
+    return this.list.filter(filter)
   }
 }
