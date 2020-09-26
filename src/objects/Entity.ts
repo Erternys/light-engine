@@ -44,6 +44,7 @@ export default class Entity extends EventEmitter {
     this.x = x
     this.y = y
     const restitution = 0.9
+    this.setName(this.constructor.name)
     this.on("move:velocity", () => {
       if (!this.isMoving) this.isMoving = true
       this.x += this.vx * this._speed * this.scene.game.secondsPassed
@@ -239,6 +240,11 @@ export default class Entity extends EventEmitter {
     return this
   }
 
+  setName(name: string) {
+    this.name = name
+    return this
+  }
+
   protected collideCirc(circle1: Circle, circle2: Circle) {
     return (
       (circle1.x - circle2.x) ** 2 + (circle1.y - circle2.y) ** 2 <=
@@ -298,12 +304,11 @@ export default class Entity extends EventEmitter {
       rect2.getY() > rect1.height + rect1.y
     )
   }
+
   fromSave(setter: { [x: string]: any }) {
     for (const key in setter) {
       if (Object.prototype.hasOwnProperty.call(setter, key)) {
-        if (key === "box") {
-          if (this.box) this.box.fromSave(setter[key])
-        } else (this as any)[key] = setter[key]
+        if ((this as any)[key] !== setter[key]) (this as any)[key] = setter[key]
       }
     }
   }
@@ -315,10 +320,7 @@ export default class Entity extends EventEmitter {
     return {
       x: this.x,
       y: this.y,
-      box: this.box,
       name: this.name,
-      width: this.width,
-      height: this.height,
       ...properties,
     }
   }

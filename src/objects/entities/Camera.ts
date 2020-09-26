@@ -50,7 +50,8 @@ export default class Camera extends Rectangle {
         if (key === "targetName")
           this.target = this.manager.getEntity(setter[key])
         else if (key === "center") this.center.fromSave(setter[key])
-        else (this as any)[key] = setter[key]
+        else if ((this as any)[key] !== setter[key])
+          (this as any)[key] = setter[key]
       }
     }
   }

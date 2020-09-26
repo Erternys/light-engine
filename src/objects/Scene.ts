@@ -151,7 +151,8 @@ export default class Scene extends EventEmitter {
           })
         else if (key === "camera") this.camera.fromSave(setter[key])
         else if (key === "world") this.world.fromSave(setter[key])
-        else (this as any)[key] = setter[key]
+        else if ((this as any)[key] !== setter[key])
+          (this as any)[key] = setter[key]
       }
     }
   }
@@ -164,6 +165,7 @@ export default class Scene extends EventEmitter {
       entities: this.entities
         .getAll()
         .filter((entity) => {
+          if (entity.name === "camera") return false
           if (typeof getter !== "object") return true
           return !getter.exclude.entities.includes(entity.name)
         })

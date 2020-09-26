@@ -58,7 +58,8 @@ export default class World extends EventEmitter {
     for (const key in setter) {
       if (Object.prototype.hasOwnProperty.call(setter, key)) {
         if (key === "boundingBox") this.bounds.fromSave(setter[key])
-        else (this as any)[key] = setter[key]
+        else if ((this as any)[key] !== setter[key])
+          (this as any)[key] = setter[key]
       }
     }
   }

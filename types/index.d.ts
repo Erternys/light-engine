@@ -1,4 +1,4 @@
-import { SceneOption, int } from "./private"
+import { SceneOption, int, StateSaveInterface } from "./private"
 
 declare class GlobalEventEmitter {
   public has(event: string | number): boolean
@@ -186,6 +186,8 @@ export namespace Objects {
     public getHeight(): number
     public setHeight(v: string | number): void
     public moveEntity(entity: Entity): this
+    public fromSave(setter: { [x: string]: any }): void
+    public toJSON(): { [x: string]: any }
   }
   export class Entity extends EventEmitter {
     public manager: Managers.EntityManager
@@ -222,6 +224,11 @@ export namespace Objects {
     setScale(vx: number, vy?: number): this
     getScale(): { x: number; y: number; r: number }
 
+    setOrigineX(value: number): this
+    setOrigineY(value: number): this
+    setOrigine(vx: number, vy?: number): this
+    getOrigine(): { x?: number; y?: number }
+
     setVelocityX(value: number): this
     setVelocityY(value: number): this
     setVelocity(vx: number, vy: number): this
@@ -236,6 +243,11 @@ export namespace Objects {
     setManager(manager: Managers.EntityManager): this
 
     setBounceWithoutLosingSpeed(value: boolean): this
+
+    setName(name: string): this
+
+    fromSave(setter: { [x: string]: any }): void
+    toJSON(): { [x: string]: any }
 
     protected collideCirc(
       circle1: ObjectEntities.Circle,
@@ -297,11 +309,15 @@ export namespace Objects {
       setScaleR(value: number): this
       getScale(): { x: number; y: number; r: number }
     }
-    export class Image extends Entity {
-      constructor(scene: Scene, x: number, y: number, use: string)
-    }
     export class Rectangle extends Entity {
       constructor(scene: Scene, x: number, y: number, w: number, h: number)
+      setCropW(value: number): this
+      setCropH(value: number): this
+      setCrop(vw?: number, vh?: number): this
+      getCrop(): { h?: number; w?: number }
+    }
+    export class Image extends Rectangle {
+      constructor(scene: Scene, x: number, y: number, use: string)
     }
     export class Sprite extends Image {
       public sprite: { x: number; y: number; width: number; height: number }
@@ -343,15 +359,19 @@ export namespace Objects {
     setName(value: string): this
     setGame(value: Game): this
     setManager(value: Managers.SceneManager): this
+    fromSave(setter: { [x: string]: any }): void
+    toJSON(): { [x: string]: any }
   }
   export class World extends EventEmitter {
     public isActive: boolean
     public bounds: BoundingBox
     constructor(scene: Scene)
     public activation(value: boolean): void
+    public fromSave(setter: { [x: string]: any }): void
+    public toJSON(): { [x: string]: any }
   }
 }
-export namespace Loaders{
+export namespace Loaders {
   export function Image(link: string): Promise<LoadEntityTypes>
   export function Audio(link: string): Promise<LoadEntityTypes>
   export function Text(content: string): Promise<LoadEntityTypes>
@@ -377,4 +397,6 @@ export class Game<S = { [x: string]: any }> extends EventEmitter {
   public secondsPassed: number
   constructor(config: ConfigOption, w?: string | number, h?: string | number)
   playScene(scene: Objects.Scene): Objects.Scene
+  getStateSave(getter?: StateSaveInterface): string
+  setStateSave(setter?: string, kleValide?: boolean): void
 }
