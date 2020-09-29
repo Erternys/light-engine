@@ -174,20 +174,20 @@ export default class Entity extends EventEmitter {
     }
   }
 
-  setOrigineX(value: number) {
+  setOriginX(value: number) {
     if (this.originX !== value) this.originX = value
     return this
   }
-  setOrigineY(value: number) {
+  setOriginY(value: number) {
     if (this.originY !== value) this.originY = value
     return this
   }
-  setOrigine(vx: number, vy?: number) {
-    this.setOrigineX(vx)
-    this.setOrigineY(vy ?? vx)
+  setOrigin(vx: number, vy?: number) {
+    this.setOriginX(vx)
+    this.setOriginY(vy ?? vx)
     return this
   }
-  getOrigine(): { x?: number; y?: number } {
+  getOrigin(): { x?: number; y?: number } {
     return {
       x: this.originX,
       y: this.originY,

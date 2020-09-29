@@ -224,10 +224,10 @@ export namespace Objects {
     setScale(vx: number, vy?: number): this
     getScale(): { x: number; y: number; r: number }
 
-    setOrigineX(value: number): this
-    setOrigineY(value: number): this
-    setOrigine(vx: number, vy?: number): this
-    getOrigine(): { x?: number; y?: number }
+    setOriginX(value: number): this
+    setOriginY(value: number): this
+    setOrigin(vx: number, vy?: number): this
+    getOrigin(): { x?: number; y?: number }
 
     setVelocityX(value: number): this
     setVelocityY(value: number): this
