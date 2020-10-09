@@ -1,14 +1,14 @@
 import Rectangle from "./Rectangle"
 import Scene from "../Scene"
 import { Entity, BoundingBox } from ".."
-import { isDefined } from "../../helper"
+import { isDefined, typeOf } from "../../helper"
 
 export default class Camera extends Rectangle {
   public target: Entity
   public center: BoundingBox
   constructor(scene: Scene) {
     super(scene, 0, 0, 0, 0)
-    this.name = "camera"
+    this.setName("camera")
     this.offAll("move:velocity")
   }
   init() {
@@ -44,13 +44,22 @@ export default class Camera extends Rectangle {
     else this.target = entity
     return this
   }
-  fromSave(setter: { entities: { [x: string]: any }[]; [x: string]: any }) {
+  fromSave(setter: { [x: string]: any }) {
     for (const key in setter) {
       if (Object.prototype.hasOwnProperty.call(setter, key)) {
         if (key === "targetName")
           this.target = this.manager.getEntity(setter[key])
-        else if (key === "center") this.center.fromSave(setter[key])
-        else if ((this as any)[key] !== setter[key])
+        else if (key === "center") {
+          if (!this.center && typeOf(this.center) !== "BoundingBox")
+            this.center = new BoundingBox(
+              this.scene,
+              setter[key].x,
+              setter[key].y,
+              setter[key].width,
+              setter[key].height
+            )
+          this.center.fromSave(setter[key])
+        } else if ((this as any)[key] !== setter[key])
           (this as any)[key] = setter[key]
       }
     }
