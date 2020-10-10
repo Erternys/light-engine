@@ -1,5 +1,3 @@
-import Rectangle from "./entities/Rectangle"
-import { Scene } from "."
 import { debugCenter } from "../helper"
 import { Game } from "../app"
 import { EventEmitter } from "../EventEmitter"
@@ -51,6 +49,6 @@ export default class Mouse extends EventEmitter {
   }
   draw(context: CanvasRenderingContext2D) {
     context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.game.debug) debugCenter(context, this.x, this.y)
+    if (this.game.debug) debugCenter(context, this)
   }
 }

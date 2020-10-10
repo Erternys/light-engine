@@ -23,8 +23,8 @@ export default class Sprite extends Image {
       (this.height * this.scaley) / -2
     )
     context.translate(
-      this.width * this.originX * this.scalex,
-      this.height * this.originY * this.scaley
+      (this.width / 2) * -this.originX * this.scalex,
+      (this.height / 2) * -this.originY * this.scaley
     )
     if (isDefined(image)) {
       if (!isDefined(this.width) && !isDefined(this.height)) {
@@ -44,7 +44,7 @@ export default class Sprite extends Image {
       )
     }
     context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.scene.game.debug) debugCenter(context, this.x, this.y)
+    if (this.scene.game.debug) debugCenter(context, this)
   }
   toJSON(entityProperties: string[]) {
     return {

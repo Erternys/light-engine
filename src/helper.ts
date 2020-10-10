@@ -5,6 +5,7 @@ import {
   VibrationOptions,
 } from "../types/private"
 import { EventEmitter } from "./EventEmitter"
+import { Entity, Mouse } from "./objects"
 import Vector2 from "./Vector2"
 
 const buttonMap = [
@@ -170,11 +171,43 @@ export function stringToPixelNum(value: string | number, nu: number): number {
   }
   return 0
 }
-export function debugCenter(context: any, x: number, y: number) {
+export function debugCenter(
+  context: CanvasRenderingContext2D,
+  entity: Entity | Mouse
+) {
+  const isMouse = typeOf(entity, true) !== "Mouse"
+  const x = entity.x + (isMouse ? (entity as Entity).scene.camera.x : 0)
+  const y = entity.y + (isMouse ? (entity as Entity).scene.camera.y : 0)
+
   context.beginPath()
   context.fillStyle = "#f00"
-  context.arc(x, y, 3, 0, Math.PI * 2)
+  context.arc(x, y, 2, 0, Math.PI * 2)
   context.fill()
+  context.closePath()
+
+  if (isMouse) {
+    const body = (entity as Entity).getBodyBox()
+    context.translate(
+      ((entity as Entity).width * (entity as Entity).getScale().x) / -2,
+      ((entity as Entity).height * (entity as Entity).getScale().y) / -2
+    )
+    context.translate(
+      ((entity as Entity).width / 2) *
+        -(entity as Entity).getOrigin().x *
+        (entity as Entity).getScale().x,
+      ((entity as Entity).height / 2) *
+        -(entity as Entity).getOrigin().y *
+        (entity as Entity).getScale().y
+    )
+    context.strokeStyle = "green"
+    context.strokeRect(
+      x + body.getX(),
+      y + body.getY(),
+      body.getWidth(),
+      body.getHeight()
+    )
+  }
+  context.setTransform(1, 0, 0, 1, 0, 0)
 }
 export function isDefined(v: any) {
   return v !== undefined && v !== null
@@ -182,7 +215,8 @@ export function isDefined(v: any) {
 export function isChromium() {
   return navigator.vendor === "Google Inc."
 }
-export function typeOf(type: any): string {
+export function typeOf(type: any, constructor = false): string {
+  if (constructor) return type.constructor.name
   if (typeof type === "object" || typeof type === "undefined") {
     if (type === null || type === undefined) return "undefined"
     if (type === Promise.prototype) return "Promise"

@@ -66,8 +66,8 @@ export default class Text extends Rectangle {
       (this.height * this.scaley) / -2
     )
     context.translate(
-      this.width * this.originX * this.scalex,
-      this.height * this.originY * this.scaley
+      (this.width / 2) * -this.originX * this.scalex,
+      (this.height / 2) * -this.originY * this.scaley
     )
     context.textBaseline = "top"
     context.font = `${this.style.font.size}px ${this.style.font.family}`
@@ -107,7 +107,13 @@ export default class Text extends Rectangle {
     context.shadowOffsetX = this.style.shadow.offsetX
     context.shadowOffsetY = this.style.shadow.offsetY
     context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.scene.game.debug) debugCenter(context, this.x, this.y)
+    if (this.scene.game.debug) debugCenter(context, this)
+  }
+  getScale(): { x?: number; y?: number; r?: number } {
+    return {
+      x: 1,
+      y: 1,
+    }
   }
   setText(content: string) {
     this.content = content

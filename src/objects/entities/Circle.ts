@@ -35,8 +35,8 @@ export default class Circle extends Entity {
     context.globalAlpha =
       this.alpha * (this.scene.isPlayed === "opacity" ? this.scene.alpha : 1)
     context.translate(
-      this.radius * this.originX * this.scaler,
-      this.radius * this.originY * this.scaler
+      this.radius * -this.originX * this.scaler,
+      this.radius * -this.originY * this.scaler
     )
     if (isDefined(this.fillColor)) {
       context.beginPath()
@@ -66,11 +66,6 @@ export default class Circle extends Entity {
       context.stroke()
     }
     context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.scene.game.debug)
-      debugCenter(
-        context,
-        this.x - this.scene.camera.x,
-        this.y - this.scene.camera.y
-      )
+    if (this.scene.game.debug) debugCenter(context, this)
   }
 }

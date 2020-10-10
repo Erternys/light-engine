@@ -32,6 +32,7 @@ export default class Entity extends EventEmitter {
   protected originY = 0
   protected scalex = 1
   protected scaley = 1
+  private bodyBox: BoundingBox = null
   private vx = 0
   private vy = 0
   private _speed = 1
@@ -45,6 +46,7 @@ export default class Entity extends EventEmitter {
     this.y = y
     const restitution = 0.9
     this.setName(this.constructor.name)
+    this.initBodyBox(scene)
     this.on("move:velocity", () => {
       if (!this.isMoving) this.isMoving = true
       this.x += this.vx * this._speed * this.scene.game.secondsPassed
@@ -127,6 +129,15 @@ export default class Entity extends EventEmitter {
   setBox(box: BoundingBox) {
     this.box = box
     return this
+  }
+
+  setBodyBox(box: BoundingBox) {
+    if (box) this.bodyBox = box
+    else this.initBodyBox(this.scene)
+    return this
+  }
+  getBodyBox() {
+    return this.bodyBox
   }
 
   collide(this: Entity, entity: Entity | World | BoundingBox | Mouse): boolean {
@@ -252,11 +263,45 @@ export default class Entity extends EventEmitter {
     )
   }
   protected collideRect(rect1: Rectangle, rect2: Rectangle) {
+    const rect1Body = rect1.getBodyBox()
+    const xRect1 =
+      rect1.x +
+      rect1Body.getX() +
+      (rect1.width / 2) * -rect1.getOrigin().x * rect1.getScale().x
+    const yRect1 =
+      rect1.y +
+      rect1Body.getY() +
+      (rect1.height / 2) * -rect1.getOrigin().y * rect1.getScale().y
+    if (!rect2.getBodyBox)
+      return !(
+        xRect1 - rect1Body.getWidth() / 2 >
+          rect2.width + rect2.x - rect2.width / 2 ||
+        rect2.x - rect2.width / 2 >
+          rect1Body.getWidth() + xRect1 - rect1Body.getWidth() / 2 ||
+        yRect1 - rect1Body.getHeight() / 2 >
+          rect2.height + rect2.y - rect2.height / 2 ||
+        rect2.y - rect2.height / 2 >
+          rect1Body.getHeight() + yRect1 - rect1Body.getHeight() / 2
+      )
+
+    const rect2Body = rect2.getBodyBox()
+    const xRect2 =
+      rect2.x +
+      rect2Body.getX() +
+      (rect2.width / 2) * -rect2.getOrigin().x * rect2.getScale().x
+    const yRect2 =
+      rect2.y +
+      rect2Body.getY() +
+      (rect2.height / 2) * -rect2.getOrigin().y * rect2.getScale().y
     return !(
-      rect1.x - rect1.width / 2 > rect2.width + rect2.x - rect2.width / 2 ||
-      rect2.x - rect2.width / 2 > rect1.width + rect1.x - rect1.width / 2 ||
-      rect1.y - rect1.height / 2 > rect2.height + rect2.y - rect2.height / 2 ||
-      rect2.y - rect2.height / 2 > rect1.height + rect1.y - rect1.height / 2
+      xRect1 - rect1Body.getWidth() / 2 >
+        rect2Body.getWidth() + xRect2 - rect2Body.getWidth() / 2 ||
+      xRect2 - rect2Body.getWidth() / 2 >
+        rect1Body.getWidth() + xRect1 - rect1Body.getWidth() / 2 ||
+      yRect1 - rect1Body.getHeight() / 2 >
+        rect2Body.getHeight() + yRect2 - rect2Body.getHeight() / 2 ||
+      yRect2 - rect2Body.getHeight() / 2 >
+        rect1Body.getHeight() + yRect1 - rect1Body.getHeight() / 2
     )
   }
   protected collideCircRect(circle: Circle, rect: Rectangle) {
@@ -297,11 +342,14 @@ export default class Entity extends EventEmitter {
     )
   }
   protected collideRectWorld(rect1: Rectangle, rect2: BoundingBox) {
+    const rect1Body = rect1.getBodyBox()
     return !(
-      rect1.x - rect1.width / 2 > rect2.getWidth() + rect2.getX() ||
-      rect2.getX() > rect1.width + rect1.x ||
-      rect1.y - rect1.height / 2 > rect2.getHeight() + rect2.getY() ||
-      rect2.getY() > rect1.height + rect1.y
+      rect1.x + rect1Body.getX() - rect1Body.getWidth() / 2 >
+        rect2.getWidth() + rect2.getX() ||
+      rect2.getX() > rect1Body.getWidth() + (rect1.x + rect1Body.getX()) ||
+      rect1.y + rect1Body.getY() - rect1Body.getHeight() / 2 >
+        rect2.getHeight() + rect2.getY() ||
+      rect2.getY() > rect1Body.getHeight() + (rect1.y + rect1Body.getY())
     )
   }
 
@@ -323,5 +371,50 @@ export default class Entity extends EventEmitter {
       name: this.name,
       ...properties,
     }
+  }
+
+  private initBodyBox(scene: Scene) {
+    let x: number = null
+    let y: number = null
+    let width: number = null
+    let height: number = null
+    const _this = this
+    this.setBodyBox(
+      new BoundingBox(
+        scene,
+        {
+          get() {
+            return x
+          },
+          set(value: number) {
+            x = value
+          },
+        },
+        {
+          get() {
+            return y
+          },
+          set(value: number) {
+            y = value
+          },
+        },
+        {
+          get() {
+            return width || _this.width
+          },
+          set(value: number) {
+            width = value
+          },
+        },
+        {
+          get() {
+            return height || _this.height
+          },
+          set(value: number) {
+            height = value
+          },
+        }
+      )
+    )
   }
 }
