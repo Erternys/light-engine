@@ -244,6 +244,9 @@ export namespace Objects {
 
     setBounceWithoutLosingSpeed(value: boolean): this
 
+    setBodyBox(box: BoundingBox): this
+    getBodyBox(): BoundingBox
+
     setName(name: string): this
 
     fromSave(setter: { [x: string]: any }): void
@@ -333,6 +336,7 @@ export namespace Objects {
         content: string,
         style: TextStyle
       )
+      setText(content: string): this
     }
   }
   export class Scene extends EventEmitter {
