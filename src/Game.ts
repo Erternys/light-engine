@@ -5,6 +5,7 @@ import {
   StateEnum,
   isDefined,
   isChromium,
+  typeOf,
 } from "./helper"
 import { Scene, Entity } from "./objects"
 import FpsCtrl from "./FpsController"
@@ -81,7 +82,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.sceneManager = config.scene(this)
     let toLoad = Object.keys(config.load || {})
 
-    if (typeof config.loadScene !== "undefined") {
+    if (typeOf(config.loadScene) !== "undefined") {
       const toForcedLoading = config.loadScene.forcedLoadingOfEntities || []
       toLoad = toLoad.filter((v) => !toForcedLoading.includes(v))
       toForcedLoading.forEach((name: string) => {
@@ -89,7 +90,8 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           .then((media) => EntityManager.addMedia(name, media))
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
-      this.playScene(config.loadScene)
+      this.sceneManager.add(config.loadScene)
+      this.playScene(this.sceneManager.getFirst())
     }
     toLoad.forEach((name: string) => {
       config.load[name]

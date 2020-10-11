@@ -1,10 +1,10 @@
 import { GlobalEventEmitter } from "./EventEmitter"
 import { Errors, Warning } from "./helper"
 
-export * as Managers from "./managers"
-export * as Objects from "./objects"
-export { default as Game } from "./Game"
-export * as Loaders from "./loaders"
+import * as Managers from "./managers"
+import * as Objects from "./objects"
+import { default as Game } from "./Game"
+import * as Loaders from "./loaders"
 
 const gee = new GlobalEventEmitter()
 document.addEventListener("visibilitychange", () =>
@@ -33,4 +33,11 @@ for (const id in Warning) {
     gee.on(`w${id}`, (reason: string) =>
       console.warn(`[${Warning[id]}]: ${reason}`)
     )
+}
+
+export default {
+  Managers,
+  Objects,
+  Game,
+  Loaders,
 }

@@ -1,6 +1,6 @@
 import { EventEmitter } from "../EventEmitter"
+import Game from "../Game"
 import { Warning, numberSuffix, stringToPixelNum } from "../helper"
-import { Game } from "../app"
 import { Scene } from "../objects"
 
 export default class SceneManager extends EventEmitter {
@@ -21,6 +21,22 @@ export default class SceneManager extends EventEmitter {
         return scene.setGame(this.game).setManager(this)
       return new scene({ name: scene.name }).setGame(this.game).setManager(this)
     })
+  }
+  public add(scene: typeof Scene | Scene) {
+    if (scene instanceof Scene)
+      this.list = [scene.setGame(this.game).setManager(this), ...this.list]
+    else
+      this.list = [
+        new scene({ name: scene.name }).setGame(this.game).setManager(this),
+        ...this.list,
+      ]
+    return this
+  }
+  public getFirst() {
+    return this.getScene(0)
+  }
+  public getLast() {
+    return this.getScene(this.list.length - 1)
   }
   public play(name: string | number): Scene {
     return this.game.playScene(this.getScene(name))

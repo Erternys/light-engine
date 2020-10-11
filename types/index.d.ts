@@ -158,6 +158,9 @@ export namespace Managers {
       list: Array<typeof Objects.Scene | Objects.Scene>
     ): (game: Game) => SceneManager
     constructor(game: Game, list: Array<typeof Objects.Scene | Objects.Scene>)
+    public add(scene: typeof Objects.Scene | Objects.Scene): this
+    public getFirst(): Objects.Scene
+    public getLast(): Objects.Scene
     public play(name: string | number): Objects.Scene
     public playWithOpacity(
       name: string | number,
