@@ -35,9 +35,4 @@ for (const id in Warning) {
     )
 }
 
-export default {
-  Managers,
-  Objects,
-  Game,
-  Loaders,
-}
+export { Managers, Objects, Game, Loaders }

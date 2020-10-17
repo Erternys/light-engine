@@ -1,5 +1,4 @@
 import { EventEmitter } from "../EventEmitter"
-import { Game } from "../app"
 import {
   SceneOption,
   int,
@@ -13,6 +12,7 @@ import BoundingBox from "./BoundingBox"
 import { Rectangle, Circle, Image, Sprite, Text } from "./entities"
 import { StateEnum } from "../helper"
 import Camera from "./entities/Camera"
+import Game from "../Game"
 
 export default class Scene extends EventEmitter {
   public get [Symbol.toStringTag]() {
