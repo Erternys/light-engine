@@ -34,6 +34,10 @@ export default class EntityManager extends EventEmitter {
     ].sort((a, b) => a.zindex - b.zindex)
     return this
   }
+  public remove(...entities: Array<Entity>) {
+    this.list = this.list.filter((e) => !entities.includes(e))
+    return this
+  }
   public setEntities(...list: Array<typeof Entity | Entity>) {
     this.list = list
       .map((entity) => {

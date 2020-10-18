@@ -225,9 +225,14 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.globals.emit("window:resize")
     this.currentScene.beforeUpdate()
     for (const entity of entities) {
-      if (entity.collide(this.mouse)) entity.emit("mouse:hover", entity)
-      if (entity.collide(this.mouse) && this.mouse.click)
-        entity.emit("mouse:click", entity)
+      if (entity.has("mouse:hover") && entity.collide(this.mouse))
+        entity.emit("mouse:hover")
+      if (
+        entity.has("mouse:click") &&
+        entity.collide(this.mouse) &&
+        this.mouse.click
+      )
+        entity.emit("mouse:click")
       entity.beforeRedraw()
       entity.redraw(this.secondsPassed)
       entity.emit("move:velocity", entity)
@@ -236,8 +241,13 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       const entities = scene.entities.getAll()
       scene.beforeUpdate()
       for (const entity of entities) {
-        if (entity.collide(this.mouse)) entity.emit("mouse:hover")
-        if (entity.collide(this.mouse) && this.mouse.click)
+        if (entity.has("mouse:hover") && entity.collide(this.mouse))
+          entity.emit("mouse:hover")
+        if (
+          entity.has("mouse:click") &&
+          entity.collide(this.mouse) &&
+          this.mouse.click
+        )
           entity.emit("mouse:click")
         entity.beforeRedraw()
         entity.redraw(this.secondsPassed)

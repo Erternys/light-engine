@@ -159,6 +159,7 @@ export namespace Managers {
     ): (game: Game) => SceneManager
     constructor(game: Game, list: Array<typeof Objects.Scene | Objects.Scene>)
     public add(scene: typeof Objects.Scene | Objects.Scene): this
+    public remove(scene: Objects.Scene): this
     public getFirst(): Objects.Scene
     public getLast(): Objects.Scene
     public play(name: string | number): Objects.Scene
@@ -212,6 +213,7 @@ export namespace Objects {
     public originY: number
     public alpha: number
     public zindex: number
+    public fixed: boolean
     constructor(scene: Scene, x: number, y: number)
     init(): void
     beforeRedraw(): void

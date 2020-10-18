@@ -60,7 +60,7 @@ export default class Text extends Rectangle {
     if (this.style.align === "left") align = this.width / 2
     context.globalAlpha =
       this.alpha * (this.scene.isPlayed === "opacity" ? this.scene.alpha : 1)
-    context.translate(this.scene.camera.x, this.scene.camera.y)
+    if (!this.fixed) context.translate(this.scene.camera.x, this.scene.camera.y)
     context.translate(
       (this.width * this.scalex) / -2,
       (this.height * this.scaley) / -2

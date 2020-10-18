@@ -6,6 +6,7 @@ import {
 } from "../types/private"
 import { EventEmitter } from "./EventEmitter"
 import { Entity, Mouse } from "./objects"
+import { Circle } from "./objects/entities"
 import Vector2 from "./Vector2"
 
 const buttonMap = [
@@ -175,9 +176,10 @@ export function debugCenter(
   context: CanvasRenderingContext2D,
   entity: Entity | Mouse
 ) {
-  const isMouse = typeOf(entity, true) !== "Mouse"
-  const x = entity.x + (isMouse ? (entity as Entity).scene.camera.x : 0)
-  const y = entity.y + (isMouse ? (entity as Entity).scene.camera.y : 0)
+  const isMouse = typeOf(entity, true) === "Mouse"
+  const isCircle = typeOf(entity) === "Circle"
+  const x = entity.x + (isMouse ? 0 : (entity as Entity).scene.camera.x)
+  const y = entity.y + (isMouse ? 0 : (entity as Entity).scene.camera.y)
 
   context.beginPath()
   context.fillStyle = "#f00"
@@ -185,8 +187,43 @@ export function debugCenter(
   context.fill()
   context.closePath()
 
-  if (isMouse) {
+  if (isCircle) {
+    if (!(entity as Circle).fixed)
+      context.translate(
+        (entity as Circle).scene.camera.x,
+        (entity as Circle).scene.camera.y
+      )
+    context.translate(
+      ((entity as Entity).width * (entity as Entity).getScale().x) / -2,
+      ((entity as Entity).height * (entity as Entity).getScale().y) / -2
+    )
+    context.translate(
+      (entity as Circle).radius *
+        -(entity as Entity).getOrigin().x *
+        (entity as Entity).getScale().r,
+      (entity as Circle).radius *
+        -(entity as Entity).getOrigin().y *
+        (entity as Entity).getScale().r
+    )
+    context.beginPath()
+    context.lineWidth = 2
+    context.strokeStyle = "green"
+    context.arc(
+      (entity as Circle).x,
+      (entity as Circle).y,
+      (entity as Circle).radius * (entity as Circle).getScale().r,
+      0,
+      Math.PI * 2
+    )
+    context.stroke()
+    context.closePath()
+  } else if (!isMouse) {
     const body = (entity as Entity).getBodyBox()
+    if (!(entity as Entity).fixed)
+      context.translate(
+        (entity as Entity).scene.camera.x,
+        (entity as Entity).scene.camera.y
+      )
     context.translate(
       ((entity as Entity).width * (entity as Entity).getScale().x) / -2,
       ((entity as Entity).height * (entity as Entity).getScale().y) / -2
@@ -199,6 +236,7 @@ export function debugCenter(
         -(entity as Entity).getOrigin().y *
         (entity as Entity).getScale().y
     )
+    context.lineWidth = 2
     context.strokeStyle = "green"
     context.strokeRect(
       x + body.getX(),

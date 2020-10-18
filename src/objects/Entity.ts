@@ -27,6 +27,7 @@ export default class Entity extends EventEmitter {
   public lineWidth = 1
   public alpha = 1
   public zindex = 0
+  public fixed = false
 
   protected originX = 0
   protected originY = 0
@@ -47,78 +48,97 @@ export default class Entity extends EventEmitter {
     const restitution = 0.9
     this.setName(this.constructor.name)
     this.initBodyBox(scene)
-    this.on("move:velocity", () => {
-      if (!this.isMoving) this.isMoving = true
-      this.x += this.vx * this._speed * this.scene.game.secondsPassed
-      this.y +=
-        this.vy * (this._gravity || this._speed) * this.scene.game.secondsPassed
-      if (this.box?.parent?.isActive) {
-        if (typeOf(this) === "Circle") {
-          if (this.x < ((this as unknown) as Circle).radius) {
-            if (this.isMoving) this.isMoving = false
-            this.vx = Math.abs(this.vx) * restitution
-            this.x = ((this as unknown) as Circle).radius
-          } else if (
-            this.x >
-            this.box.getWidth() - ((this as unknown) as Circle).radius
+    this.on("move:velocity", (e: Entity) => {
+      if (!e.isMoving) e.isMoving = true
+      e.x += e.vx * e._speed * e.scene.game.secondsPassed
+      e.y += e.vy * (e._gravity || e._speed) * e.scene.game.secondsPassed
+      if (e.box?.parent?.isActive) {
+        if (typeOf(e) === "Circle") {
+          if (
+            e.x <
+            ((e as unknown) as Circle).radius *
+              ((e as unknown) as Circle).getScale().r
           ) {
-            if (this.isMoving) this.isMoving = false
-            this.vx = -Math.abs(this.vx) * restitution
-            this.x = this.box.getWidth() - ((this as unknown) as Circle).radius
+            if (e.isMoving) e.isMoving = false
+            e.vx = Math.abs(e.vx) * restitution
+            e.x =
+              ((e as unknown) as Circle).radius *
+              ((e as unknown) as Circle).getScale().r
+          } else if (
+            e.x >
+            e.box.getWidth() -
+              ((e as unknown) as Circle).radius *
+                ((e as unknown) as Circle).getScale().r
+          ) {
+            if (e.isMoving) e.isMoving = false
+            e.vx = -Math.abs(e.vx) * restitution
+            e.x =
+              e.box.getWidth() -
+              ((e as unknown) as Circle).radius *
+                ((e as unknown) as Circle).getScale().r
           }
-          if (this.y < ((this as unknown) as Circle).radius) {
-            if (this.isMoving) this.isMoving = false
-            this.vy = Math.abs(this.vy) * restitution
-            this.y = ((this as unknown) as Circle).radius
-          } else if (
-            this.y >
-            this.box.getHeight() - ((this as unknown) as Circle).radius
+          if (
+            e.y <
+            ((e as unknown) as Circle).radius *
+              ((e as unknown) as Circle).getScale().r
           ) {
-            if (this.isMoving) this.isMoving = false
-            this.vy = -Math.abs(this.vy) * restitution
-            this.y = this.box.getHeight() - ((this as unknown) as Circle).radius
+            if (e.isMoving) e.isMoving = false
+            e.vy = Math.abs(e.vy) * restitution
+            e.y =
+              ((e as unknown) as Circle).radius *
+              ((e as unknown) as Circle).getScale().r
+          } else if (
+            e.y >
+            e.box.getHeight() -
+              ((e as unknown) as Circle).radius *
+                ((e as unknown) as Circle).getScale().r
+          ) {
+            if (e.isMoving) e.isMoving = false
+            e.vy = -Math.abs(e.vy) * restitution
+            e.y =
+              e.box.getHeight() -
+              ((e as unknown) as Circle).radius *
+                ((e as unknown) as Circle).getScale().r
           }
-        } else if (typeOf(this) === "Rectangle") {
-          if (this.x < ((this as unknown) as Rectangle).width / 2) {
-            if (this.isMoving) this.isMoving = false
-            if (this.box.rebound)
-              this.vx =
-                Math.abs(this.vx) *
-                (restitution + (this._bounceWithoutLosingSpeed ? 0.1 : 0))
-            this.x = ((this as unknown) as Rectangle).width / 2
+        } else if (typeOf(e) === "Rectangle") {
+          if (e.x < ((e as unknown) as Rectangle).width / 2) {
+            if (e.isMoving) e.isMoving = false
+            if (e.box.rebound)
+              e.vx =
+                Math.abs(e.vx) *
+                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
+            e.x = ((e as unknown) as Rectangle).width / 2
           } else if (
-            this.x >
-            this.box.getWidth() - ((this as unknown) as Rectangle).width / 2
+            e.x >
+            e.box.getWidth() - ((e as unknown) as Rectangle).width / 2
           ) {
-            if (this.isMoving) this.isMoving = false
-            if (this.box.rebound)
-              this.vx =
-                -Math.abs(this.vx) *
-                (restitution + (this._bounceWithoutLosingSpeed ? 0.1 : 0))
-            this.x =
-              this.box.getWidth() - ((this as unknown) as Rectangle).width / 2
+            if (e.isMoving) e.isMoving = false
+            if (e.box.rebound)
+              e.vx =
+                -Math.abs(e.vx) *
+                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
+            e.x = e.box.getWidth() - ((e as unknown) as Rectangle).width / 2
           }
-          if (this.y < ((this as unknown) as Rectangle).height / 2) {
-            if (this.isMoving) this.isMoving = false
-            if (this.box.rebound)
-              this.vy =
-                Math.abs(this.vy) *
-                (restitution + (this._bounceWithoutLosingSpeed ? 0.1 : 0))
-            this.y = ((this as unknown) as Rectangle).height / 2
+          if (e.y < ((e as unknown) as Rectangle).height / 2) {
+            if (e.isMoving) e.isMoving = false
+            if (e.box.rebound)
+              e.vy =
+                Math.abs(e.vy) *
+                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
+            e.y = ((e as unknown) as Rectangle).height / 2
           } else if (
-            this.y >
-            this.box.getHeight() - ((this as unknown) as Rectangle).height / 2
+            e.y >
+            e.box.getHeight() - ((e as unknown) as Rectangle).height / 2
           ) {
-            if (this.isMoving) this.isMoving = false
-            if (this.box.rebound)
-              this.vy =
-                -Math.abs(this.vy) *
-                (restitution + (this._bounceWithoutLosingSpeed ? 0.1 : 0))
-            this.y =
-              this.box.getHeight() - ((this as unknown) as Rectangle).height / 2
+            if (e.isMoving) e.isMoving = false
+            if (e.box.rebound)
+              e.vy =
+                -Math.abs(e.vy) *
+                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
+            e.y = e.box.getHeight() - ((e as unknown) as Rectangle).height / 2
           }
         }
-      } else if (this.isMoving) this.isMoving = false
+      } else if (e.isMoving) e.isMoving = false
     })
   }
   init() {}
@@ -259,7 +279,9 @@ export default class Entity extends EventEmitter {
   protected collideCirc(circle1: Circle, circle2: Circle) {
     return (
       (circle1.x - circle2.x) ** 2 + (circle1.y - circle2.y) ** 2 <=
-      (circle1.radius + circle2.radius) ** 2
+      (circle1.radius * circle1.getScale().r +
+        circle2.radius * circle2.getScale().r) **
+        2
     )
   }
   protected collideRect(rect1: Rectangle, rect2: Rectangle) {
@@ -309,8 +331,8 @@ export default class Entity extends EventEmitter {
     let circleDistanceY = Math.abs(circle.y - rect.y - rect.height / 2)
 
     if (
-      circleDistanceX > rect.width / 2 + circle.radius ||
-      circleDistanceY > rect.height / 2 + circle.radius
+      circleDistanceX > rect.width / 2 + circle.radius * circle.getScale().r ||
+      circleDistanceY > rect.height / 2 + circle.radius * circle.getScale().r
     )
       return false
     if (circleDistanceX <= rect.width / 2 || circleDistanceY <= rect.height / 2)
@@ -318,7 +340,7 @@ export default class Entity extends EventEmitter {
     return (
       (circleDistanceX - rect.width / 2) ** 2 +
         (circleDistanceY - rect.height / 2) ** 2 <=
-      circle.radius ** 2
+      circle.radius * circle.getScale().r ** 2
     )
   }
   protected collideCircWorld(circle: Circle, rect: BoundingBox) {
@@ -326,8 +348,8 @@ export default class Entity extends EventEmitter {
     let circleDistanceY = Math.abs(circle.y - rect.getY())
 
     if (
-      circleDistanceX > rect.getWidth() + circle.radius ||
-      circleDistanceY > rect.getHeight() + circle.radius
+      circleDistanceX > rect.getWidth() + circle.radius * circle.getScale().r ||
+      circleDistanceY > rect.getHeight() + circle.radius * circle.getScale().r
     )
       return false
     if (
@@ -338,7 +360,7 @@ export default class Entity extends EventEmitter {
     return (
       (circleDistanceX - rect.getWidth()) ** 2 +
         (circleDistanceY - rect.getHeight()) ** 2 <=
-      circle.radius ** 2
+      circle.radius * circle.getScale().r ** 2
     )
   }
   protected collideRectWorld(rect1: Rectangle, rect2: BoundingBox) {
