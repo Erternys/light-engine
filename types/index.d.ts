@@ -146,7 +146,7 @@ export namespace Managers {
     constructor(scene: Objects.Scene)
     static addMedia(name: string, media: LoadEntityTypes): typeof EntityManager
     public add(...entities: Array<typeof Objects.Entity | Objects.Entity>): this
-    public remove(scene: Objects.Entity): this
+    public remove(...entities: Array<Objects.Entity>): this
     public setEntities(
       ...list: Array<typeof Objects.Entity | Objects.Entity>
     ): this
