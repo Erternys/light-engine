@@ -10,9 +10,11 @@ export default class Camera extends Rectangle {
     super(scene, 0, 0, 0, 0)
     this.setName("camera")
     this.offAll("move:velocity")
-    this.center = new BoundingBox(scene, "50%", "50%", 2, 2)
-    this.width = scene.game.canvas.width
-    this.height = scene.game.canvas.height
+  }
+  init() {
+    this.center = new BoundingBox(this.scene, "50%", "50%", 2, 2)
+    this.width = this.scene.game.canvas.width
+    this.height = this.scene.game.canvas.height
   }
   draw() {}
   setValues(x?: number, y?: number, width?: number, height?: number) {

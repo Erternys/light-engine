@@ -1,6 +1,6 @@
 {
   "name": "light-engine",
-  "version": "1.5.2",
+  "version": "1.6.1",
   "description": "Light Engine is a game engine by Grozzlo",
   "main": "lib/light.js",
   "types": "types/index.d.ts",
