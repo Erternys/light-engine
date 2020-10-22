@@ -1,4 +1,4 @@
-import { EventEmitter } from "./EventEmitter"
+import { EventEmitter, GlobalEventEmitter } from "./EventEmitter"
 import {
   Errors,
   stringToPixelNum,
@@ -6,6 +6,7 @@ import {
   isDefined,
   isChromium,
   typeOf,
+  Warning,
 } from "./helper"
 import { Scene, Entity } from "./objects"
 import FpsCtrl from "./FpsController"
@@ -35,7 +36,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   constructor(
     config: ConfigOption,
     public w: string | number = 800,
-    public h: string | number = 600
+    public h: string | number = 600,
+    private doc: Document = document,
+    private win: Window = window
   ) {
     super()
     this.playedWithOpacity = []
@@ -46,7 +49,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       typeof config.canvas === "object" &&
       config.canvas instanceof HTMLCanvasElement
         ? config.canvas
-        : document.body.appendChild(document.createElement("canvas"))
+        : this.doc.body.appendChild(this.doc.createElement("canvas"))
 
     const p = this.canvas.parentNode as Element
     this.canvas.width = stringToPixelNum(w, p.clientWidth)
@@ -93,26 +96,24 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       this.sceneManager.add(config.loadScene)
       this.playScene(this.sceneManager.getFirst())
     }
-    if (toLoad.length < 1) this.currentScene.emit("progress:ended")
-    else
-      toLoad.forEach((name: string, i: number) => {
+    ;[...toLoad, () => {}].forEach((name: string, i: number) => {
+      if (typeOf(name) !== "function")
         config.load[name]
           .then((media) => {
             EntityManager.addMedia(name, media)
-            if (this.currentScene) {
+            if (this.currentScene)
               this.currentScene.emit("progress", (i + 1) / toLoad.length)
-              if ((i + 1) / toLoad.length === 1)
-                this.currentScene.emit("progress:ended")
-            }
           })
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
-      })
+      else this.currentScene.emit("progress:ended")
+    })
     if (!this.currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()
     this.mouse = new Mouse(this)
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
+    this.eventsAndErrors()
   }
   playScene(scene: Scene) {
     if (
@@ -282,5 +283,35 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.secondsPassed = (timestamp - this.oldTimeStamp) / 1000
     this.oldTimeStamp = timestamp
     this.fps = Math.round(1 / this.secondsPassed)
+  }
+  private eventsAndErrors() {
+    const gee = new GlobalEventEmitter()
+    this.doc.addEventListener("visibilitychange", () =>
+      gee.emit("page:visibilitychange")
+    )
+    this.win.addEventListener("keydown", (e) => {
+      gee.emit("key:down", e.key)
+    })
+    this.win.addEventListener("keyup", (e) => {
+      gee.emit("key:up", e.key)
+    })
+    this.win.addEventListener("gamepadconnected", (e) => {
+      gee.emit("gamepad:add", e)
+    })
+    this.win.addEventListener("gamepaddisconnected", (e) => {
+      gee.emit("gamepad:remove", e)
+    })
+    for (const id in Errors) {
+      if (/\d/.test(id))
+        gee.on(`e${id}`, (reason: string) =>
+          console.error(`[${Errors[id]}]: ${reason}`)
+        )
+    }
+    for (const id in Warning) {
+      if (/\d/.test(id))
+        gee.on(`w${id}`, (reason: string) =>
+          console.warn(`[${Warning[id]}]: ${reason}`)
+        )
+    }
   }
 }

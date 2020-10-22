@@ -1,6 +1,6 @@
 import Entity from "../Entity"
 import { Scene } from ".."
-import { isDefined, debugCenter } from "../../helper"
+import { isDefined, debugCenter, typeOf } from "../../helper"
 import Rectangle from "./Rectangle"
 import { TextStyle } from "../../../types/private"
 
@@ -73,25 +73,59 @@ export default class Text extends Rectangle {
     context.font = `${this.style.font.size}px ${this.style.font.family}`
     if (this.content !== this.lastContent) {
       this.lastContent = this.content
-      this.width = context.measureText(this.content).width
-      this.height = this.style.font.size
+      this.height = this.content.split("\n").reduce((rest, line, index) => {
+        if (index === 0) {
+          this.width = context.measureText(line.trim()).width
+          return this.style.font.size
+        }
+        if (this.width < context.measureText(line.trim()).width)
+          this.width = context.measureText(line.trim()).width
+        return rest + this.style.lineSpacing + this.style.font.size
+      }, 0)
     }
     if (isDefined(this.style.background)) {
-      context.fillStyle = this.style.background.toString(16)
-      context.fillRect(
-        this.x,
-        this.y,
-        this.width + this.style.padding.left + this.style.padding.right,
-        this.height + this.style.padding.top + this.style.padding.bottom
-      )
+      if (
+        this.style.background instanceof Entity ||
+        this.manager.medias.images.get(this.style.background) instanceof Entity
+      ) {
+        const image = (typeOf(this.style.background) === "string"
+          ? this.manager.medias.images.get(this.style.background)
+          : this.style.background) as Entity
+
+        if (
+          image.getScale().x !== this.getScale().x ||
+          image.getScale().y !== this.getScale().y
+        )
+          image.setScale(this.getScale().x, this.getScale().y)
+        if (
+          image.getOrigin().x !== this.getOrigin().x ||
+          image.getOrigin().y !== this.getOrigin().y
+        )
+          image.setOrigin(this.getOrigin().x, this.getOrigin().y)
+        if (image.box !== this.box) image.setBox(this.box)
+        if (image.x !== this.x) image.x = this.x
+        if (image.y !== this.y) image.y = this.y
+      } else {
+        context.fillStyle = this.style.background.toString(16)
+        context.fillRect(
+          this.x,
+          this.y,
+          this.width + this.style.padding.left + this.style.padding.right,
+          this.height + this.style.padding.top + this.style.padding.bottom
+        )
+      }
     }
     if (isDefined(this.fillColor)) {
       context.fillStyle = this.fillColor.toString(16)
-      context.fillText(
-        this.content,
-        this.x + this.style.padding.left + align,
-        this.y + this.style.padding.top
-      )
+      this.content.split("\n").forEach((line, index) => {
+        context.fillText(
+          line.trim(),
+          this.x + this.style.padding.left + align,
+          this.y +
+            this.style.padding.top +
+            (this.style.lineSpacing + this.style.font.size) * index
+        )
+      }, 0)
     }
     if (isDefined(this.strokeColor)) {
       context.lineWidth = this.lineWidth

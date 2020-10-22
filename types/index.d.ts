@@ -12,9 +12,7 @@ declare class GlobalEventEmitter {
   ): boolean
   public offAll(event?: string | number): boolean
 }
-declare class EventEmitter extends GlobalEventEmitter {
-  public readonly globals: GlobalEventEmitter
-}
+
 declare enum StateEnum {
   Next,
   Prev,
@@ -33,6 +31,9 @@ declare class Vector2 {
   public x: number
   public y: number
   constructor(x: number, y: number)
+}
+export class EventEmitter extends GlobalEventEmitter {
+  public readonly globals: GlobalEventEmitter
 }
 export type LoadEntityTypes = HTMLImageElement | HTMLAudioElement | Text
 export interface ConfigOption {
@@ -105,7 +106,7 @@ export interface TextStyle {
     blur: number
   }
   lineSpacing?: number
-  background?: string | number
+  background?: string | number | Objects.Entity
   align?: "left" | "center" | "right"
   padding?: {
     left?: number
@@ -172,15 +173,11 @@ export namespace Managers {
 }
 
 export namespace Objects {
-  type obj = {
-    get(): number | string
-    set(v: number | string): void
-  }
-
   export class BoundingBox {
     public parent: World
     public rebound: boolean
     constructor(parent: World | Scene, x: int, y: int, width: int, height: int)
+    public clone(): this
     public getX(): number
     public setX(v: string | number): void
     public getY(): number
@@ -209,8 +206,6 @@ export namespace Objects {
     public use: string
     public name: string
     public lineWidth: number
-    public originX: number
-    public originY: number
     public alpha: number
     public zindex: number
     public fixed: boolean

@@ -178,12 +178,18 @@ export function debugCenter(
 ) {
   const isMouse = typeOf(entity, true) === "Mouse"
   const isCircle = typeOf(entity) === "Circle"
-  const x = entity.x + (isMouse ? 0 : (entity as Entity).scene.camera.x)
-  const y = entity.y + (isMouse ? 0 : (entity as Entity).scene.camera.y)
+  const x = entity.x
+  const y = entity.y
 
   context.beginPath()
   context.fillStyle = "#f00"
-  context.arc(x, y, 2, 0, Math.PI * 2)
+  context.arc(
+    x + (isMouse ? 0 : (entity as Entity).scene.camera.x),
+    y + (isMouse ? 0 : (entity as Entity).scene.camera.y),
+    2,
+    0,
+    Math.PI * 2
+  )
   context.fill()
   context.closePath()
 
@@ -209,8 +215,8 @@ export function debugCenter(
     context.lineWidth = 2
     context.strokeStyle = "green"
     context.arc(
-      (entity as Circle).x,
-      (entity as Circle).y,
+      x,
+      y,
       (entity as Circle).radius * (entity as Circle).getScale().r,
       0,
       Math.PI * 2

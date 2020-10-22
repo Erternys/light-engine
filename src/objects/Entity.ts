@@ -45,97 +45,116 @@ export default class Entity extends EventEmitter {
     this.box = scene?.world?.bounds
     this.x = x
     this.y = y
-    const restitution = 0.9
+    this.isMoving = true
+    const rest = 0.9
     this.setName(this.constructor.name)
     this.initBodyBox(scene)
     this.on("move:velocity", (e: Entity) => {
-      if (!e.isMoving) e.isMoving = true
+      let restitution = rest + (e._bounceWithoutLosingSpeed ? 0.1 : 0)
       e.x += e.vx * e._speed * e.scene.game.secondsPassed
       e.y += e.vy * (e._gravity || e._speed) * e.scene.game.secondsPassed
       if (e.box?.parent?.isActive) {
         if (typeOf(e) === "Circle") {
           if (
             e.x <
-            ((e as unknown) as Circle).radius *
-              ((e as unknown) as Circle).getScale().r
+            (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originX
           ) {
             if (e.isMoving) e.isMoving = false
-            e.vx = Math.abs(e.vx) * restitution
+            if (e.box.rebound) e.vx = Math.abs(e.vx) * restitution
             e.x =
-              ((e as unknown) as Circle).radius *
-              ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originX
           } else if (
             e.x >
             e.box.getWidth() -
-              ((e as unknown) as Circle).radius *
-                ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originX
           ) {
             if (e.isMoving) e.isMoving = false
-            e.vx = -Math.abs(e.vx) * restitution
+            if (e.box.rebound) e.vx = -Math.abs(e.vx) * restitution
             e.x =
               e.box.getWidth() -
-              ((e as unknown) as Circle).radius *
-                ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originX
           }
           if (
             e.y <
-            ((e as unknown) as Circle).radius *
-              ((e as unknown) as Circle).getScale().r
+            (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originY
           ) {
             if (e.isMoving) e.isMoving = false
-            e.vy = Math.abs(e.vy) * restitution
+            if (e.box.rebound) e.vy = Math.abs(e.vy) * restitution
             e.y =
-              ((e as unknown) as Circle).radius *
-              ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originY
           } else if (
             e.y >
             e.box.getHeight() -
-              ((e as unknown) as Circle).radius *
-                ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originY
           ) {
             if (e.isMoving) e.isMoving = false
-            e.vy = -Math.abs(e.vy) * restitution
+            if (e.box.rebound) e.vy = -Math.abs(e.vy) * restitution
             e.y =
               e.box.getHeight() -
-              ((e as unknown) as Circle).radius *
-                ((e as unknown) as Circle).getScale().r
+              (e as Circle).radius * (e as Circle).getScale().r +
+              (e as Circle).radius * (e as Circle).getScale().r * e.originY
           }
         } else if (typeOf(e) === "Rectangle") {
-          if (e.x < ((e as unknown) as Rectangle).width / 2) {
+          if (
+            e.x <
+            ((e as Rectangle).width / 2) * e.scalex +
+              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
+          ) {
             if (e.isMoving) e.isMoving = false
-            if (e.box.rebound)
-              e.vx =
-                Math.abs(e.vx) *
-                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
-            e.x = ((e as unknown) as Rectangle).width / 2
+            if (e.box.rebound) e.vx = Math.abs(e.vx) * restitution
+            e.x =
+              ((e as Rectangle).width / 2) * e.scalex +
+              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
           } else if (
             e.x >
-            e.box.getWidth() - ((e as unknown) as Rectangle).width / 2
+            e.box.getWidth() -
+              ((e as Rectangle).width / 2) * e.scalex +
+              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
           ) {
             if (e.isMoving) e.isMoving = false
-            if (e.box.rebound)
-              e.vx =
-                -Math.abs(e.vx) *
-                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
-            e.x = e.box.getWidth() - ((e as unknown) as Rectangle).width / 2
+            if (e.box.rebound) e.vx = -Math.abs(e.vx) * restitution
+            e.x =
+              e.box.getWidth() -
+              ((e as Rectangle).width / 2) * e.scalex +
+              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
           }
-          if (e.y < ((e as unknown) as Rectangle).height / 2) {
+          if (
+            e.y <
+            ((e as Rectangle).height / 2) * e.scaley +
+              ((e as Rectangle).height / 2) *
+                (e as Rectangle).scaley *
+                e.originY
+          ) {
             if (e.isMoving) e.isMoving = false
-            if (e.box.rebound)
-              e.vy =
-                Math.abs(e.vy) *
-                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
-            e.y = ((e as unknown) as Rectangle).height / 2
+            if (e.box.rebound) e.vy = Math.abs(e.vy) * restitution
+            e.y =
+              ((e as Rectangle).height / 2) * e.scaley +
+              ((e as Rectangle).height / 2) *
+                (e as Rectangle).scaley *
+                e.originY
           } else if (
             e.y >
-            e.box.getHeight() - ((e as unknown) as Rectangle).height / 2
+            e.box.getHeight() -
+              ((e as Rectangle).height / 2) * e.scaley +
+              ((e as Rectangle).height / 2) *
+                (e as Rectangle).scaley *
+                e.originY
           ) {
             if (e.isMoving) e.isMoving = false
-            if (e.box.rebound)
-              e.vy =
-                -Math.abs(e.vy) *
-                (restitution + (e._bounceWithoutLosingSpeed ? 0.1 : 0))
-            e.y = e.box.getHeight() - ((e as unknown) as Rectangle).height / 2
+            if (e.box.rebound) e.vy = -Math.abs(e.vy) * restitution
+            e.y =
+              e.box.getHeight() -
+              ((e as Rectangle).height / 2) * e.scaley +
+              ((e as Rectangle).height / 2) *
+                (e as Rectangle).scaley *
+                e.originY
           }
         }
       } else if (e.isMoving) e.isMoving = false
@@ -396,8 +415,8 @@ export default class Entity extends EventEmitter {
   }
 
   private initBodyBox(scene: Scene) {
-    let x: number = null
-    let y: number = null
+    let x: number = 0
+    let y: number = 0
     let width: number = null
     let height: number = null
     const _this = this
@@ -422,7 +441,7 @@ export default class Entity extends EventEmitter {
         },
         {
           get() {
-            return width || _this.width
+            return (width || _this.width) * _this.scalex
           },
           set(value: number) {
             width = value
@@ -430,7 +449,7 @@ export default class Entity extends EventEmitter {
         },
         {
           get() {
-            return height || _this.height
+            return (height || _this.height) * _this.scaley
           },
           set(value: number) {
             height = value

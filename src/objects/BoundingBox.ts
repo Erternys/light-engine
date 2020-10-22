@@ -41,62 +41,7 @@ export default class BoundingBox {
       this._y,
       this._width,
       this._height
-    ).setBorder(this._border)
-  }
-  public getBorder() {
-    return this._border
-  }
-  public setBorder(
-    top:
-      | number
-      | {
-          top: number
-          right: number
-          bottom: number
-          left: number
-        },
-    right?: number,
-    bottom?: number,
-    left?: number
-  ) {
-    if (typeof top === "object")
-      this._border = Object.assign({}, this._border, top)
-    else if (!isDefined(right) && !isDefined(bottom) && !isDefined(left))
-      this._border = Object.assign({}, this._border, {
-        top: isDefined(top) ? top : 0,
-        right: isDefined(top) ? top : 0,
-        bottom: isDefined(top) ? top : 0,
-        left: isDefined(top) ? top : 0,
-      })
-    else if (!isDefined(bottom) && !isDefined(left))
-      this._border = Object.assign({}, this._border, {
-        top: isDefined(top) ? top : 0,
-        right: isDefined(right) ? right : 0,
-        bottom: isDefined(top) ? top : 0,
-        left: isDefined(right) ? right : 0,
-      })
-    else if (!isDefined(left))
-      this._border = Object.assign({}, this._border, {
-        top: isDefined(top) ? top : 0,
-        right: isDefined(right) ? right : 0,
-        bottom: isDefined(bottom) ? bottom : 0,
-        left: isDefined(right) ? right : 0,
-      })
-    else
-      this._border = Object.assign({}, this._border, {
-        top: isDefined(top) ? top : 0,
-        right: isDefined(right) ? right : 0,
-        bottom: isDefined(bottom) ? bottom : 0,
-        left: isDefined(left) ? left : 0,
-      })
-    return this
-  }
-  public getOnlyBorder() {
-    return this._onlyBorder
-  }
-  public setOnlyBorder(value: boolean) {
-    this._onlyBorder = value
-    return this
+    )
   }
   public getX(): number {
     if (typeof this._x === "number") return this._x

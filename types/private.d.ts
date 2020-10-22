@@ -1,5 +1,5 @@
 import { LoadEntityTypes } from "."
-import { Scene } from "../src/objects"
+import { Entity, Scene } from "../src/objects"
 import { Game } from "../src/app"
 import { SceneManager } from "../src/managers"
 
@@ -49,7 +49,7 @@ export interface TextStyle {
     blur: number
   }
   lineSpacing?: number
-  background?: string | number
+  background?: string | number | Entity
   align?: "left" | "center" | "right"
   padding?: {
     left?: number

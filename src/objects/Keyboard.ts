@@ -60,7 +60,10 @@ export default class Keyboard extends EventEmitter {
     )
   }
   vectorQuery(template: string | string[]) {
-    if (typeof template === "string" && template in arrowKeyTemplates) {
+    if (
+      typeof template === "string" &&
+      template.toLocaleLowerCase() in arrowKeyTemplates
+    ) {
       const vector = new Vector2(0, 0)
       if (this.query(arrowKeyTemplates[template][0])) vector.y -= 1
       if (this.query(arrowKeyTemplates[template][1])) vector.x -= 1

@@ -24,7 +24,6 @@ export default class Gamepad extends EventEmitter {
         }
         return true
       })
-      console.log(this.gamepads)
     })
     this.pressed = new Set()
     this.withGamepad(0)

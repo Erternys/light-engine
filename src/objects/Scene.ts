@@ -14,6 +14,8 @@ import { StateEnum } from "../helper"
 import Camera from "./entities/Camera"
 import Game from "../Game"
 
+const memory = new Map<string, AudioManager>()
+
 export default class Scene extends EventEmitter {
   public get [Symbol.toStringTag]() {
     return "Scene"
@@ -126,8 +128,15 @@ export default class Scene extends EventEmitter {
     return true
   }
   getAudio(name: string) {
+    if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
     const audio = this.entities.medias.audios.get(name)
-    if (audio) return new AudioManager(audio, name)
+    if (audio) {
+      const manager = new AudioManager(audio, name)
+      memory.set(name, manager)
+      manager.deletion.caller
+      return manager
+    }
+    return null
   }
   setName(value: string) {
     this.name = value
