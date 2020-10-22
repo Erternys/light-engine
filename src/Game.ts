@@ -108,7 +108,6 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     if (!this.currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()
-    this.currentScene.emit("progress:ended")
     this.mouse = new Mouse(this)
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
@@ -208,6 +207,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       for (const entity of entities) {
         entity.init()
       }
+      scene.emit("progress:ended")
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {
