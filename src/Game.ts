@@ -20,6 +20,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   public canvas: HTMLCanvasElement
   public state: S
   public debug: boolean
+  public pixel: boolean
   public fps: number
   public loop: FpsCtrl
   public context: CanvasRenderingContext2D
@@ -43,6 +44,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     super()
     this.playedWithOpacity = []
     this.debug = config.debug
+    this.pixel = config.pixel
     this.update = this.update.bind(this)
     this.initScene = this.initScene.bind(this)
     this.canvas =

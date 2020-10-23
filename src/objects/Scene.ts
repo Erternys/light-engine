@@ -133,7 +133,6 @@ export default class Scene extends EventEmitter {
     if (audio) {
       const manager = new AudioManager(audio, name)
       memory.set(name, manager)
-      manager.deletion.caller
       return manager
     }
     return null
