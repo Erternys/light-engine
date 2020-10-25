@@ -32,7 +32,6 @@ class CloneAudioManager extends EventEmitter {
     if (!this.isLocal)
       this.getAudio(this.audio.src)
         .then((buffer) => {
-          this.state.loop = true
           this.state.started = false
           this.source.buffer = buffer
           this.source.loop = this.loop
@@ -43,6 +42,7 @@ class CloneAudioManager extends EventEmitter {
     else this.audio.addEventListener("ended", this.ended)
     this.volume = 1
     this.speed = 1
+    this.loop = true
 
     this.globals.on("page:visibilitychange", this.changePageVisible)
   }
@@ -99,9 +99,11 @@ class CloneAudioManager extends EventEmitter {
   }
   public destroy() {
     if (this.isLocal) this.audio.removeEventListener("ended", this.ended)
-    else this.source.removeEventListener("ended", this.ended)
+    else {
+      this.source.removeEventListener("ended", this.ended)
+      this.source.stop()
+    }
     this.gain.disconnect()
-    this.source.stop()
     this.source.disconnect()
     this.context.close()
     this.globals.off("page:visibilitychange", this.changePageVisible)
@@ -138,5 +140,6 @@ export default class AudioManager extends CloneAudioManager {
   public deletion() {
     this.destroy()
     this.clones.forEach((clone) => clone.destroy())
+    this.clones = []
   }
 }

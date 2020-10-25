@@ -126,6 +126,7 @@ export namespace Managers {
     public key: string
     public volume: number
     public speed: number
+    public loop: boolean
 
     constructor(audio: HTMLAudioElement, key?: string)
     public play(): void
