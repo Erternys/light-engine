@@ -7,6 +7,7 @@ export interface SceneOption {
   name?: string
 }
 export interface AudioState {
+  loop?: boolean
   volume?: number
   speed?: number
   started?: boolean

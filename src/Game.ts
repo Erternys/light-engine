@@ -98,15 +98,32 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       this.sceneManager.add(config.loadScene)
       this.playScene(this.sceneManager.getFirst())
     }
-    toLoad.forEach((name: string, i: number) => {
-      config.load[name]
-        .then((media) => {
-          EntityManager.addMedia(name, media)
-          if (this.currentScene)
-            this.currentScene.emit("progress", (i + 1) / toLoad.length)
+    Promise.allSettled(
+      toLoad.map((name: string, i: number) => {
+        return new Promise((res, rej) =>
+          config.load[name]
+            .then((media) => {
+              EntityManager.addMedia(name, media)
+              res((i + 1) / toLoad.length)
+            })
+            .catch((reason) => rej(reason))
+        )
+      })
+    )
+      .then((a) => {
+        a.forEach((result) => {
+          if (result.status === "fulfilled" && this.currentScene)
+            this.currentScene.emit("progress", result.value)
+          else if (result.status === "rejected")
+            this.globals.emit(
+              "e" + Errors.Load,
+              (result.reason as Error).message
+            )
         })
-        .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
-    })
+      })
+      .finally(() => {
+        if (this.currentScene) this.currentScene.emit("progress:ended")
+      })
     if (!this.currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()
@@ -209,7 +226,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       for (const entity of entities) {
         entity.init()
       }
-      scene.emit("progress:ended")
+      // scene.emit("progress:ended")
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {
@@ -269,7 +286,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     for (const scene of this.playedWithOpacity) {
       const entities = scene.entities.getAll()
       for (const entity of entities) {
-        entity.draw(this.context)
+        if (!entity.hidden) entity.draw(this.context)
         entity.afterRedraw()
       }
       scene.update(this.secondsPassed)
