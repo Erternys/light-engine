@@ -128,7 +128,7 @@ export namespace Managers {
     public speed: number
     public loop: boolean
 
-    constructor(audio: HTMLAudioElement, key?: string)
+    constructor(audio: HTMLAudioElement, key?: string, isSound?: boolean)
     public play(): void
     public pause(): void
     public toggle(): void
@@ -360,7 +360,7 @@ export namespace Objects {
     update(secondsPassed: number): void
     afterUpdate(): void
     changeAllow(scene: Scene, state: StateEnum): boolean
-    getAudio(name: string): Managers.AudioManager
+    getAudio(name: string, isSound?: boolean): Managers.AudioManager
     setName(value: string): this
     setGame(value: Game): this
     setManager(value: Managers.SceneManager): this

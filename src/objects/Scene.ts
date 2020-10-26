@@ -127,11 +127,11 @@ export default class Scene extends EventEmitter {
   changeAllow(scene: Scene, state: StateEnum) {
     return true
   }
-  getAudio(name: string) {
+  getAudio(name: string, isSound: boolean) {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
     const audio = this.entities.medias.audios.get(name)
     if (audio) {
-      const manager = new AudioManager(audio, name)
+      const manager = new AudioManager(audio, name, isSound)
       memory.set(name, manager)
       return manager
     }

@@ -16,8 +16,8 @@ class CloneAudioManager extends EventEmitter {
   private state: AudioState = {}
   private source: AudioBufferSourceNode
   private gain: GainNode
-  private isLocal: boolean
-  constructor(audio: HTMLAudioElement, key?: string) {
+  private withoutAudioContext: boolean
+  constructor(audio: HTMLAudioElement, key?: string, isSound = false) {
     super()
     this.changePageVisible = this.changePageVisible.bind(this)
     this.key = key
@@ -27,9 +27,9 @@ class CloneAudioManager extends EventEmitter {
     this.gain.connect(this.context.destination)
     this.source = this.context.createBufferSource()
 
-    this.isLocal = /^file:\/\/\//.test(location.href)
+    this.withoutAudioContext = /^file:\/\/\//.test(location.href) || isSound
 
-    if (!this.isLocal)
+    if (!this.withoutAudioContext)
       this.getAudio(this.audio.src)
         .then((buffer) => {
           this.state.started = false
@@ -50,7 +50,7 @@ class CloneAudioManager extends EventEmitter {
     return this.state.loop
   }
   public set loop(value: boolean) {
-    if (this.isLocal) this.audio.loop = value
+    if (this.withoutAudioContext) this.audio.loop = value
     else this.source.loop = value
     this.state.loop = value
   }
@@ -58,7 +58,7 @@ class CloneAudioManager extends EventEmitter {
     return this.state.volume
   }
   public set volume(value: number) {
-    if (this.isLocal) this.audio.volume = value
+    if (this.withoutAudioContext) this.audio.volume = value
     else this.gain.gain.value = value
     this.state.volume = value
   }
@@ -66,13 +66,13 @@ class CloneAudioManager extends EventEmitter {
     return this.state.speed
   }
   public set speed(value: number) {
-    if (this.isLocal) this.audio.playbackRate = value
+    if (this.withoutAudioContext) this.audio.playbackRate = value
     else this.source.playbackRate.value = value
     this.state.speed = value
   }
   public play() {
     if (this.isPaused) {
-      if (this.isLocal) this.audio.play()
+      if (this.withoutAudioContext) this.audio.play()
       else {
         if (!this.state.started) {
           this.source.start()
@@ -86,7 +86,7 @@ class CloneAudioManager extends EventEmitter {
   }
   public pause() {
     if (this.isPlaying) {
-      if (this.isLocal) this.audio.pause()
+      if (this.withoutAudioContext) this.audio.pause()
       else this.context.suspend()
       this.emit("paused")
       this.isPaused = true
@@ -98,7 +98,8 @@ class CloneAudioManager extends EventEmitter {
     else this.play()
   }
   public destroy() {
-    if (this.isLocal) this.audio.removeEventListener("ended", this.ended)
+    if (this.withoutAudioContext)
+      this.audio.removeEventListener("ended", this.ended)
     else {
       this.source.removeEventListener("ended", this.ended)
       this.source.stop()
@@ -121,9 +122,9 @@ class CloneAudioManager extends EventEmitter {
   private ended = () => this.emit("ended")
   private changePageVisible() {
     if (document.hidden && this.isPlaying)
-      this.isLocal ? this.audio.pause() : this.context.suspend()
+      this.withoutAudioContext ? this.audio.pause() : this.context.suspend()
     else if (!document.hidden && this.isPlaying)
-      this.isLocal ? this.audio.play() : this.context.resume()
+      this.withoutAudioContext ? this.audio.play() : this.context.resume()
   }
 }
 
