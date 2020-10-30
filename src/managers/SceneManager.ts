@@ -38,7 +38,7 @@ export default class SceneManager extends EventEmitter {
   public getLast() {
     return this.getScene(this.list.length - 1)
   }
-  public play(name: string | number): Scene {
+  public play(name: string | number | Scene): Scene {
     return this.game.playScene(this.getScene(name))
   }
   public playWithOpacity(
@@ -53,7 +53,7 @@ export default class SceneManager extends EventEmitter {
       this.game.playedWithOpacity = [...this.game.playedWithOpacity, scene]
     return scene
   }
-  public getScene(name: string | number): Scene {
+  public getScene(name: string | number | Scene): Scene {
     if (typeof name === "string") {
       const scene = this.list.find((scene) => scene.name === name)
       if (scene) return scene
@@ -65,7 +65,7 @@ export default class SceneManager extends EventEmitter {
         "w" + Warning.Scene,
         `the ${name}${numberSuffix(name)} scene has not been created`
       )
-    }
+    } else if (typeof name === "object") return name
     return this.list[0]
   }
   public getScenes(filter = (scene: Scene) => true) {

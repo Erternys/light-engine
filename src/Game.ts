@@ -86,6 +86,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.context = this.canvas.getContext("2d")
     this.sceneManager = config.scene(this)
     let toLoad = Object.keys(config.load || {})
+    let currentScene: Scene | null = null
 
     if (typeOf(config.loadScene) !== "undefined") {
       const toForcedLoading = config.loadScene.forcedLoadingOfEntities || []
@@ -95,36 +96,19 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           .then((media) => EntityManager.addMedia(name, media))
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
-      this.sceneManager.add(config.loadScene)
-      this.playScene(this.sceneManager.getFirst())
+      currentScene = this.sceneManager.add(config.loadScene).play(0)
     }
-    Promise.allSettled(
-      toLoad.map((name: string, i: number) => {
-        return new Promise((res, rej) =>
-          config.load[name]
-            .then((media) => {
-              EntityManager.addMedia(name, media)
-              res((i + 1) / toLoad.length)
-            })
-            .catch((reason) => rej(reason))
-        )
-      })
-    )
-      .then((a) => {
-        a.forEach((result) => {
-          if (result.status === "fulfilled" && this.currentScene)
-            this.currentScene.emit("progress", result.value)
-          else if (result.status === "rejected")
-            this.globals.emit(
-              "e" + Errors.Load,
-              (result.reason as Error).message
-            )
+    toLoad.forEach((name: string, i: number) => {
+      config.load[name]
+        .then((media) => {
+          EntityManager.addMedia(name, media)
+          if (currentScene)
+            currentScene.emit("progress", (i + 1) / toLoad.length)
+          if ((i + 1) / toLoad.length === 1) currentScene.emit("progress:ended")
         })
-      })
-      .finally(() => {
-        if (this.currentScene) this.currentScene.emit("progress:ended")
-      })
-    if (!this.currentScene) this.sceneManager.play(0)
+        .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
+    })
+    if (!currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()
     this.mouse = new Mouse(this)
@@ -226,7 +210,6 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       for (const entity of entities) {
         entity.init()
       }
-      // scene.emit("progress:ended")
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {

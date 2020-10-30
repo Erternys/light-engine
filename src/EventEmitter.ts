@@ -15,7 +15,7 @@ export class GlobalEventEmitter {
     if (!this.has(event)) return false
     this.events.set(
       event,
-      this.get(event).map((v) => {
+      (this.get(event) || []).map((v) => {
         if (v instanceof Array) {
           if (!v[1]) {
             v[0](...args)
