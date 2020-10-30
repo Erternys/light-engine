@@ -97,17 +97,21 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
       currentScene = this.sceneManager.add(config.loadScene).play(0)
+      this.initScene(currentScene.entities.getAll(), currentScene)
+      currentScene.on("progress", (progress) => {
+        if (progress === 1) currentScene.emit("progress:ended")
+      })
     }
-    toLoad.forEach((name: string, i: number) => {
+    for (let i = 0; i < toLoad.length; i++) {
+      const name = toLoad[i]
       config.load[name]
         .then((media) => {
           EntityManager.addMedia(name, media)
           if (currentScene)
             currentScene.emit("progress", (i + 1) / toLoad.length)
-          if ((i + 1) / toLoad.length === 1) currentScene.emit("progress:ended")
         })
         .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
-    })
+    }
     if (!currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
     this.loop.start()

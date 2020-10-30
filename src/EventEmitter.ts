@@ -6,7 +6,7 @@ const globalMap = new Map<
 export class GlobalEventEmitter {
   protected events = globalMap
   public has(event: string | number) {
-    return this.events.has(event)
+    return this.events.has(event) && this.get(event).length > 0
   }
   public get(event: string | number) {
     return this.events.get(event)
@@ -48,7 +48,7 @@ export class GlobalEventEmitter {
     return true
   }
   public offAll(event?: string | number) {
-    if (this.has(event)) return this.events.delete(event)
+    if (event) this.events.set(event, [])
     else this.events.clear()
     return true
   }
@@ -58,6 +58,9 @@ export class EventEmitter extends GlobalEventEmitter {
     string | number,
     Array<Function | [Function, boolean]>
   >()
+  constructor() {
+    super()
+  }
   public get globals(): GlobalEventEmitter {
     return new GlobalEventEmitter()
   }
