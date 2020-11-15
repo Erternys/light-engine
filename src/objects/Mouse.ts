@@ -11,7 +11,7 @@ export default class Mouse extends EventEmitter {
   private game: Game
   private currentClickPos: Map<
     "left" | "center" | "right",
-    MouseEvent
+    MouseEvent | TouchEvent
   > = new Map()
 
   public get [Symbol.toStringTag]() {
@@ -25,21 +25,43 @@ export default class Mouse extends EventEmitter {
       "right",
     ]
     this.game = game
+    game.canvas.addEventListener("mousedown", (e) => {
+      this.click = true
+      this.currentClickPos.set(clickPos[e.button], e)
+      this.globals.emit(`mouse:down-${clickPos[e.button]}`, e)
+    })
     game.canvas.addEventListener("mousemove", (e) => {
       this.x = e.offsetX
       this.y = e.offsetY
       this.globals.emit("mouse:move", e)
     })
-    game.canvas.addEventListener("mousedown", (e) => {
-      this.click = true
-      this.currentClickPos.set(clickPos[e.which], e)
-      this.globals.emit(`mouse:down-${clickPos[e.which]}`, e)
-    })
     game.canvas.addEventListener("mouseup", (e) => {
       this.click = false
-      this.currentClickPos.delete(clickPos[e.which])
-      this.globals.emit(`mouse:up-${clickPos[e.which]}`, e)
-      this.globals.emit(`mouse:up-${clickPos[e.which]}`, e)
+      this.currentClickPos.delete(clickPos[e.button])
+      this.globals.emit(`mouse:up-${clickPos[e.button]}`, e)
+    })
+
+    game.canvas.addEventListener("touchstart", (e) => {
+      const rect = game.canvas.getBoundingClientRect()
+
+      this.x = e.touches[0].clientX - rect.left
+      this.y = e.touches[0].clientY - rect.top
+
+      this.click = true
+      this.currentClickPos.set("left", e)
+      this.globals.emit("mouse:down-left", e)
+    })
+    game.canvas.addEventListener("touchmove", (e) => {
+      const rect = game.canvas.getBoundingClientRect()
+
+      this.x = e.touches[0].clientX - rect.left
+      this.y = e.touches[0].clientY - rect.top
+      this.globals.emit("mouse:move", e)
+    })
+    game.canvas.addEventListener("touchend", (e) => {
+      this.click = false
+      this.currentClickPos.delete("left")
+      this.globals.emit("mouse:up-left", e)
     })
   }
   update() {

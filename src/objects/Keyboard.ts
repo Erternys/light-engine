@@ -72,7 +72,7 @@ export default class Keyboard extends EventEmitter {
       return vector
     } else if (template instanceof Array) {
       const vector = new Vector2(0, 0)
-      if (this.query(template[0])) vector.y - 1
+      if (this.query(template[0])) vector.y -= 1
       if (this.query(template[1])) vector.x -= 1
       if (this.query(template[2])) vector.y += 1
       if (this.query(template[3])) vector.x += 1

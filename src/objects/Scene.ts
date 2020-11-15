@@ -13,6 +13,7 @@ import { Rectangle, Circle, Image, Sprite, Text } from "./entities"
 import { StateEnum } from "../helper"
 import Camera from "./entities/Camera"
 import Game from "../Game"
+import Timer from "./Timer"
 
 const memory = new Map<string, AudioManager>()
 
@@ -53,6 +54,13 @@ export default class Scene extends EventEmitter {
         const box = new BoundingBox(self.world, x, y, width, height)
         entities.forEach((entity) => box.moveEntity(entity))
         return box
+      },
+      timer(
+        callback: () => void,
+        o: { time: number; tick: number },
+        unique = false
+      ) {
+        return new Timer(self, callback, o, unique)
       },
       entity: {
         rectangle(

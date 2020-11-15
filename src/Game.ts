@@ -30,14 +30,16 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   public mouse: Mouse
   public keyboard: Keyboard
   public gamepad: Gamepad
+  public w: number
+  public h: number
 
   public secondsPassed = 0
   private oldTimeStamp = 0
   private inited: Function[] = []
   constructor(
     config: ConfigOption,
-    public w: string | number = 800,
-    public h: string | number = 600,
+    w: string | number = 800,
+    h: string | number = 600,
     private doc: Document = document,
     private win: Window = window
   ) {
@@ -54,9 +56,11 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
         : this.doc.body.appendChild(this.doc.createElement("canvas"))
 
     const p = this.canvas.parentNode as Element
-    this.canvas.width = stringToPixelNum(w, p.clientWidth)
-    this.canvas.height = stringToPixelNum(h, p.clientHeight)
-    const prev = { w: this.canvas.width, h: this.canvas.height }
+    this.w = stringToPixelNum(w, p.clientWidth)
+    this.h = stringToPixelNum(h, p.clientHeight)
+    this.canvas.width = this.w
+    this.canvas.height = this.h
+    const prev = { w: this.w, h: this.h }
     if (
       typeof w === "string" &&
       w.trim().endsWith("%") &&
@@ -68,14 +72,18 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           typeof w === "string" &&
           w.trim().endsWith("%") &&
           prev.w !== p.clientWidth
-        )
-          this.canvas.width = stringToPixelNum(w, p.clientWidth)
+        ) {
+          this.w = stringToPixelNum(w, p.clientWidth)
+          this.canvas.width = this.w
+        }
         if (
           typeof h === "string" &&
           h.trim().endsWith("%") &&
           prev.h !== p.clientHeight
-        )
-          this.canvas.height = stringToPixelNum(h, p.clientHeight)
+        ) {
+          this.h = stringToPixelNum(h, p.clientHeight)
+          this.canvas.height = this.h
+        }
       })
 
     if (config.pixel)
@@ -120,7 +128,8 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.gamepad = new Gamepad()
     this.eventsAndErrors()
   }
-  playScene(scene: Scene) {
+  changeScene(name: Scene | string | number) {
+    const scene = this.sceneManager.getScene(name)
     if (
       !isDefined(this.currentScene) ||
       this.currentScene.changeAllow(scene, StateEnum.Next) ||
@@ -137,6 +146,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       this.playedWithOpacity = []
     }
     return this.currentScene
+  }
+  playScene(scene: Scene) {
+    return this.changeScene(scene)
   }
   getStateSave(getter?: StateSaveInterface): string {
     const dGetter = Object.assign(
@@ -231,13 +243,8 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.globals.emit("window:resize")
     this.currentScene.beforeUpdate()
     for (const entity of entities) {
-      if (entity.has("mouse:hover") && entity.collide(this.mouse))
-        entity.emit("mouse:hover")
-      if (
-        entity.has("mouse:click") &&
-        entity.collide(this.mouse) &&
-        this.mouse.click
-      )
+      if (entity.collide(this.mouse)) entity.emit("mouse:hover")
+      if (entity.collide(this.mouse) && this.mouse.click)
         entity.emit("mouse:click")
       entity.beforeRedraw()
       entity.redraw(this.secondsPassed)
@@ -247,13 +254,8 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       const entities = scene.entities.getAll()
       scene.beforeUpdate()
       for (const entity of entities) {
-        if (entity.has("mouse:hover") && entity.collide(this.mouse))
-          entity.emit("mouse:hover")
-        if (
-          entity.has("mouse:click") &&
-          entity.collide(this.mouse) &&
-          this.mouse.click
-        )
+        if (entity.collide(this.mouse)) entity.emit("mouse:hover")
+        if (entity.collide(this.mouse) && this.mouse.click)
           entity.emit("mouse:click")
         entity.beforeRedraw()
         entity.redraw(this.secondsPassed)

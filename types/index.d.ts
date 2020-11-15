@@ -55,6 +55,11 @@ export interface CreatorInterface {
     height: int,
     entities?: Array<Objects.Entity>
   ): Objects.BoundingBox
+  timer(
+    callback: () => void,
+    o: { time: number; tick: number },
+    unique?: boolean
+  ): Objects.Timer
   entity: {
     rectangle(
       x: number,
@@ -191,6 +196,19 @@ export namespace Objects {
     public fromSave(setter: { [x: string]: any }): void
     public toJSON(): { [x: string]: any }
   }
+  export class Timer extends EventEmitter {
+    public isPlaying: boolean
+    constructor(
+      scene: Scene,
+      callback: Function,
+      o: { time: number; tick: number },
+      unique?: boolean
+    )
+    setTimeWait(o: { time: number; tick: number }): this
+    cancel(): void
+    play(): void
+    pause(): void
+  }
   export class Entity extends EventEmitter {
     public manager: Managers.EntityManager
     public scene: Scene
@@ -252,27 +270,6 @@ export namespace Objects {
 
     fromSave(setter: { [x: string]: any }): void
     toJSON(): { [x: string]: any }
-
-    protected collideCirc(
-      circle1: ObjectEntities.Circle,
-      circle2: ObjectEntities.Circle
-    ): boolean
-    protected collideRect(
-      rect1: ObjectEntities.Rectangle,
-      rect2: ObjectEntities.Rectangle
-    ): boolean
-    protected collideCircRect(
-      circle: ObjectEntities.Circle,
-      rect: ObjectEntities.Rectangle
-    ): boolean
-    protected collideCircWorld(
-      circle: ObjectEntities.Circle,
-      rect: BoundingBox
-    ): boolean
-    protected collideRectWorld(
-      rect1: ObjectEntities.Rectangle,
-      rect2: BoundingBox
-    ): boolean
   }
   export class Gamepad extends EventEmitter {
     public pressed: Set<string>
@@ -386,7 +383,6 @@ export namespace Loaders {
 export class Game<S = { [x: string]: any }> extends EventEmitter {
   public canvas: HTMLCanvasElement
   public state: S
-  public debug: boolean
   public fps: number
   public loop: FpsCtrl
   public context: CanvasRenderingContext2D
@@ -396,12 +392,14 @@ export class Game<S = { [x: string]: any }> extends EventEmitter {
   public mouse: Objects.Mouse
   public keyboard: Objects.Keyboard
   public gamepad: Objects.Gamepad
-  public w: string | number
-  public h: string | number
+  public w: number
+  public h: number
 
   public secondsPassed: number
   constructor(config: ConfigOption, w?: string | number, h?: string | number)
+  /** @deprecated */
   playScene(scene: Objects.Scene): Objects.Scene
+  changeScene(scene: Objects.Scene | string | number): Objects.Scene
   getStateSave(getter?: StateSaveInterface): string
   setStateSave(setter?: string, kleValide?: boolean): void
 }
