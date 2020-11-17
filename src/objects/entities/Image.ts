@@ -25,6 +25,8 @@ export default class Image extends Rectangle {
         this.width = image.width
         this.height = image.height
       }
+      context.imageSmoothingEnabled = false
+      context.imageSmoothingQuality = "high"
       context.drawImage(
         image,
         0,

@@ -7,7 +7,6 @@ import { TextStyle } from "../../../types/private"
 export default class Text extends Rectangle {
   public content: string
   public style: TextStyle
-  private lastContent: string
   constructor(
     scene: Scene,
     x: number,
@@ -58,9 +57,23 @@ export default class Text extends Rectangle {
     let align = 0
     if (this.style.align === "right") align = this.width / -2
     if (this.style.align === "left") align = this.width / 2
+
     context.globalAlpha =
       this.alpha * (this.scene.isPlayed === "opacity" ? this.scene.alpha : 1)
     if (!this.fixed) context.translate(this.scene.camera.x, this.scene.camera.y)
+
+    context.textBaseline = "top"
+    context.font = `${this.style.font.size}px ${this.style.font.family}`
+    this.height = this.content.split("\n").reduce((rest, line, index) => {
+      if (index === 0) {
+        this.width = context.measureText(line.trim()).width
+        return this.style.font.size
+      }
+      if (this.width < context.measureText(line.trim()).width)
+        this.width = context.measureText(line.trim()).width
+      return rest + this.style.lineSpacing + this.style.font.size
+    }, 0)
+
     context.translate(
       (this.width * this.scalex) / -2,
       (this.height * this.scaley) / -2
@@ -69,20 +82,6 @@ export default class Text extends Rectangle {
       (this.width / 2) * -this.originX * this.scalex,
       (this.height / 2) * -this.originY * this.scaley
     )
-    context.textBaseline = "top"
-    context.font = `${this.style.font.size}px ${this.style.font.family}`
-    if (this.content !== this.lastContent) {
-      this.lastContent = this.content
-      this.height = this.content.split("\n").reduce((rest, line, index) => {
-        if (index === 0) {
-          this.width = context.measureText(line.trim()).width
-          return this.style.font.size
-        }
-        if (this.width < context.measureText(line.trim()).width)
-          this.width = context.measureText(line.trim()).width
-        return rest + this.style.lineSpacing + this.style.font.size
-      }, 0)
-    }
     if (isDefined(this.style.background)) {
       if (
         this.style.background instanceof Entity ||
@@ -130,11 +129,15 @@ export default class Text extends Rectangle {
     if (isDefined(this.strokeColor)) {
       context.lineWidth = this.lineWidth
       context.strokeStyle = this.strokeColor.toString(16)
-      context.strokeText(
-        this.content,
-        this.x + this.style.padding.left + align,
-        this.y + this.style.padding.top
-      )
+      this.content.split("\n").forEach((line, index) => {
+        context.strokeText(
+          line.trim(),
+          this.x + this.style.padding.left + align,
+          this.y +
+            this.style.padding.top +
+            (this.style.lineSpacing + this.style.font.size) * index
+        )
+      }, 0)
     }
     context.shadowBlur = this.style.shadow.blur
     context.shadowColor = this.style.shadow.color.toString(16)
@@ -149,6 +152,7 @@ export default class Text extends Rectangle {
       y: 1,
     }
   }
+
   setText(content: string) {
     this.content = content
     return this

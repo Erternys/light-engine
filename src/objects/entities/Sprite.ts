@@ -31,6 +31,8 @@ export default class Sprite extends Image {
         this.width = this.sprite.width
         this.height = this.sprite.height
       }
+      context.imageSmoothingEnabled = false
+      context.imageSmoothingQuality = "high"
       context.drawImage(
         image,
         this.sprite.x,
