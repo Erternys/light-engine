@@ -21,12 +21,10 @@ export default class Image extends Rectangle {
       (this.height / 2) * -this.originY * this.scaley
     )
     if (isDefined(image)) {
-      if (!isDefined(this.width) && !isDefined(this.height)) {
+      if (this.width !== image.width && this.height !== image.height) {
         this.width = image.width
         this.height = image.height
       }
-      context.imageSmoothingEnabled = false
-      context.imageSmoothingQuality = "high"
       context.drawImage(
         image,
         0,

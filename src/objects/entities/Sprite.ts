@@ -27,12 +27,10 @@ export default class Sprite extends Image {
       (this.height / 2) * -this.originY * this.scaley
     )
     if (isDefined(image)) {
-      if (!isDefined(this.width) && !isDefined(this.height)) {
-        this.width = this.sprite.width
-        this.height = this.sprite.height
+      if (this.width !== image.width && this.height !== image.height) {
+        this.width = image.width
+        this.height = image.height
       }
-      context.imageSmoothingEnabled = false
-      context.imageSmoothingQuality = "high"
       context.drawImage(
         image,
         this.sprite.x,

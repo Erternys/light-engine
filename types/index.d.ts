@@ -204,6 +204,8 @@ export namespace Objects {
       o: { time: number; tick: number },
       unique?: boolean
     )
+    getWaitValue(): number
+    setWaitValue(v: number): this
     setTimeWait(o: { time: number; tick: number }): this
     cancel(): void
     play(): void
@@ -250,7 +252,7 @@ export namespace Objects {
 
     setVelocityX(value: number): this
     setVelocityY(value: number): this
-    setVelocity(vx: number, vy: number): this
+    setVelocity(vx: number, vy?: number): this
     getVelocity(): { x: number; y: number }
 
     getSpeed(): number

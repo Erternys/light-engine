@@ -105,7 +105,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
       currentScene = this.sceneManager.add(config.loadScene).play(0)
-      this.initScene(currentScene.entities.getAll(), currentScene)
+      this.initScene(currentScene)
       currentScene.on("progress", (progress) => {
         if (progress === 1) currentScene.emit("progress:ended")
       })
@@ -219,23 +219,23 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
         })
     }
   }
-  private initScene(entities: Entity[], scene: Scene) {
+  private initScene(scene: Scene) {
     if (!this.inited.includes(scene.init)) {
       this.inited = [...this.inited, scene.init]
       scene.init()
-      for (const entity of entities) {
+      for (const entity of scene.entities.getAll()) {
         entity.init()
       }
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {
-        this.initScene(scene.entities.getAll(), scene)
+        this.initScene(scene)
       }
     }
   }
   private update(o: { time: number; frame: number }) {
+    this.initScene(this.currentScene)
     const entities = this.currentScene.entities.getAll()
-    this.initScene(entities, this.currentScene)
 
     this.setFPS(o.time)
     this.mouse.update()
@@ -262,12 +262,16 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
         entity.emit("move:velocity", entity)
       }
     }
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.context.clearRect(0, 0, this.w, this.h)
     this.context.save()
     this.context.globalAlpha = 1
     this.context.fillStyle = "#000"
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.context.fillRect(0, 0, this.w, this.h)
     this.context.restore()
+    if (this.pixel) {
+      this.context.imageSmoothingEnabled = false
+      this.context.imageSmoothingQuality = "high"
+    }
     for (const entity of entities) {
       if (!entity.hidden) entity.draw(this.context)
       entity.afterRedraw()

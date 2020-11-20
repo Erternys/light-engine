@@ -19,29 +19,35 @@ export default class Timer extends EventEmitter {
     this.scene.game.on("updated", this.update)
     this.setTimeWait(o)
   }
+  getWaitValue() {
+    return this.wait
+  }
+  setWaitValue(v: number) {
+    this.wait = v
+    return this
+  }
   setTimeWait(o: { time: number; tick: number }) {
     this.useTime = "time" in o
     this.useTick = "tick" in o
     this.time = o.time
     this.tick = o.tick
-    this.wait = 0
-    return this
+    return this.setWaitValue(0)
   }
   private update() {
     if (this.isPlaying) {
       if (this.useTime) {
-        this.wait += this.scene.game.secondsPassed * 1000
+        this.setWaitValue(this.wait + this.scene.game.secondsPassed * 1000)
         if (this.time <= this.wait) {
           this.callback()
           if (this.unique) this.cancel()
-          else this.wait = 0
+          else this.setWaitValue(0)
         }
       } else if (this.useTick) {
-        this.wait += 1
+        this.setWaitValue(this.wait + 1)
         if (this.tick <= this.wait) {
           this.callback()
           if (this.unique) this.cancel()
-          else this.wait = 0
+          else this.setWaitValue(0)
         }
       }
     }
