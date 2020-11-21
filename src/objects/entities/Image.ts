@@ -7,6 +7,10 @@ export default class Image extends Rectangle {
     super(scene, x, y, null, null)
     this.use = use
   }
+  protected setSize(image: { width: number; height: number }) {
+    this.width = image.width
+    this.height = image.height
+  }
   draw(context: CanvasRenderingContext2D) {
     const image = this.manager.medias.images.get(this.use)
     context.globalAlpha =
@@ -21,10 +25,7 @@ export default class Image extends Rectangle {
       (this.height / 2) * -this.originY * this.scaley
     )
     if (isDefined(image)) {
-      if (this.width !== image.width && this.height !== image.height) {
-        this.width = image.width
-        this.height = image.height
-      }
+      if (!isDefined(this.width) && !isDefined(this.height)) this.setSize(image)
       context.drawImage(
         image,
         0,

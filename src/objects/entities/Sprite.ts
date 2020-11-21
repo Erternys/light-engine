@@ -27,10 +27,8 @@ export default class Sprite extends Image {
       (this.height / 2) * -this.originY * this.scaley
     )
     if (isDefined(image)) {
-      if (this.width !== image.width && this.height !== image.height) {
-        this.width = image.width
-        this.height = image.height
-      }
+      if (!isDefined(this.width) && !isDefined(this.height))
+        this.setSize(this.sprite)
       context.drawImage(
         image,
         this.sprite.x,
