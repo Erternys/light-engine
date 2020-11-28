@@ -34,8 +34,8 @@ export default class Image extends Rectangle {
         this.height * this.croph,
         this.x - this.scene.camera.x,
         this.y - this.scene.camera.y,
-        this.width * this.scalex,
-        this.height * this.scaley
+        this.width * this.scalex * this.cropw,
+        this.height * this.scaley * this.croph
       )
     }
     context.setTransform(1, 0, 0, 1, 0, 0)

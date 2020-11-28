@@ -57,7 +57,7 @@ export interface CreatorInterface {
   ): Objects.BoundingBox
   timer(
     callback: () => void,
-    o: { time: number; tick: number },
+    o: { time?: number; tick?: number },
     unique?: boolean
   ): Objects.Timer
   entity: {
@@ -201,12 +201,12 @@ export namespace Objects {
     constructor(
       scene: Scene,
       callback: Function,
-      o: { time: number; tick: number },
+      o: { time?: number; tick?: number },
       unique?: boolean
     )
     getWaitValue(): number
     setWaitValue(v: number): this
-    setTimeWait(o: { time: number; tick: number }): this
+    setTimeWait(o: { time?: number; tick?: number }): this
     cancel(): void
     play(): void
     pause(): void

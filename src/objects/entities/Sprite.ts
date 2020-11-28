@@ -37,8 +37,8 @@ export default class Sprite extends Image {
         this.sprite.height * this.croph,
         this.x,
         this.y,
-        this.width * this.scalex,
-        this.height * this.scaley
+        this.width * this.scalex * this.cropw,
+        this.height * this.scaley * this.croph
       )
     }
     context.setTransform(1, 0, 0, 1, 0, 0)
