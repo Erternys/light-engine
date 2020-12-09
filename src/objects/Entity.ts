@@ -56,7 +56,7 @@ export default class Entity extends EventEmitter {
       if (e.box?.parent?.isActive) {
         if (typeOf(e) === "Circle") {
           if (
-            e.x <
+            e.x - e.box.getX() <
             (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originX
           ) {
@@ -64,22 +64,24 @@ export default class Entity extends EventEmitter {
             if (e.box.rebound) e.vx = Math.abs(e.vx) * restitution
             e.x =
               (e as Circle).radius * (e as Circle).getScale().r +
-              (e as Circle).radius * (e as Circle).getScale().r * e.originX
+              (e as Circle).radius * (e as Circle).getScale().r * e.originX +
+              e.box.getX()
           } else if (
-            e.x >
-            e.box.getWidth() -
+            e.x - e.box.getX() >
+            e.box.getWidth() +
               (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originX
           ) {
             if (e.isMoving) e.isMoving = false
             if (e.box.rebound) e.vx = -Math.abs(e.vx) * restitution
             e.x =
-              e.box.getWidth() -
+              e.box.getWidth() +
+              e.box.getX() -
               (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originX
           }
           if (
-            e.y <
+            e.y - e.box.getY() <
             (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originY
           ) {
@@ -87,23 +89,25 @@ export default class Entity extends EventEmitter {
             if (e.box.rebound) e.vy = Math.abs(e.vy) * restitution
             e.y =
               (e as Circle).radius * (e as Circle).getScale().r +
-              (e as Circle).radius * (e as Circle).getScale().r * e.originY
+              (e as Circle).radius * (e as Circle).getScale().r * e.originY -
+              e.box.getY()
           } else if (
-            e.y >
-            e.box.getHeight() -
+            e.y - e.box.getY() >
+            e.box.getHeight() +
               (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originY
           ) {
             if (e.isMoving) e.isMoving = false
             if (e.box.rebound) e.vy = -Math.abs(e.vy) * restitution
             e.y =
-              e.box.getHeight() -
+              e.box.getHeight() +
+              e.box.getY() -
               (e as Circle).radius * (e as Circle).getScale().r +
               (e as Circle).radius * (e as Circle).getScale().r * e.originY
           }
         } else if (typeOf(e) === "Rectangle") {
           if (
-            e.x <
+            e.x - e.box.getX() <
             ((e as Rectangle).width / 2) * e.scalex +
               ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
           ) {
@@ -111,9 +115,12 @@ export default class Entity extends EventEmitter {
             if (e.box.rebound) e.vx = Math.abs(e.vx) * restitution
             e.x =
               ((e as Rectangle).width / 2) * e.scalex +
-              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
+              ((e as Rectangle).width / 2) *
+                (e as Rectangle).scalex *
+                e.originX +
+              e.box.getX()
           } else if (
-            e.x >
+            e.x - e.box.getX() >
             e.box.getWidth() -
               ((e as Rectangle).width / 2) * e.scalex +
               ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
@@ -123,10 +130,13 @@ export default class Entity extends EventEmitter {
             e.x =
               e.box.getWidth() -
               ((e as Rectangle).width / 2) * e.scalex +
-              ((e as Rectangle).width / 2) * (e as Rectangle).scalex * e.originX
+              ((e as Rectangle).width / 2) *
+                (e as Rectangle).scalex *
+                e.originX +
+              e.box.getX()
           }
           if (
-            e.y <
+            e.y - e.box.getY() <
             ((e as Rectangle).height / 2) * e.scaley +
               ((e as Rectangle).height / 2) *
                 (e as Rectangle).scaley *
@@ -138,9 +148,10 @@ export default class Entity extends EventEmitter {
               ((e as Rectangle).height / 2) * e.scaley +
               ((e as Rectangle).height / 2) *
                 (e as Rectangle).scaley *
-                e.originY
+                e.originY +
+              e.box.getY()
           } else if (
-            e.y >
+            e.y - e.box.getY() >
             e.box.getHeight() -
               ((e as Rectangle).height / 2) * e.scaley +
               ((e as Rectangle).height / 2) *
@@ -154,7 +165,8 @@ export default class Entity extends EventEmitter {
               ((e as Rectangle).height / 2) * e.scaley +
               ((e as Rectangle).height / 2) *
                 (e as Rectangle).scaley *
-                e.originY
+                e.originY +
+              e.box.getY()
           }
         }
       } else if (e.isMoving) e.isMoving = false
