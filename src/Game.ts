@@ -8,9 +8,9 @@ import {
   typeOf,
   Warning,
 } from "./helper"
-import { Scene, Entity } from "./objects"
+import { Scene } from "./objects"
 import FpsCtrl from "./FpsController"
-import { EntityManager, SceneManager } from "./managers"
+import { EntityManager, Manager, SceneManager } from "./managers"
 import { ConfigOption, StateSaveInterface } from "../types/private"
 import Mouse from "./objects/Mouse"
 import Keyboard from "./objects/Keyboard"
@@ -24,6 +24,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   public fps: number
   public loop: FpsCtrl
   public context: CanvasRenderingContext2D
+  public audioContext: AudioContext
   public sceneManager: SceneManager
   public currentScene: Scene
   public playedWithOpacity: Scene[]
@@ -44,6 +45,10 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     private win: Window = window
   ) {
     super()
+
+    Manager.createType("Entity")
+
+    this.audioContext = new AudioContext()
     this.playedWithOpacity = []
     this.debug = config.debug
     this.pixel = config.pixel
@@ -226,6 +231,8 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       for (const entity of scene.entities.getAll()) {
         entity.init()
       }
+      for (const manager of scene.managers.getAllType("Entity"))
+        manager.init(scene)
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {
@@ -262,6 +269,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
         entity.emit("move:velocity", entity)
       }
     }
+    for (const manager of this.currentScene.managers.getAllType("Entity"))
+      manager.update()
+
     this.context.clearRect(0, 0, this.w, this.h)
     this.context.save()
     this.context.globalAlpha = 1

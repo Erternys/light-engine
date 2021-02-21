@@ -1,11 +1,12 @@
-import { EventEmitter } from "../EventEmitter"
-import { LoadEntityTypes } from "../../types"
 import { Scene, Entity } from "../objects"
 import { Warning } from "../helper"
+import Manager from "./Manager"
+import AudioLoader from "../objects/AudioLoader"
+import { LoadEntityTypes } from "../../types/private"
 
-export default class EntityManager extends EventEmitter {
+export default class EntityManager extends Manager {
   public static images: Map<any, HTMLImageElement> = new Map()
-  public static audios: Map<any, HTMLAudioElement> = new Map()
+  public static audios: Map<any, AudioLoader> = new Map()
   public static texts: Map<any, Text> = new Map()
   public get medias() {
     return EntityManager
@@ -14,7 +15,7 @@ export default class EntityManager extends EventEmitter {
   private list: Entity[]
   static addMedia(name: string, media: LoadEntityTypes) {
     if (media instanceof HTMLImageElement) this.images.set(name, media)
-    else if (media instanceof HTMLAudioElement) this.audios.set(name, media)
+    else if (media instanceof AudioLoader) this.audios.set(name, media)
     else if (media instanceof Text) this.texts.set(name, media)
     return this
   }

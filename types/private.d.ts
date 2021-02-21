@@ -1,8 +1,9 @@
-import { LoadEntityTypes } from "."
 import { Entity, Scene } from "../src/objects"
 import { Game } from "../src/app"
 import { SceneManager } from "../src/managers"
+import AudioLoader from "../src/objects/AudioLoader"
 
+export type LoadEntityTypes = HTMLImageElement | AudioLoader | Text
 export interface SceneOption {
   name?: string
 }

@@ -1,9 +1,9 @@
-import { EventEmitter } from "../EventEmitter"
 import Game from "../Game"
 import { Warning, numberSuffix, stringToPixelNum } from "../helper"
 import { Scene } from "../objects"
+import Manager from "./Manager"
 
-export default class SceneManager extends EventEmitter {
+export default class SceneManager extends Manager {
   private list: Array<Scene> = []
   private game: Game
   public static create(

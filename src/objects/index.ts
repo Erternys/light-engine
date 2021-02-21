@@ -1,3 +1,4 @@
+export { default as AudioLoader } from "./AudioLoader"
 export { default as Scene } from "./Scene"
 export { default as Entity } from "./Entity"
 export { default as World } from "./World"

@@ -1,3 +1,5 @@
+import AudioLoader from "./objects/AudioLoader"
+
 export function Image(link: string) {
   return new Promise<HTMLImageElement>((wait, fail) => {
     const img = document.createElement("img")
@@ -7,11 +9,10 @@ export function Image(link: string) {
   })
 }
 export function Audio(link: string) {
-  return new Promise<HTMLAudioElement>((wait, fail) => {
-    const audio = document.createElement("audio")
-    audio.src = link
-    audio.onloadeddata = () => wait(audio)
-    audio.onerror = fail
+  return new Promise<AudioLoader>((wait, fail) => {
+    const audio = new AudioLoader(link)
+    audio.on("loadeddata", () => wait(audio))
+    audio.on("error", fail)
   })
 }
 export function Text(content: string) {

@@ -35,7 +35,7 @@ declare class Vector2 {
 export class EventEmitter extends GlobalEventEmitter {
   public readonly globals: GlobalEventEmitter
 }
-export type LoadEntityTypes = HTMLImageElement | HTMLAudioElement | Text
+export type LoadEntityTypes = HTMLImageElement | Objects.AudioLoader | Text
 export interface ConfigOption {
   // plugins?: Array<Plugin>
   debug?: boolean
@@ -125,7 +125,14 @@ export interface TextStyle {
   }
 }
 export namespace Managers {
-  class CloneAudioManager extends EventEmitter {
+  export class Manager extends EventEmitter {
+    public type: symbol
+    public name: string;
+    [x: string]: any
+    static get Types(): { [name: string]: symbol }
+    static createType(name: string): Manager
+  }
+  class CloneAudioManager extends Manager {
     public isPlaying: boolean
     public isPaused: boolean
     public key: string
@@ -144,7 +151,7 @@ export namespace Managers {
     public createClone(): CloneAudioManager
     public deletion(): void
   }
-  export class EntityManager extends EventEmitter {
+  export class EntityManager extends Manager {
     public static images: Map<any, HTMLImageElement>
     public static audios: Map<any, HTMLAudioElement>
     public static texts: Map<any, Text>
@@ -160,8 +167,7 @@ export namespace Managers {
     public getEntity(name: string): Objects.Entity
     public getAll(): Array<Objects.Entity>
   }
-
-  export class SceneManager extends EventEmitter {
+  export class SceneManager extends Manager {
     public static create(
       list: Array<typeof Objects.Scene | Objects.Scene>
     ): (game: Game) => SceneManager
@@ -175,6 +181,17 @@ export namespace Managers {
       opacity: string | number
     ): Objects.Scene
     public getScene(name: string | number): Objects.Scene
+  }
+  export class ContainerManager extends Manager {
+    public scene: Objects.Scene
+    private list: Manager[]
+    constructor(scene: Objects.Scene)
+    public add(...entities: Array<typeof Manager | Manager>): this
+    public remove(...entities: Array<Manager>): this
+    public setManagers(...list: Array<typeof Manager | Manager>): this
+    public getManager(name: string): Manager
+    public getAllType(type: string): Manager[]
+    public getAll(): Manager[]
   }
 }
 
@@ -236,6 +253,7 @@ export namespace Objects {
     redraw(secondsPassed: number): void
     afterRedraw(): void
     draw(context: CanvasRenderingContext2D): void
+    destroy(): void
     setBox(box: BoundingBox): this
 
     collide(this: Entity, entity: Entity | World | BoundingBox | Mouse): boolean
@@ -352,6 +370,7 @@ export namespace Objects {
     public world: World
     public camera: ObjectEntities.Camera
     public create: CreatorInterface
+    public managers: Managers.ContainerManager
 
     constructor(option: SceneOption)
     init(): void
@@ -374,6 +393,11 @@ export namespace Objects {
     public fromSave(setter: { [x: string]: any }): void
     public toJSON(): { [x: string]: any }
   }
+  export class AudioLoader extends EventEmitter {
+    public buffer: ArrayBuffer
+    public src: string
+    constructor(src: string)
+  }
 }
 export namespace Loaders {
   export function Image(link: string): Promise<LoadEntityTypes>
@@ -388,6 +412,7 @@ export class Game<S = { [x: string]: any }> extends EventEmitter {
   public fps: number
   public loop: FpsCtrl
   public context: CanvasRenderingContext2D
+  public audioContext: AudioContext
   public sceneManager: Managers.SceneManager
   public currentScene: Objects.Scene
   public playedWithOpacity: Objects.Scene[]

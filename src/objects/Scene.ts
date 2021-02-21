@@ -5,7 +5,12 @@ import {
   TextStyle,
   StateSaveInterface,
 } from "../../types/private"
-import { SceneManager, EntityManager, AudioManager } from "../managers"
+import {
+  SceneManager,
+  EntityManager,
+  AudioManager,
+  ContainerManager,
+} from "../managers"
 import { Entity } from "."
 import World from "./World"
 import BoundingBox from "./BoundingBox"
@@ -32,10 +37,12 @@ export default class Scene extends EventEmitter {
 
   public world: World
   public camera: Camera
+  public managers: ContainerManager
   public create: any
 
   constructor(option: SceneOption) {
     super()
+    this.managers = new ContainerManager(this)
     this.entities = new EntityManager(this)
     this.world = new World(this)
     this.name = option.name
@@ -135,11 +142,11 @@ export default class Scene extends EventEmitter {
   changeAllow(scene: Scene, state: StateEnum) {
     return true
   }
-  getAudio(name: string, isSound: boolean) {
+  getAudio(name: string) {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
     const audio = this.entities.medias.audios.get(name)
     if (audio) {
-      const manager = new AudioManager(audio, name, isSound)
+      const manager = new AudioManager(this.game, audio, name)
       memory.set(name, manager)
       return manager
     }

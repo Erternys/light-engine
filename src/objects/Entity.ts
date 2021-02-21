@@ -177,6 +177,9 @@ export default class Entity extends EventEmitter {
   redraw(secondsPassed: number) {}
   afterRedraw() {}
   draw(context: CanvasRenderingContext2D) {}
+  destroy() {
+    this.manager.remove(this)
+  }
   setBox(box: BoundingBox) {
     this.box = box
     return this

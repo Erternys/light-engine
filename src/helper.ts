@@ -287,6 +287,7 @@ export enum StateEnum {
 export enum Warning {
   Scene,
   Entity,
+  Manager,
 }
 export enum Errors {
   Load,
