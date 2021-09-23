@@ -7,7 +7,8 @@ import {
 import { EventEmitter } from "./EventEmitter"
 import { Entity, Mouse } from "./objects"
 import { Circle } from "./objects/entities"
-import Vector2 from "./Vector2"
+import Storage from "./objects/Storage"
+import Vector2 from "./objects/Vector2"
 
 const buttonMap = [
   ["A"],
@@ -155,7 +156,7 @@ export class GamepadInteractor extends EventEmitter {
   }
 }
 
-export const customStorage = new Map()
+export const customStorage = new Storage()
 export function numberSuffix(number: number): string {
   const partsNumber = number.toString().split("")
   if (partsNumber[partsNumber.length - 1] === "1") return number + "st"
@@ -279,6 +280,13 @@ export function typeOf(type: any, constructor = false): string {
     return define
   }
   return typeof type
+}
+export function arrayDiff(arr1: any[], arr2: any[]) {
+  if (arr1.length !== arr2.length) return true
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return true
+  }
+  return false
 }
 export enum StateEnum {
   Next,

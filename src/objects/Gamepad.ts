@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import Vector2 from "../Vector2"
+import Vector2 from "./Vector2"
 import { GamepadInterface, VibrationOptions } from "../../types/private"
 import { GamepadInteractor } from "../helper"
 

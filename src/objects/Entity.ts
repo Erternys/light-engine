@@ -4,8 +4,9 @@ import World from "./World"
 import { Circle, Rectangle } from "./entities"
 import { typeOf } from "../helper"
 import BoundingBox from "./BoundingBox"
-import { EntityManager } from "../managers"
+import { AudioManager, EntityManager } from "../managers"
 import Mouse from "./Mouse"
+import Vector2 from "./Vector2"
 
 // Calculate distance between two points: sqrt((x1 - x2)2 + (y1 - y2)2)
 
@@ -25,9 +26,15 @@ export default class Entity extends EventEmitter {
   public use: string
   public name = ""
   public lineWidth = 1
+  public angle = 0
   public alpha = 1
   public zindex = 0
   public fixed = false
+  public hooks: any[] = []
+  public hookIndex: number = 0
+  public get points(): Array<Vector2> {
+    return []
+  }
 
   protected originX = 0
   protected originY = 0
@@ -172,6 +179,7 @@ export default class Entity extends EventEmitter {
       } else if (e.isMoving) e.isMoving = false
     })
   }
+
   init() {}
   beforeRedraw() {}
   redraw(secondsPassed: number) {}
@@ -185,10 +193,16 @@ export default class Entity extends EventEmitter {
     return this
   }
 
+  set body(value: BoundingBox) {
+    this.setBodyBox(value)
+  }
   setBodyBox(box: BoundingBox) {
     if (box) this.bodyBox = box
     else this.initBodyBox(this.scene)
     return this
+  }
+  get body() {
+    return this.getBodyBox()
   }
   getBodyBox() {
     return this.bodyBox
@@ -308,6 +322,10 @@ export default class Entity extends EventEmitter {
   setName(name: string) {
     this.name = name
     return this
+  }
+
+  getAudio(name: string): AudioManager | null {
+    return this.scene.getAudio(name)
   }
 
   protected collideCirc(circle1: Circle, circle2: Circle) {

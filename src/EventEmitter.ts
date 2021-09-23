@@ -5,17 +5,12 @@ const globalMap = new Map<
 
 export class GlobalEventEmitter {
   protected events = globalMap
-  public has(event: string | number) {
-    return this.events.has(event) && this.get(event).length > 0
-  }
-  public get(event: string | number) {
-    return this.events.get(event)
-  }
   public emit(event: string | number, ...args: any[]): boolean {
-    if (!this.has(event)) return false
+    if (!(this.events.has(event) && this.events.get(event).length > 0))
+      return false
     this.events.set(
       event,
-      (this.get(event) || []).map((v) => {
+      (this.events.get(event) || []).map((v) => {
         if (v instanceof Array) {
           if (!v[1]) {
             v[0](...args)
@@ -29,16 +24,20 @@ export class GlobalEventEmitter {
     return true
   }
   public on(event: string | number, listener: (...args: any[]) => void) {
-    this.events.set(event, [...(this.get(event) || []), listener])
+    this.events.set(event, [...(this.events.get(event) || []), listener])
     return this
   }
   public once(event: string | number, listener: (...args: any[]) => void) {
-    this.events.set(event, [...(this.get(event) || []), [listener, false]])
+    this.events.set(event, [
+      ...(this.events.get(event) || []),
+      [listener, false],
+    ])
     return this
   }
   public off(event: string | number, listener: (...args: any[]) => void) {
-    if (!this.has(event)) return false
-    let content = this.get(event)
+    if (!(this.events.has(event) && this.events.get(event).length > 0))
+      return false
+    let content = this.events.get(event)
     if (!content) return false
     this.events.set(
       event,

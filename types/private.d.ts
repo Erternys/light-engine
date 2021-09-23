@@ -21,6 +21,7 @@ export type int = number | string | obj
 export interface ConfigOption {
   // plugins?: Array<Plugin>
   debug?: boolean
+  dev?: boolean
   pixel?: boolean
   canvas?: HTMLCanvasElement
   load: { [x: string]: Promise<LoadEntityTypes> }

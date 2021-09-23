@@ -39,6 +39,8 @@ export default class Scene extends EventEmitter {
   public camera: Camera
   public managers: ContainerManager
   public create: any
+  public hooks: any[] = []
+  public hookIndex: number = 0
 
   constructor(option: SceneOption) {
     super()
@@ -142,12 +144,15 @@ export default class Scene extends EventEmitter {
   changeAllow(scene: Scene, state: StateEnum) {
     return true
   }
-  getAudio(name: string) {
+  getAudio(name: string): AudioManager | null {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
     const audio = this.entities.medias.audios.get(name)
     if (audio) {
       const manager = new AudioManager(this.game, audio, name)
       memory.set(name, manager)
+      manager.on("destroy", () => {
+        memory.delete(name)
+      })
       return manager
     }
     return null

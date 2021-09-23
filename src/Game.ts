@@ -7,18 +7,20 @@ import {
   isChromium,
   typeOf,
   Warning,
+  customStorage,
 } from "./helper"
 import { Scene } from "./objects"
 import FpsCtrl from "./FpsController"
-import { EntityManager, Manager, SceneManager } from "./managers"
+import { EntityManager, Manager, SaveManager, SceneManager } from "./managers"
 import { ConfigOption, StateSaveInterface } from "../types/private"
 import Mouse from "./objects/Mouse"
 import Keyboard from "./objects/Keyboard"
 import Gamepad from "./objects/Gamepad"
+import Storage from "./objects/Storage"
 
-export default class Game<S = { [x: string]: any }> extends EventEmitter {
+export default class Game extends EventEmitter {
   public canvas: HTMLCanvasElement
-  public state: S
+  public state: Storage<any>
   public debug: boolean
   public pixel: boolean
   public fps: number
@@ -31,6 +33,7 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   public mouse: Mouse
   public keyboard: Keyboard
   public gamepad: Gamepad
+  public save: SaveManager
   public w: number
   public h: number
 
@@ -48,8 +51,11 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
 
     Manager.createType("Entity")
 
+    customStorage.set("development", config.dev ?? false)
+
     this.audioContext = new AudioContext()
     this.playedWithOpacity = []
+    this.state = new Storage()
     this.debug = config.debug
     this.pixel = config.pixel
     this.update = this.update.bind(this)
@@ -127,10 +133,10 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     }
     if (!currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
-    this.loop.start()
     this.mouse = new Mouse(this)
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
+    this.save = new SaveManager()
     this.eventsAndErrors()
   }
   changeScene(name: Scene | string | number) {
@@ -155,6 +161,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   playScene(scene: Scene) {
     return this.changeScene(scene)
   }
+  /**
+   * @deprecated
+   */
   getStateSave(getter?: StateSaveInterface): string {
     const dGetter = Object.assign(
       {},
@@ -190,6 +199,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       },
     })
   }
+  /**
+   * @deprecated
+   */
   setStateSave(setter?: string, kleValide = false) {
     const setter_obj = JSON.parse(setter)
     if (
@@ -227,12 +239,19 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   private initScene(scene: Scene) {
     if (!this.inited.includes(scene.init)) {
       this.inited = [...this.inited, scene.init]
+      customStorage.set("currentObject", scene)
+      scene.hookIndex = 0
       scene.init()
       for (const entity of scene.entities.getAll()) {
+        customStorage.set("currentObject", entity)
+        entity.hookIndex = 0
         entity.init()
       }
-      for (const manager of scene.managers.getAllType("Entity"))
+      for (const manager of scene.managers.getAllType("Entity")) {
+        customStorage.set("currentObject", manager)
+        manager.hookIndex = 0
         manager.init(scene)
+      }
     }
     if (scene.isPlayed === "main") {
       for (const scene of this.playedWithOpacity) {
@@ -242,35 +261,50 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
   }
   private update(o: { time: number; frame: number }) {
     this.initScene(this.currentScene)
+
     const entities = this.currentScene.entities.getAll()
 
     this.setFPS(o.time)
     this.mouse.update()
-    this.emit("updated")
+    this.globals.emit("updated")
     this.globals.emit("window:resize")
+
+    customStorage.set("currentObject", this.currentScene)
+    this.currentScene.hookIndex = 0
     this.currentScene.beforeUpdate()
     for (const entity of entities) {
       if (entity.collide(this.mouse)) entity.emit("mouse:hover")
       if (entity.collide(this.mouse) && this.mouse.click)
         entity.emit("mouse:click")
+
+      customStorage.set("currentObject", entity)
+      entity.hookIndex = 0
       entity.beforeRedraw()
       entity.redraw(this.secondsPassed)
       entity.emit("move:velocity", entity)
     }
     for (const scene of this.playedWithOpacity) {
       const entities = scene.entities.getAll()
+      customStorage.set("currentObject", scene)
+      scene.hookIndex = 0
       scene.beforeUpdate()
       for (const entity of entities) {
         if (entity.collide(this.mouse)) entity.emit("mouse:hover")
         if (entity.collide(this.mouse) && this.mouse.click)
           entity.emit("mouse:click")
+
+        customStorage.set("currentObject", entity)
+        entity.hookIndex = 0
         entity.beforeRedraw()
         entity.redraw(this.secondsPassed)
         entity.emit("move:velocity", entity)
       }
     }
-    for (const manager of this.currentScene.managers.getAllType("Entity"))
+    for (const manager of this.currentScene.managers.getAllType("Entity")) {
+      customStorage.set("currentObject", manager)
+      manager.hookIndex = 0
       manager.update()
+    }
 
     this.context.clearRect(0, 0, this.w, this.h)
     this.context.save()
@@ -283,20 +317,26 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
       this.context.imageSmoothingQuality = "high"
     }
     for (const entity of entities) {
+      customStorage.set("currentObject", entity)
+
       if (!entity.hidden) entity.draw(this.context)
       entity.afterRedraw()
     }
     for (const scene of this.playedWithOpacity) {
       const entities = scene.entities.getAll()
       for (const entity of entities) {
+        customStorage.set("currentObject", entity)
+
         if (!entity.hidden) entity.draw(this.context)
         entity.afterRedraw()
       }
+      customStorage.set("currentObject", scene)
       scene.update(this.secondsPassed)
       scene.afterUpdate()
     }
     this.context.globalAlpha = 1
     this.mouse.draw(this.context)
+    customStorage.set("currentObject", this.currentScene)
     this.currentScene.update(this.secondsPassed)
     this.currentScene.afterUpdate()
   }
@@ -310,6 +350,9 @@ export default class Game<S = { [x: string]: any }> extends EventEmitter {
     this.doc.addEventListener("visibilitychange", () =>
       gee.emit("page:visibilitychange")
     )
+    this.win.addEventListener("load", () => {
+      this.loop.start()
+    })
     this.win.addEventListener("keydown", (e) => {
       gee.emit("key:down", e.key)
     })

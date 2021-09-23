@@ -3,8 +3,6 @@ import { Game } from "../app"
 import AudioLoader from "../objects/AudioLoader"
 import Manager from "./Manager"
 
-const customStorage = new Map()
-
 class CloneAudioManager extends Manager {
   public isPlaying = false
   public isPaused = true
@@ -21,7 +19,7 @@ class CloneAudioManager extends Manager {
     public key?: string
   ) {
     super()
-    this.context = this.game.audioContext
+    this.context = new AudioContext()
     this.changePageVisible = this.changePageVisible.bind(this)
     this.gain = this.context.createGain()
     this.gain.connect(this.context.destination)
@@ -93,14 +91,7 @@ class CloneAudioManager extends Manager {
     this.globals.off("page:visibilitychange", this.changePageVisible)
     this.audio = null
     this.isDeleted = true
-  }
-  private async getAudio(link: string): Promise<AudioBuffer> {
-    if (customStorage.has(link)) return customStorage.get(link)
-    const response = await fetch(link)
-    const arrayBuffer = await response.arrayBuffer()
-    const audioBuffer = await this.context.decodeAudioData(arrayBuffer)
-    customStorage.set(link, audioBuffer)
-    return audioBuffer
+    this.emit("destroy")
   }
   private ended = () => this.emit("ended")
   private changePageVisible() {
@@ -114,6 +105,9 @@ export default class AudioManager extends CloneAudioManager {
   public createClone() {
     const clone = new CloneAudioManager(this.game, this.audio, this.key)
     this.clones.push(clone)
+    clone.on("destroy", () => {
+      this.clones = this.clones.filter((c) => c !== clone)
+    })
     return clone
   }
   public deletion() {

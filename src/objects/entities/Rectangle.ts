@@ -1,12 +1,29 @@
 import Entity from "../Entity"
 import { Scene } from ".."
 import { isDefined, debugCenter } from "../../helper"
+import Vector2 from "../Vector2"
 
 export default class Rectangle extends Entity {
   protected cropw = 1
   protected croph = 1
   public get [Symbol.toStringTag]() {
     return "Rectangle"
+  }
+  public get points(): Array<Vector2> {
+    const x =
+      this.x +
+      this.body.getX() +
+      (this.width / 2) * -this.getOrigin().x * this.getScale().x
+    const y =
+      this.y +
+      this.body.getY() +
+      (this.height / 2) * -this.getOrigin().y * this.getScale().y
+    return [
+      new Vector2(x, y),
+      new Vector2(x + this.body.width, y),
+      new Vector2(x, y + this.body.height),
+      new Vector2(x + this.body.width, y + this.body.height),
+    ]
   }
   constructor(scene: Scene, x: number, y: number, w: number, h: number) {
     super(scene, x, y)

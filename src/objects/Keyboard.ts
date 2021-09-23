@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import Vector2 from "../Vector2"
+import Vector2 from "./Vector2"
 
 const keyMap: { [x: string]: string[] } = {
   " ": ["Space", "Spacebar", "Space Bar"],

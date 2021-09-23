@@ -1,4 +1,4 @@
-import { isDefined, stringToPixelNum, typeOf } from "../helper"
+import { stringToPixelNum, typeOf } from "../helper"
 import { Scene, World, Entity } from "."
 import { int } from "../../types/private"
 
@@ -43,6 +43,9 @@ export default class BoundingBox {
       this._height
     )
   }
+  public get x() {
+    return this.getX()
+  }
   public getX(): number {
     if (typeof this._x === "number") return this._x
     if (typeof this._x === "string")
@@ -59,9 +62,15 @@ export default class BoundingBox {
       )
     return 0
   }
+  public set x(value: number) {
+    this.setX(value)
+  }
   public setX(v: string | number): void {
     if (typeof this._x === "object") this._x.set(v)
     else this._x = v
+  }
+  public get y() {
+    return this.getX()
   }
   public getY(): number {
     if (typeof this._y === "number") return this._y
@@ -79,9 +88,15 @@ export default class BoundingBox {
       )
     return 0
   }
+  public set y(value: number) {
+    this.setY(value)
+  }
   public setY(v: string | number): void {
     if (typeof this._y === "object") this._y.set(v)
     else this._y = v
+  }
+  public get width() {
+    return this.getX()
   }
   public getWidth(): number {
     if (typeof this._width === "number") return this._width
@@ -99,9 +114,15 @@ export default class BoundingBox {
       )
     return 0
   }
+  public set width(value: number) {
+    this.setWidth(value)
+  }
   public setWidth(v: string | number): void {
     if (typeof this._width === "object") this._width.set(v)
     else this._width = v
+  }
+  public get height() {
+    return this.getX()
   }
   public getHeight(): number {
     if (typeof this._height === "number") return this._height
@@ -118,6 +139,9 @@ export default class BoundingBox {
         this.parent ? this.parent.bounds.getHeight() : 0
       )
     return 0
+  }
+  public set height(value: number) {
+    this.setHeight(value)
   }
   public setHeight(v: string | number): void {
     if (typeof this._height === "object") this._height.set(v)

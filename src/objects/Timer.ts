@@ -16,7 +16,7 @@ export default class Timer extends EventEmitter {
   ) {
     super()
     this.update = this.update.bind(this)
-    this.scene.game.on("updated", this.update)
+    this.scene.game.globals.on("updated", this.update)
     this.setTimeWait(o)
   }
   getWaitValue() {
@@ -26,7 +26,7 @@ export default class Timer extends EventEmitter {
     this.wait = v
     return this
   }
-  setTimeWait(o: { time: number; tick: number }) {
+  setTimeWait(o: { time?: number; tick?: number }) {
     this.useTime = "time" in o
     this.useTick = "tick" in o
     this.time = o.time
@@ -53,7 +53,7 @@ export default class Timer extends EventEmitter {
     }
   }
   cancel() {
-    this.scene.game.off("updated", this.update)
+    this.scene.game.globals.off("updated", this.update)
     this.pause()
   }
   play() {
