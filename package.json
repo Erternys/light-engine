@@ -1,6 +1,6 @@
 {
   "name": "light-engine",
-  "version": "1.8.0",
+  "version": "1.10.0",
   "description": "Light Engine is a game engine by Grozzlo",
   "main": "lib/light.js",
   "types": "types/index.d.ts",
@@ -9,7 +9,8 @@
   "files": [
     "lib/**/*.js",
     "src/**/*.js",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "README.md"
   ],
   "repository": "https://github.com/Grozzlo/light-engine",
   "author": "ashikuri",

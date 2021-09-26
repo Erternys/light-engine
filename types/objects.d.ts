@@ -70,6 +70,11 @@ declare enum StateEnum {
   Next,
   Prev,
 }
+declare class WatchEvent {
+  public stopped: boolean
+
+  stop(): void
+}
 
 export interface TextStyle {
   shadow?: {
@@ -332,4 +337,19 @@ export class Vector2 {
   distSq(v: { x: number; y: number }): number
   cross(v: { x: number; y: number }): number
 }
+interface WatchHandler<T> {
+  call?(
+    e: WatchEvent,
+    target: T,
+    name: string,
+    thisArg: any,
+    argArray: any[]
+  ): void
+  setter?(e: WatchEvent, target: T, prop: string, value: any): void
+}
+
+interface WatchConstructor {
+  new <T extends object>(target: T, handler: WatchHandler<T>): T
+}
+export const Watch: WatchConstructor & EventEmitter
 export { ObjectEntities }
