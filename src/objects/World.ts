@@ -54,19 +54,4 @@ export default class World extends EventEmitter {
   public activation(value: boolean) {
     this.isActive = value
   }
-  fromSave(setter: { [x: string]: any }) {
-    for (const key in setter) {
-      if (Object.prototype.hasOwnProperty.call(setter, key)) {
-        if (key === "boundingBox") this.bounds.fromSave(setter[key])
-        else if ((this as any)[key] !== setter[key])
-          (this as any)[key] = setter[key]
-      }
-    }
-  }
-  toJSON() {
-    return {
-      isActive: this.isActive,
-      boundingBox: this.bounds,
-    }
-  }
 }

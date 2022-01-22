@@ -128,8 +128,6 @@ export class BoundingBox {
   public getHeight(): number
   public setHeight(v: string | number): void
   public moveEntity(entity: Entity): this
-  public fromSave(setter: { [x: string]: any }): void
-  public toJSON(): { [x: string]: any }
 }
 export class Timer extends EventEmitter {
   public isPlaying: boolean
@@ -209,9 +207,6 @@ export class Entity extends EventEmitter {
   setName(name: string): this
 
   getAudio(name: string): AudioManager | null
-
-  fromSave(setter: { [x: string]: any }): void
-  toJSON(): { [x: string]: any }
 }
 export class Gamepad extends EventEmitter {
   public pressed: Set<string>
@@ -261,16 +256,12 @@ export class Scene extends EventEmitter {
   setName(value: string): this
   setGame(value: Game): this
   setManager(value: SceneManager): this
-  fromSave(setter: { [x: string]: any }): void
-  toJSON(): { [x: string]: any }
 }
 export class World extends EventEmitter {
   public isActive: boolean
   public bounds: BoundingBox
   constructor(scene: Scene)
   public activation(value: boolean): void
-  public fromSave(setter: { [x: string]: any }): void
-  public toJSON(): { [x: string]: any }
 }
 export class AudioLoader extends EventEmitter {
   public buffer: ArrayBuffer

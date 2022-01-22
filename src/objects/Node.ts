@@ -38,23 +38,4 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
     this.manager = manager
     return this
   }
-  fromSave(setter: { [x: string]: any }) {
-    for (const key in setter) {
-      if (Object.prototype.hasOwnProperty.call(setter, key)) {
-        if ((this as any)[key] !== setter[key]) (this as any)[key] = setter[key]
-      }
-    }
-  }
-  toJSON(entityProperties: string[]): object {
-    const properties: { [x: string]: any } = {}
-    entityProperties.forEach((property) => {
-      properties[property] = property in this ? (this as any)[property] : null
-    })
-    return {
-      x: this.x,
-      y: this.y,
-      name: this.name,
-      ...properties,
-    }
-  }
 }

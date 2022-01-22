@@ -78,10 +78,4 @@ export default class Text extends Rectangle {
     this.content = content
     return this
   }
-  toJSON(entityProperties: string[]) {
-    return {
-      ...super.toJSON(entityProperties),
-      content: this.content,
-    }
-  }
 }

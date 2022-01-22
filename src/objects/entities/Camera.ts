@@ -30,35 +30,4 @@ export default class Camera extends Rectangle {
     else this.target = node
     return this
   }
-  fromSave(setter: { [x: string]: any }) {
-    for (const key in setter) {
-      if (Object.prototype.hasOwnProperty.call(setter, key)) {
-        if (key === "targetName")
-          this.target = this.manager.getNode(setter[key])
-        else if (key === "center") {
-          if (!this.center && typeOf(this.center) !== "BoundingBox")
-            this.center = new BoundingBox(
-              this.parent,
-              setter[key].x,
-              setter[key].y,
-              setter[key].width,
-              setter[key].height
-            )
-          this.center.fromSave(setter[key])
-        } else if ((this as any)[key] !== setter[key])
-          (this as any)[key] = setter[key]
-      }
-    }
-  }
-  toJSON() {
-    return {
-      x: this.x,
-      y: this.y,
-      name: this.name,
-      width: this.width,
-      height: this.height,
-      targetName: this.target?.name,
-      center: this.center,
-    }
-  }
 }

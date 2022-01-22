@@ -31,10 +31,4 @@ export default class Sprite extends Image {
       .size(this.width, this.height)
       .draw(context)
   }
-  toJSON(entityProperties: string[]) {
-    return {
-      ...super.toJSON(entityProperties),
-      sprite: this.sprite,
-    }
-  }
 }

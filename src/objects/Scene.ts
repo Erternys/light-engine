@@ -138,35 +138,4 @@ export default class Scene extends EventEmitter {
     this.manager = value
     return this
   }
-  fromSave(setter: { entities: { [x: string]: any }[]; [x: string]: any }) {
-    for (const key in setter) {
-      if (Object.prototype.hasOwnProperty.call(setter, key)) {
-        if (key === "entities")
-          this.nodes.getAll().map((entity) => {
-            const finded = setter.entities.find((v) => v.name === entity.name)
-            if (finded) entity.fromSave(finded)
-          })
-        else if (key === "camera") this.camera.fromSave(setter[key])
-        else if (key === "world") this.world.fromSave(setter[key])
-        else if ((this as any)[key] !== setter[key])
-          (this as any)[key] = setter[key]
-      }
-    }
-  }
-  toJSON(getter: StateSaveInterface) {
-    return {
-      name: this.name,
-      world: this.world,
-      camera: this.camera,
-      alpha: this.alpha,
-      entities: this.nodes
-        .getAll()
-        .filter((entity) => {
-          if (entity.name === "camera") return false
-          if (typeof getter !== "object") return true
-          return !getter.exclude.entities.includes(entity.name)
-        })
-        .map((entity) => entity.toJSON(getter.entityProperties || [])),
-    }
-  }
 }

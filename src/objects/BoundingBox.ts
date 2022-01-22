@@ -151,22 +151,4 @@ export default class BoundingBox {
     entity.setBox(this)
     return this
   }
-  fromSave(setter: { [x: string]: any }) {
-    for (const key in setter) {
-      if (
-        Object.prototype.hasOwnProperty.call(setter, key) &&
-        key === "rebound"
-      )
-        this.rebound = setter[key]
-    }
-  }
-  toJSON() {
-    return {
-      x: this.getX(),
-      y: this.getY(),
-      width: this.getWidth(),
-      height: this.getHeight(),
-      rebound: this.rebound,
-    }
-  }
 }
