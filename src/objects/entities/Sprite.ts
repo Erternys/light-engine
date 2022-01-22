@@ -17,8 +17,7 @@ export default class Sprite extends Image {
     const image = this.manager.medias.images.get(this.src)
     if (!isDefined(image)) return
 
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
 
     this.drawer

@@ -52,8 +52,7 @@ export default class Text extends Rectangle {
     this.height = height
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
 
     const { width, height } = this.drawer

@@ -46,8 +46,8 @@ export default class Game extends EventEmitter {
   private oldTimeStamp = 0
   constructor(
     config: ConfigOption,
-    public w: number = 800,
-    public h: number = 600,
+    public width: number = 800,
+    public height: number = 600,
     private doc: Document = document,
     private win: Window = window
   ) {
@@ -70,8 +70,8 @@ export default class Game extends EventEmitter {
         ? config.canvas
         : this.doc.body.appendChild(this.doc.createElement("canvas"))
 
-    this.canvas.width = this.w
-    this.canvas.height = this.h
+    this.canvas.width = this.width
+    this.canvas.height = this.height
 
     if (config.pixel)
       this.canvas.style.imageRendering = isChromium()
@@ -212,11 +212,11 @@ export default class Game extends EventEmitter {
       manager.update()
     }
 
-    this.context.clearRect(0, 0, this.w, this.h)
+    this.context.clearRect(0, 0, this.width, this.height)
     this.context.save()
     this.context.globalAlpha = 1
     this.context.fillStyle = "#000"
-    this.context.fillRect(0, 0, this.w, this.h)
+    this.context.fillRect(0, 0, this.width, this.height)
     this.context.restore()
     if (this.pixel) {
       this.context.imageSmoothingEnabled = false

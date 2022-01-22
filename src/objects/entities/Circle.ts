@@ -7,9 +7,6 @@ import { isDefined } from "../../helper"
 export default class Circle extends Entity {
   public radius: number
   public angle: number
-  public get [Symbol.toStringTag]() {
-    return "Circle"
-  }
   constructor(scene: Scene, x: number, y: number, r: number) {
     super(scene, x, y)
     this.radius = r
@@ -17,8 +14,7 @@ export default class Circle extends Entity {
     this.fillColor = "#fff"
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .move(this.x, this.y)
@@ -34,8 +30,7 @@ export default class Circle extends Entity {
   }
   debug(context: CanvasRenderingContext2D, delta: number): void {
     // draw the origin of the entity
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .move(this.origin.x, this.origin.y)
@@ -46,6 +41,7 @@ export default class Circle extends Entity {
       .draw(context)
 
     // draw the bounds of the entity
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .move(this.x, this.y)
@@ -60,8 +56,7 @@ export default class Circle extends Entity {
 
     // draw the velocity vector of the entity
     if (this.velocity.length() > 0) {
-      if (!this.fixed)
-        this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+      if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
       this.drawer

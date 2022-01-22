@@ -3,9 +3,6 @@ import { Scene } from "."
 import BoundingBox from "./BoundingBox"
 
 export default class World extends EventEmitter {
-  public get [Symbol.toStringTag]() {
-    return "World"
-  }
   public isActive: boolean
   public bounds: BoundingBox
   constructor(scene: Scene) {
@@ -35,7 +32,7 @@ export default class World extends EventEmitter {
       },
       {
         get() {
-          return width || scene.camera.width
+          return width || scene.game.width
         },
         set(value: number) {
           width = value
@@ -43,7 +40,7 @@ export default class World extends EventEmitter {
       },
       {
         get() {
-          return height || scene.camera.height
+          return height || scene.game.height
         },
         set(value: number) {
           height = value

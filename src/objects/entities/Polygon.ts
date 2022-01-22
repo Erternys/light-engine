@@ -19,8 +19,7 @@ export default class Polygon extends Entity {
     this.origin.set(this)
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .points(this.points)
@@ -35,8 +34,7 @@ export default class Polygon extends Entity {
   }
   debug(context: CanvasRenderingContext2D, delta: number): void {
     // draw the origin of the entity
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .move(this.origin.x, this.origin.y)
@@ -47,6 +45,7 @@ export default class Polygon extends Entity {
       .draw(context)
 
     // draw the bounds of the entity
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .points(this.points)
@@ -60,8 +59,7 @@ export default class Polygon extends Entity {
 
     // draw the velocity vector of the entity
     if (this.velocity.length() > 0) {
-      if (!this.fixed)
-        this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+      if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
       this.drawer

@@ -257,6 +257,7 @@ export default class Entity extends Node<Scene> {
 
   move(delta: number, ...forces: Vector2[]) {
     const force = forces.reduce((acc, f) => acc.add(f)).mul(delta)
+    this.origin = this.origin.add(force)
     this.x += force.x
     this.y += force.y
     return this

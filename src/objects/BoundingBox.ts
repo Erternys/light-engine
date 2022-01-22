@@ -3,9 +3,6 @@ import { Scene, World, Entity } from "."
 import { int } from "../../types/private"
 
 export default class BoundingBox {
-  public get [Symbol.toStringTag]() {
-    return "BoundingBox"
-  }
   public parent: World
   public rebound = false
   private _x: int

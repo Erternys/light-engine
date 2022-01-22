@@ -2,6 +2,7 @@ import { Scale, Vector2 } from "."
 import { TextStyle } from "../../types/private"
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
+import { Camera } from "./entities"
 
 type RGBA =
   | [number, number, number, number]
@@ -29,6 +30,7 @@ export default class Drawer extends EventEmitter {
   private _crop: Crop = { x: 0, y: 0, width: -1, height: -1 }
   private _style: TextStyle
   private _text: string = ""
+  private _camera: Camera | null = null
   private r: number | null = null
   private x = 0
   private y = 0
@@ -40,6 +42,10 @@ export default class Drawer extends EventEmitter {
     this.reset()
   }
 
+  camera(camera: Camera) {
+    if (isDefined(camera)) this._camera = camera
+    return this
+  }
   move(x: number, y: number) {
     this.x += x
     this.y += y
@@ -131,6 +137,7 @@ export default class Drawer extends EventEmitter {
       },
     }
     this._text = null
+    this._camera = null
     this.width = 0
     this.height = 0
     return this
@@ -152,7 +159,11 @@ export default class Drawer extends EventEmitter {
   }
   draw(context: CanvasRenderingContext2D) {
     context.save()
-    context.translate(this.x, this.y)
+    context.rotate((Math.PI * -(this._camera?.angle ?? 0)) / 180)
+    context.translate(
+      this.x + (this._camera?.x ?? 0),
+      this.y + (this._camera?.y ?? 0)
+    )
     context.lineWidth = this._lineWidth
     context.globalAlpha = this._alpha
 
@@ -177,10 +188,16 @@ export default class Drawer extends EventEmitter {
     if (isDefined(this.r)) {
       context.arc(0, 0, this.r * this._scale.r, 0, 2 * Math.PI, true)
     }
-    const [x, y] = [this.x - this._origin.x, this.y - this._origin.y]
+    const [x, y] = [
+      this.x - (this._camera?.x ?? 0) - this._origin.x,
+      this.y - (this._camera?.y ?? 0) - this._origin.y,
+    ]
     if (isDefined(this._image)) {
-      context.translate(this._origin.x - this.x, this._origin.y - this.y)
-      context.rotate(-this._angle)
+      context.translate(
+        this._origin.x - this.x - (this._camera?.x ?? 0),
+        this._origin.y - this.y - (this._camera?.y ?? 0)
+      )
+      context.rotate(-this._angle - (this._camera?.angle ?? 0))
       context.drawImage(
         this._image,
         this._crop.x,
@@ -194,7 +211,10 @@ export default class Drawer extends EventEmitter {
       )
     }
     if (isDefined(this._text)) {
-      context.translate(this._origin.x - this.x, this._origin.y - this.y)
+      context.translate(
+        this._origin.x - this.x - (this._camera?.x ?? 0),
+        this._origin.y - this.y - (this._camera?.y ?? 0)
+      )
       context.rotate(-this._angle)
       context.font = `${this._style.font.size}px ${this._style.font.family}`
       context.textAlign = this._style.align

@@ -6,9 +6,6 @@ export default class Rectangle extends Polygon {
   public crop = new Vector2(1, 1)
   public width: number
   public height: number
-  public get [Symbol.toStringTag]() {
-    return "Rectangle"
-  }
   public get points(): Array<Vector2> {
     return [
       new Vector2(this.x, this.y).rotate(this.angle, this.origin),
@@ -27,8 +24,7 @@ export default class Rectangle extends Polygon {
     this.fillColor = "#fff"
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .points(this.points)
@@ -43,8 +39,7 @@ export default class Rectangle extends Polygon {
   }
   debug(context: CanvasRenderingContext2D, delta: number): void {
     // draw the origin of the entity
-    if (!this.fixed)
-      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       .move(this.origin.x, this.origin.y)
@@ -55,6 +50,7 @@ export default class Rectangle extends Polygon {
       .draw(context)
 
     // draw the bounds of the entity
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
       // .move(this.origin.x, this.origin.y)
@@ -69,8 +65,7 @@ export default class Rectangle extends Polygon {
 
     // draw the velocity vector of the entity
     if (this.velocity.length() > 0) {
-      if (!this.fixed)
-        this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+      if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
       this.drawer

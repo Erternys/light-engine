@@ -1,10 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import {
-  SceneOption,
-  int,
-  TextStyle,
-  StateSaveInterface,
-} from "../../types/private"
+import { SceneOption, int, TextStyle } from "../../types/private"
 import {
   SceneManager,
   NodeManager,
@@ -21,9 +16,6 @@ import Game from "../Game"
 import Timer from "./Timer"
 
 export default class Scene extends EventEmitter {
-  public get [Symbol.toStringTag]() {
-    return "Scene"
-  }
   public name: string
   public manager: SceneManager
   public preload: Array<string> = []

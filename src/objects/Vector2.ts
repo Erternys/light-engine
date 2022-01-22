@@ -51,8 +51,11 @@ export default class Vector2 {
     }
     return new Vector2(this.x - sub, this.y - sub)
   }
-  reverse() {
+  inverse() {
     return this.mul(-1)
+  }
+  reverse() {
+    return new Vector2(this.y, this.x)
   }
   abs() {
     return new Vector2(Math.abs(this.x), Math.abs(this.y))

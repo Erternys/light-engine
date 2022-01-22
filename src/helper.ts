@@ -184,7 +184,6 @@ export function typeOf(type: any, constructor = false): string {
   if (typeof type === "object" || typeof type === "undefined") {
     if (type === null || type === undefined) return "undefined"
     if (type === Promise.prototype) return "Promise"
-    if (type[Symbol.toStringTag] !== undefined) return type[Symbol.toStringTag]
     const define: string = Object.prototype.toString
       .call(type)
       .replace(/\[object (.*)\]/, (_: any, name: string) => name)
