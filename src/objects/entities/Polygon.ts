@@ -1,31 +1,32 @@
 import SAT from "sat"
 
 import Entity from "../Entity"
-import { Scene, Vector2 } from ".."
-import { isDefined } from "../../helper"
+import { Scene } from ".."
+import Vector2 from "../Vector2"
 
-export default class Circle extends Entity {
-  public radius: number
-  public angle: number
-  public get [Symbol.toStringTag]() {
-    return "Circle"
+export default class Polygon extends Entity {
+  public get points(): Array<Vector2> {
+    return [
+      new Vector2(0, 0).add(this),
+      new Vector2(0, 1).add(this),
+      new Vector2(1, 1).add(this),
+      new Vector2(1, 0).add(this),
+    ]
   }
-  constructor(scene: Scene, x: number, y: number, r: number) {
+  constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y)
-    this.radius = r
-    this.angle = 360
     this.fillColor = "#fff"
+    this.origin.set(this)
   }
   draw(context: CanvasRenderingContext2D) {
     if (!this.fixed)
       this.drawer.move(this.parent.camera.x, this.parent.camera.y)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
-      .move(this.x, this.y)
-      .radius(this.radius)
-      .angle((Math.PI * this.angle) / 180)
-      .origin(this.origin)
+      .points(this.points)
       .alpha(this.alpha)
+      .angle(this.angle)
+      .origin(this.origin)
       .scale(this.scale)
       .fill(this.fillColor)
       .stroke(this.strokeColor)
@@ -48,8 +49,7 @@ export default class Circle extends Entity {
     // draw the bounds of the entity
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
     this.drawer
-      .move(this.x, this.y)
-      .radius(this.radius)
+      .points(this.points)
       .alpha(0.8)
       .alpha(this.alpha)
       .angle(this.angle)
@@ -74,5 +74,12 @@ export default class Circle extends Entity {
         .lineWidth(2)
         .draw(context)
     }
+  }
+
+  toSATEntity(): SAT.Polygon {
+    return new SAT.Polygon(
+      new SAT.Vector(0, 0),
+      this.points.map((v) => v.toSATVector())
+    )
   }
 }

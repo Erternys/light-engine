@@ -5,6 +5,9 @@ const globalMap = new Map<
 
 export class GlobalEventEmitter {
   protected events = globalMap
+  public exist(event: string | number): boolean {
+    return this.events.has(event)
+  }
   public emit(event: string | number, ...args: any[]): boolean {
     if (!(this.events.has(event) && this.events.get(event).length > 0))
       return false

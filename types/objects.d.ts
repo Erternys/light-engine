@@ -8,7 +8,7 @@ import {
 import * as ObjectEntities from "./objectEntities"
 
 type StorageKey = string | symbol | number
-type VectorValue = number | { x: number; y: number }
+type VectorValue = number | Vector2
 
 declare interface VibrationOptions {
   strongMagnitude?: number
@@ -171,7 +171,7 @@ export class Entity extends EventEmitter {
   constructor(scene: Scene, x: number, y: number)
   init(): void
   beforeRedraw(): void
-  redraw(secondsPassed: number): void
+  redraw(delta: number): void
   afterRedraw(): void
   draw(context: CanvasRenderingContext2D): void
   destroy(): void
@@ -191,7 +191,7 @@ export class Entity extends EventEmitter {
   setVelocityX(value: number): this
   setVelocityY(value: number): this
   setVelocity(vx: number, vy?: number): this
-  getVelocity(): { x: number; y: number }
+  getVelocity(): Vector2
 
   getSpeed(): number
   setSpeed(value: number): this
@@ -254,7 +254,7 @@ export class Scene extends EventEmitter {
   constructor(option: { name?: string })
   init(): void
   beforeUpdate(): void
-  update(secondsPassed: number): void
+  update(delta: number): void
   afterUpdate(): void
   changeAllow(scene: Scene, state: StateEnum): boolean
   getAudio(name: string): AudioManager | null
@@ -318,7 +318,7 @@ export class Vector2 {
 
   constructor(x?: number, y?: number)
   set(set: VectorValue): this
-  equals(v: { x: number; y: number }): boolean
+  equals(v: Vector2): boolean
   clone(): Vector2
   mul(mul: VectorValue): Vector2
   div(div: VectorValue): Vector2
@@ -326,16 +326,16 @@ export class Vector2 {
   sub(sub: VectorValue): Vector2
   reverse(): Vector2
   abs(): Vector2
-  dot(v: { x: number; y: number }): number
+  dot(v: Vector2): number
   length(): number
   lengthSq(): number
   setLength(l: VectorValue): Vector2
-  lerp(v: { x: number; y: number }, s: number): Vector2
+  lerp(v: Vector2, s: number): Vector2
   normalize(): Vector2
   truncate(max: number): this
-  dist(v: { x: number; y: number }): number
-  distSq(v: { x: number; y: number }): number
-  cross(v: { x: number; y: number }): number
+  dist(v: Vector2): number
+  distSq(v: Vector2): number
+  cross(v: Vector2): number
 }
 interface WatchHandler<T> {
   call?(

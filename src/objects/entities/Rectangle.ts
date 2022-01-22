@@ -1,28 +1,23 @@
-import Entity from "../Entity"
+import { Polygon } from "."
 import { Scene } from ".."
-import { isDefined, debugCenter } from "../../helper"
 import Vector2 from "../Vector2"
 
-export default class Rectangle extends Entity {
-  protected cropw = 1
-  protected croph = 1
+export default class Rectangle extends Polygon {
+  public crop = new Vector2(1, 1)
+  public width: number
+  public height: number
   public get [Symbol.toStringTag]() {
     return "Rectangle"
   }
   public get points(): Array<Vector2> {
-    const x =
-      this.x +
-      this.body.getX() +
-      (this.width / 2) * -this.getOrigin().x * this.getScale().x
-    const y =
-      this.y +
-      this.body.getY() +
-      (this.height / 2) * -this.getOrigin().y * this.getScale().y
     return [
-      new Vector2(x, y),
-      new Vector2(x + this.body.width, y),
-      new Vector2(x, y + this.body.height),
-      new Vector2(x + this.body.width, y + this.body.height),
+      new Vector2(this.x, this.y).rotate(this.angle, this.origin),
+      new Vector2(this.x + this.width, this.y).rotate(this.angle, this.origin),
+      new Vector2(this.x + this.width, this.y + this.height).rotate(
+        this.angle,
+        this.origin
+      ),
+      new Vector2(this.x, this.y + this.height).rotate(this.angle, this.origin),
     ]
   }
   constructor(scene: Scene, x: number, y: number, w: number, h: number) {
@@ -32,52 +27,61 @@ export default class Rectangle extends Entity {
     this.fillColor = "#fff"
   }
   draw(context: CanvasRenderingContext2D) {
-    context.globalAlpha =
-      this.alpha * (this.scene.isPlayed === "opacity" ? this.scene.alpha : 1)
-    if (!this.fixed) context.translate(this.scene.camera.x, this.scene.camera.y)
-    context.translate(
-      (this.width * this.scalex) / -2,
-      (this.height * this.scaley) / -2
-    )
-    context.translate(
-      (this.width / 2) * -this.originX * this.scalex,
-      (this.height / 2) * -this.originY * this.scaley
-    )
-    if (isDefined(this.fillColor)) {
-      context.fillStyle = this.fillColor.toString(16)
-      context.fillRect(this.x, this.y, this.width, this.height)
-    }
-    if (isDefined(this.strokeColor)) {
-      context.lineWidth = this.lineWidth
-      context.strokeStyle = this.strokeColor.toString(16)
-      context.strokeRect(
-        this.x,
-        this.y,
-        this.width * this.scalex * this.cropw,
-        this.height * this.scaley * this.croph
-      )
-    }
-    context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.scene.game.debug) debugCenter(context, this)
+    if (!this.fixed)
+      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    this.drawer
+      .points(this.points)
+      .alpha(this.alpha)
+      .angle(this.angle)
+      .origin(this.origin)
+      .scale(this.scale)
+      .fill(this.fillColor)
+      .stroke(this.strokeColor)
+      .lineWidth(this.lineWidth)
+      .draw(context)
   }
+  debug(context: CanvasRenderingContext2D, delta: number): void {
+    // draw the origin of the entity
+    if (!this.fixed)
+      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    this.drawer
+      .move(this.origin.x, this.origin.y)
+      .radius(2)
+      .alpha(0.8)
+      .alpha(this.alpha)
+      .fill("#f00")
+      .draw(context)
 
-  setCropW(value: number) {
-    if (this.cropw !== value) this.cropw = value
-    return this
-  }
-  setCropH(value: number) {
-    if (this.croph !== value) this.croph = value
-    return this
-  }
-  setCrop(vw = 1, vh = 1) {
-    this.setCropW(vw)
-    this.setCropH(vh)
-    return this
-  }
-  getCrop(): { h?: number; w?: number } {
-    return {
-      w: this.cropw,
-      h: this.croph,
+    // draw the bounds of the entity
+    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    this.drawer
+      // .move(this.origin.x, this.origin.y)
+      .points(this.points)
+      .alpha(0.8)
+      .alpha(this.alpha)
+      .angle(this.angle)
+      .origin(this.origin)
+      .stroke("#00f")
+      .fill("transparent")
+      .draw(context)
+
+    // draw the velocity vector of the entity
+    if (this.velocity.length() > 0) {
+      if (!this.fixed)
+        this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+      if (this.parent.isPlayed === "opacity")
+        this.drawer.alpha(this.parent.alpha)
+      this.drawer
+        .move(this.origin.x, this.origin.y)
+        .points([Vector2.Zero(), this.velocity])
+        .alpha(0.8)
+        .alpha(this.alpha)
+        .fill("#0f0")
+        .stroke("#0f0")
+        .lineWidth(2)
+        .draw(context)
     }
   }
 }

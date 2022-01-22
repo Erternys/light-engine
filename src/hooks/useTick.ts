@@ -17,7 +17,7 @@ export default function useTick(
   if (current instanceof Manager)
     return console.error(`[useTick]: is not allowed in a Manger`)
 
-  const scene = current instanceof Entity ? current.scene : current
+  const scene = current instanceof Entity ? current.parent : current
 
   const oldHook: timerHook = current.hooks && current.hooks[current.hookIndex]
   const hook: timerHook = {
@@ -30,10 +30,10 @@ export default function useTick(
 
   const timer = useMemo<Timer>(() => {
     const timer = scene.create.timer(
-      () => {
+      (delta: number) => {
         customStorage.set("currentObject", hook)
         hook.hookIndex = 0
-        fn()
+        fn(delta)
         customStorage.set("currentObject", current)
       },
       { tick }

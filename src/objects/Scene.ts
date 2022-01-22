@@ -7,7 +7,7 @@ import {
 } from "../../types/private"
 import {
   SceneManager,
-  EntityManager,
+  NodeManager,
   AudioManager,
   ContainerManager,
 } from "../managers"
@@ -20,17 +20,14 @@ import Camera from "./entities/Camera"
 import Game from "../Game"
 import Timer from "./Timer"
 
-const memory = new Map<string, AudioManager>()
-
 export default class Scene extends EventEmitter {
   public get [Symbol.toStringTag]() {
     return "Scene"
   }
   public name: string
-  public game: Game
   public manager: SceneManager
-  public forcedLoadingOfEntities: Array<string> = []
-  public entities: EntityManager
+  public preload: Array<string> = []
+  public nodes: NodeManager
   public played: boolean
   public isPlayed: "none" | "opacity" | "main"
   public alpha: number
@@ -41,11 +38,12 @@ export default class Scene extends EventEmitter {
   public create: any
   public hooks: any[] = []
   public hookIndex: number = 0
+  public inited = false
 
-  constructor(option: SceneOption) {
+  constructor(public game: Game, option: SceneOption) {
     super()
     this.managers = new ContainerManager(this)
-    this.entities = new EntityManager(this)
+    this.nodes = new NodeManager(this)
     this.world = new World(this)
     this.name = option.name
     this.isPlayed = "none"
@@ -77,32 +75,22 @@ export default class Scene extends EventEmitter {
           y: number,
           w: number,
           h: number,
-          fillColor?: string | number,
-          zindex = 0
+          fillColor?: string | number
         ) {
           const rect = new Rectangle(self, x, y, w, h)
-          rect.zindex = zindex
           rect.fillColor = fillColor
-          self.entities.add(rect)
+          self.nodes.add(rect)
           return rect
         },
-        circle(
-          x: number,
-          y: number,
-          r: number,
-          fillColor?: string | number,
-          zindex = 0
-        ) {
+        circle(x: number, y: number, r: number, fillColor?: string | number) {
           const circ = new Circle(self, x, y, r)
-          circ.zindex = zindex
           circ.fillColor = fillColor
-          self.entities.add(circ)
+          self.nodes.add(circ)
           return circ
         },
-        image(x: number, y: number, use: string, zindex = 0) {
+        image(x: number, y: number, use: string) {
           const img = new Image(self, x, y, use)
-          img.zindex = zindex
-          self.entities.add(img)
+          self.nodes.add(img)
           return img
         },
         sprite(
@@ -110,52 +98,33 @@ export default class Scene extends EventEmitter {
           y: number,
           use: string,
           spriteWidth: number,
-          spriteHeight: number,
-          zindex = 0
+          spriteHeight: number
         ) {
           const srt = new Sprite(self, x, y, use)
           srt.sprite.width = spriteWidth
           srt.sprite.height = spriteHeight
-          srt.zindex = zindex
-          self.entities.add(srt)
+          self.nodes.add(srt)
           return srt
         },
-        text(
-          x: number,
-          y: number,
-          content: string,
-          style: TextStyle = {},
-          zindex = 0
-        ) {
+        text(x: number, y: number, content: string, style: TextStyle = {}) {
           const img = new Text(self, x, y, content, style)
-          img.zindex = zindex
-          self.entities.add(img)
+          self.nodes.add(img)
           return img
         },
       },
     }
     this.camera = new Camera(this)
-    this.entities.add(this.camera)
+    this.nodes.add(this.camera)
   }
   init() {}
   beforeUpdate() {}
-  update(secondsPassed: number) {}
+  update(delta: number) {}
   afterUpdate() {}
   changeAllow(scene: Scene, state: StateEnum) {
     return true
   }
   getAudio(name: string): AudioManager | null {
-    if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
-    const audio = this.entities.medias.audios.get(name)
-    if (audio) {
-      const manager = new AudioManager(this.game, audio, name)
-      memory.set(name, manager)
-      manager.on("destroy", () => {
-        memory.delete(name)
-      })
-      return manager
-    }
-    return null
+    return this.game.getAudio(name)
   }
   setName(value: string) {
     this.name = value
@@ -173,7 +142,7 @@ export default class Scene extends EventEmitter {
     for (const key in setter) {
       if (Object.prototype.hasOwnProperty.call(setter, key)) {
         if (key === "entities")
-          this.entities.getAll().map((entity) => {
+          this.nodes.getAll().map((entity) => {
             const finded = setter.entities.find((v) => v.name === entity.name)
             if (finded) entity.fromSave(finded)
           })
@@ -190,7 +159,7 @@ export default class Scene extends EventEmitter {
       world: this.world,
       camera: this.camera,
       alpha: this.alpha,
-      entities: this.entities
+      entities: this.nodes
         .getAll()
         .filter((entity) => {
           if (entity.name === "camera") return false

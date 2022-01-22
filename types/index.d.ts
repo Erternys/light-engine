@@ -4,6 +4,7 @@ import * as Managers from "./managers"
 import * as Hooks from "./hooks"
 
 declare class GlobalEventEmitter {
+  public exist(event: string | number): boolean
   public emit(event: string | number, ...args: any[]): boolean
   public on(event: string | number, listener: (...args: any[]) => void): this
   public once(event: string | number, listener: (...args: any[]) => void): this
@@ -53,12 +54,12 @@ export class Game extends EventEmitter {
   public playedWithOpacity: Objects.Scene[]
   public mouse: Objects.Mouse
   public keyboard: Objects.Keyboard
-  public gamepad: Gamepad
+  public gamepad: Objects.Gamepad
   public save: Managers.SaveManager
   public w: number
   public h: number
 
-  public secondsPassed: number
+  public delta: number
   constructor(config: ConfigOption, w?: string | number, h?: string | number)
   /** @deprecated */
   playScene(scene: Objects.Scene): Objects.Scene

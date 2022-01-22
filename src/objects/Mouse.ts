@@ -1,30 +1,20 @@
-import { debugCenter } from "../helper"
 import { Game } from "../app"
-import { EventEmitter } from "../EventEmitter"
+import { Node } from "."
 
-export default class Mouse extends EventEmitter {
-  public x = 0
-  public y = 0
-  public width = 1
-  public height = 1
+export default class Mouse extends Node {
   public click = false
-  private game: Game
   private currentClickPos: Map<
     "left" | "center" | "right",
     MouseEvent | TouchEvent
   > = new Map()
 
-  public get [Symbol.toStringTag]() {
-    return "Rectangle"
-  }
   constructor(game: Game) {
-    super()
+    super(null)
     const clickPos: ("left" | "center" | "right")[] = [
       "left",
       "center",
       "right",
     ]
-    this.game = game
     game.canvas.addEventListener("mousedown", (e) => {
       this.click = true
       this.currentClickPos.set(clickPos[e.button], e)
@@ -69,8 +59,8 @@ export default class Mouse extends EventEmitter {
       this.globals.emit(`mouse:down-${n}`, e)
     })
   }
-  draw(context: CanvasRenderingContext2D) {
-    context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.game.debug) debugCenter(context, this)
+  debug(context: CanvasRenderingContext2D) {
+    // draw the center of the mouse
+    this.drawer.move(this.x, this.y).fill("#f00").alpha(0.6).draw(context)
   }
 }

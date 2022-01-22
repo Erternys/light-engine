@@ -1,44 +1,32 @@
 import { Scene } from ".."
-import { isDefined, debugCenter } from "../../helper"
+import { isDefined } from "../../helper"
+import { NodeManager } from "../../managers"
 import Rectangle from "./Rectangle"
 
 export default class Image extends Rectangle {
-  constructor(scene: Scene, x: number, y: number, use: string) {
+  constructor(scene: Scene, x: number, y: number, src: string) {
     super(scene, x, y, null, null)
-    this.use = use
-  }
-  protected setSize(image: { width: number; height: number }) {
-    this.width = image.width
-    this.height = image.height
+    const image = NodeManager.images.get(src)
+    this.src = src
+    this.width = image.naturalWidth
+    this.height = image.naturalHeight
   }
   draw(context: CanvasRenderingContext2D) {
-    const image = this.manager.medias.images.get(this.use)
-    context.globalAlpha =
-      this.alpha * (this.scene.isPlayed === "opacity" ? this.scene.alpha : 1)
-    if (!this.fixed) context.translate(this.scene.camera.x, this.scene.camera.y)
-    context.translate(
-      (this.width * this.scalex) / -2,
-      (this.height * this.scaley) / -2
-    )
-    context.translate(
-      (this.width / 2) * -this.originX * this.scalex,
-      (this.height / 2) * -this.originY * this.scaley
-    )
-    if (isDefined(image)) {
-      if (!isDefined(this.width) && !isDefined(this.height)) this.setSize(image)
-      context.drawImage(
-        image,
-        0,
-        0,
-        this.width * this.cropw,
-        this.height * this.croph,
-        this.x - this.scene.camera.x,
-        this.y - this.scene.camera.y,
-        this.width * this.scalex * this.cropw,
-        this.height * this.scaley * this.croph
-      )
-    }
-    context.setTransform(1, 0, 0, 1, 0, 0)
-    if (this.scene.game.debug) debugCenter(context, this)
+    const image = this.manager.medias.images.get(this.src)
+    if (!isDefined(image)) return
+
+    if (!this.fixed)
+      this.drawer.move(this.parent.camera.x, this.parent.camera.y)
+    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+
+    this.drawer
+      .move(this.x, this.y)
+      .alpha(this.alpha)
+      .angle(this.angle)
+      .origin(this.origin)
+      .scale(this.scale)
+      .size(this.width, this.height)
+      .image(image)
+      .draw(context)
   }
 }

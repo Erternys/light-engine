@@ -1,10 +1,10 @@
 import Rectangle from "./Rectangle"
 import Scene from "../Scene"
-import { Entity, BoundingBox } from ".."
+import { Node, BoundingBox } from ".."
 import { isDefined, typeOf } from "../../helper"
 
 export default class Camera extends Rectangle {
-  public target: Entity
+  public target: Node<any>
   public center: BoundingBox
   constructor(scene: Scene) {
     super(scene, 0, 0, 0, 0)
@@ -12,11 +12,12 @@ export default class Camera extends Rectangle {
     this.offAll("move:velocity")
   }
   init() {
-    this.center = new BoundingBox(this.scene, "50%", "50%", 2, 2)
-    this.width = this.scene.game.canvas.width
-    this.height = this.scene.game.canvas.height
+    this.center = new BoundingBox(this.parent, "50%", "50%", 2, 2)
+    this.width = this.parent.game.canvas.width
+    this.height = this.parent.game.canvas.height
   }
   draw() {}
+  debug() {}
   setValues(x?: number, y?: number, width?: number, height?: number) {
     if (isDefined(x)) this.x = x
     if (isDefined(y)) this.y = y
@@ -24,21 +25,20 @@ export default class Camera extends Rectangle {
     if (isDefined(height)) this.height = height
     return this
   }
-  setTarget(entity: Entity | string) {
-    if (typeof entity === "string")
-      this.target = this.scene.entities.getEntity(entity)
-    else this.target = entity
+  setTarget(node: Node<any> | string) {
+    if (typeof node === "string") this.target = this.parent.nodes.getNode(node)
+    else this.target = node
     return this
   }
   fromSave(setter: { [x: string]: any }) {
     for (const key in setter) {
       if (Object.prototype.hasOwnProperty.call(setter, key)) {
         if (key === "targetName")
-          this.target = this.manager.getEntity(setter[key])
+          this.target = this.manager.getNode(setter[key])
         else if (key === "center") {
           if (!this.center && typeOf(this.center) !== "BoundingBox")
             this.center = new BoundingBox(
-              this.scene,
+              this.parent,
               setter[key].x,
               setter[key].y,
               setter[key].width,

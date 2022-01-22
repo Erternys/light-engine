@@ -47,8 +47,8 @@ export default class Gamepad extends EventEmitter {
     if (typeof stick === "string" && this.gamepads.length > this.gamepadIndex) {
       const vector = this.currentGamepad.stick(stick).query()
       return new Vector2(
-        Math.round(vector.x * 10000) / 10000,
-        Math.round(vector.y * 10000) / 10000
+        Math.round(vector.x * 1000) / 1000,
+        Math.round(vector.y * 1000) / 1000
       )
     }
     return new Vector2(0, 0)

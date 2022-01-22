@@ -37,8 +37,10 @@ export default class Watch<T extends object> extends EventEmitter {
       },
       apply(t: any, self: any, args: any[]) {
         const e = new WatchEvent()
-        if (handler?.call) handler.call(e, target, t.name, self, args)
-        if (!e.stopped) t.apply(self, args)
+        let result = null
+        if (handler?.call) result = handler.call(e, target, t.name, self, args)
+        if (!e.stopped) return t.apply(self, args)
+        return result
       },
     }
 
