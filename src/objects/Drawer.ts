@@ -22,7 +22,7 @@ export default class Drawer extends EventEmitter {
   private _fill: RGBA = "#000"
   private _stroke: RGBA = "transparent"
   private _origin: Vector2 = Vector2.Zero()
-  private _scale: Scale = new Scale(1, 1, 1)
+  private _invert: Vector2 = new Vector2(1, 1)
   private _angle = 0
   private _alpha = 1
   private _lineWidth = 1
@@ -49,10 +49,6 @@ export default class Drawer extends EventEmitter {
   move(x: number, y: number) {
     this.x += x
     this.y += y
-    return this
-  }
-  scale(scale: Scale) {
-    if (isDefined(scale)) this._scale = scale
     return this
   }
   points(points: Vector2[]) {
@@ -87,6 +83,11 @@ export default class Drawer extends EventEmitter {
     if (isDefined(width)) this._lineWidth = width
     return this
   }
+  invert(invert: Vector2) {
+    if (isDefined(invert)) this._invert = invert
+
+    return this
+  }
   image(image: HTMLImageElement, crop?: Crop) {
     if (isDefined(image)) this._image = image
     if (isDefined(crop)) this._crop = crop
@@ -112,7 +113,7 @@ export default class Drawer extends EventEmitter {
     this.x = 0
     this.y = 0
     this._origin = Vector2.Zero()
-    this._scale = new Scale(1, 1, 1)
+    this._invert = new Vector2(1, 1)
     this._angle = 0
     this._alpha = 1
     this._fill = "#fff"
@@ -186,7 +187,7 @@ export default class Drawer extends EventEmitter {
       }
     }
     if (isDefined(this.r)) {
-      context.arc(0, 0, this.r * this._scale.r, 0, 2 * Math.PI, true)
+      context.arc(0, 0, this.r, 0, 2 * Math.PI, true)
     }
     const [x, y] = [
       this.x - (this._camera?.x ?? 0) - this._origin.x,
@@ -204,10 +205,10 @@ export default class Drawer extends EventEmitter {
         this._crop.y,
         this._crop.width,
         this._crop.height,
-        x,
-        y,
-        this.width * this._scale.w,
-        this.height * this._scale.h
+        x - (this._invert.x < 0 ? this.width * this._invert.x : 0),
+        y - (this._invert.y < 0 ? this.height * this._invert.y : 0),
+        this.width * this._invert.x,
+        this.height * this._invert.y
       )
     }
     if (isDefined(this._text)) {

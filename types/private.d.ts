@@ -25,7 +25,7 @@ export interface ConfigOption {
   pixel?: boolean
   canvas?: HTMLCanvasElement
   load: { [x: string]: Promise<LoadEntityTypes> }
-  loadScene: Scene & { forcedLoadingOfEntities: Array<string> }
+  loadScene: Scene & { preload: Array<string> }
   scene: (g: Game) => SceneManager
   save?: boolean
   state?: { [x: string]: any }
@@ -63,13 +63,5 @@ export interface TextStyle {
   font?: {
     size?: number
     family?: string
-  }
-}
-export interface StateSaveInterface {
-  entityProperties: string[]
-  over: { [x: string]: any }
-  exclude: {
-    scenes: string[]
-    entities: string[]
   }
 }

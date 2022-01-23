@@ -1,54 +1,14 @@
-import { EventEmitter } from "../EventEmitter"
-import { Scene } from "."
-import BoundingBox from "./BoundingBox"
+import { Scene, Vector2 } from "."
+import Box from "./Box"
 
-export default class World extends EventEmitter {
-  public isActive: boolean
-  public bounds: BoundingBox
+export default class World extends Box {
   constructor(scene: Scene) {
-    super()
-    let x: number = null
-    let y: number = null
-    let width: number = null
-    let height: number = null
-    this.isActive = false
-    this.bounds = new BoundingBox(
-      this,
-      {
-        get() {
-          return x || scene.camera.x
-        },
-        set(value: number) {
-          x = value
-        },
-      },
-      {
-        get() {
-          return y || scene.camera.y
-        },
-        set(value: number) {
-          y = value
-        },
-      },
-      {
-        get() {
-          return width || scene.game.width
-        },
-        set(value: number) {
-          width = value
-        },
-      },
-      {
-        get() {
-          return height || scene.game.height
-        },
-        set(value: number) {
-          height = value
-        },
-      }
-    )
-  }
-  public activation(value: boolean) {
-    this.isActive = value
+    super(scene, [
+      new Vector2(0, 0),
+      new Vector2(scene.game.width, 0),
+      new Vector2(scene.game.width, scene.game.height),
+      new Vector2(0, scene.game.height),
+    ])
+    this.name = "World"
   }
 }

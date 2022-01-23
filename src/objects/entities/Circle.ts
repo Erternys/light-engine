@@ -22,7 +22,6 @@ export default class Circle extends Entity {
       .angle((Math.PI * this.angle) / 180)
       .origin(this.origin)
       .alpha(this.alpha)
-      .scale(this.scale)
       .fill(this.fillColor)
       .stroke(this.strokeColor)
       .lineWidth(this.lineWidth)
@@ -67,6 +66,34 @@ export default class Circle extends Entity {
         .fill("#0f0")
         .stroke("#0f0")
         .lineWidth(2)
+        .draw(context)
+    }
+
+    // draw the body of the entity
+    if (!this.fixed) this.drawer.camera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (this.body.isCircle()) {
+      const { x, y } = this.body.toSATBox().pos
+      this.drawer
+        .move(x, y)
+        .radius(this.body.radius)
+        .alpha(0.8)
+        .alpha(this.alpha)
+        .angle(this.angle)
+        .origin(this.origin)
+        .stroke("#f0f")
+        .fill("transparent")
+        .draw(context)
+    } else {
+      const { points } = this.body.toSATBox() as SAT.Polygon
+      this.drawer
+        .points(points.map((p) => Vector2.from(p).add(this.origin)))
+        .alpha(0.8)
+        .alpha(this.alpha)
+        .angle(this.angle)
+        .origin(this.origin)
+        .stroke("#f0f")
+        .fill("transparent")
         .draw(context)
     }
   }

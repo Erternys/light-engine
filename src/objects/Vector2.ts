@@ -6,6 +6,10 @@ export default class Vector2 {
   static Zero() {
     return new Vector2(0, 0)
   }
+  static from(v: VectorValue) {
+    if (typeof v === "object") return new Vector2(v.x, v.y)
+    return new Vector2(v, v)
+  }
   constructor(public x = 0, public y = 0) {}
   set(set: VectorValue) {
     if (typeof set === "object") {
@@ -28,27 +32,27 @@ export default class Vector2 {
     return new Vector2(this.x, this.y)
   }
   mul(mul: VectorValue) {
-    if (typeof mul === "object") {
+    if (typeof mul === "object")
       return new Vector2(this.x * mul.x, this.y * mul.y)
-    }
+
     return new Vector2(this.x * mul, this.y * mul)
   }
   div(div: VectorValue) {
-    if (typeof div === "object") {
+    if (typeof div === "object")
       return new Vector2(this.x / div.x, this.y / div.y)
-    }
+
     return new Vector2(this.x / div, this.y / div)
   }
   add(add: VectorValue) {
-    if (typeof add === "object") {
+    if (typeof add === "object")
       return new Vector2(this.x + add.x, this.y + add.y)
-    }
+
     return new Vector2(this.x + add, this.y + add)
   }
   sub(sub: VectorValue) {
-    if (typeof sub === "object") {
+    if (typeof sub === "object")
       return new Vector2(this.x - sub.x, this.y - sub.y)
-    }
+
     return new Vector2(this.x - sub, this.y - sub)
   }
   inverse() {

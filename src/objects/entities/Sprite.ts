@@ -25,9 +25,9 @@ export default class Sprite extends Image {
       .alpha(this.alpha)
       .angle(this.angle)
       .origin(this.origin)
-      .scale(this.scale)
       .image(image, this.sprite)
       .size(this.width, this.height)
+      .invert(this.invert)
       .draw(context)
   }
 }

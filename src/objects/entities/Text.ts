@@ -68,7 +68,6 @@ export default class Text extends Rectangle {
       .alpha(this.alpha)
       .angle(this.angle)
       .origin(this.origin)
-      .scale(this.scale)
       .fill(this.fillColor)
       .stroke(this.strokeColor)
       .draw(context)

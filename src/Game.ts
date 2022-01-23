@@ -84,9 +84,9 @@ export default class Game extends EventEmitter {
     let currentScene: Scene | null = null
 
     if (typeOf(config.loadScene) !== "undefined") {
-      const toForcedLoading = config.loadScene.forcedLoadingOfEntities || []
-      toLoad = toLoad.filter((v) => !toForcedLoading.includes(v))
-      toForcedLoading.forEach((name: string) => {
+      const toPreloading = config.loadScene.preload || []
+      toLoad = toLoad.filter((v) => !toPreloading.includes(v))
+      toPreloading.forEach((name: string) => {
         config.load[name]
           .then((media) => NodeManager.addMedia(name, media))
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))

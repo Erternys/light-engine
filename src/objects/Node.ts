@@ -1,3 +1,4 @@
+import { Vector2 } from "."
 import { EventEmitter } from "../EventEmitter"
 import Game from "../Game"
 import { AudioManager, NodeManager } from "../managers"
@@ -11,6 +12,8 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
   public hooks: any[] = []
   public hookIndex: number = 0
 
+  public origin = Vector2.Zero()
+  public angle = 0
   public inited = false
   public hidden = false
   public name = ""
@@ -37,5 +40,9 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
   setManager(manager: NodeManager) {
     this.manager = manager
     return this
+  }
+
+  toSATEntity(): SAT.Polygon | SAT.Circle {
+    return new SAT.Polygon()
   }
 }

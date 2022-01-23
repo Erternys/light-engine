@@ -1,7 +1,7 @@
 import { Game } from "../app"
 import { Node } from "."
 
-export default class Mouse extends Node {
+export default class Mouse extends Node<Game> {
   public click = false
   private currentClickPos: Map<
     "left" | "center" | "right",
@@ -9,7 +9,7 @@ export default class Mouse extends Node {
   > = new Map()
 
   constructor(game: Game) {
-    super(null)
+    super(game, 0, 0)
     const clickPos: ("left" | "center" | "right")[] = [
       "left",
       "center",

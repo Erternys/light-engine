@@ -62,4 +62,7 @@ export default class Gamepad extends EventEmitter {
       strongMagnitude,
     })
   }
+  clone() {
+    return new Gamepad()
+  }
 }
