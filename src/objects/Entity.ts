@@ -44,7 +44,7 @@ export default class Entity extends Node<Scene> {
 
   collide(...others: (Entity | Box)[]): Vector2 {
     let result = Vector2.Zero()
-    let collide = false
+    let bodyCollide = false
     others.forEach((other) => {
       const response = new SAT.Response()
       const thisBody = isDefined(this.body)
@@ -55,13 +55,7 @@ export default class Entity extends Node<Scene> {
           ? other.body.toSATBox()
           : other.toSATEntity()
 
-      if (otherBody instanceof SAT.Circle) {
-        if (thisBody instanceof SAT.Circle)
-          collide = SAT.testCircleCircle(thisBody, otherBody, response)
-        else collide = SAT.testPolygonCircle(thisBody, otherBody, response)
-      } else if (thisBody instanceof SAT.Circle)
-        collide = SAT.testCirclePolygon(thisBody, otherBody, response)
-      else collide = SAT.testPolygonPolygon(thisBody, otherBody, response)
+      const collide = this.SATcollide(thisBody, otherBody, response)
 
       if (other instanceof Box) {
         const points = this.body ? this.body.points : this.points
@@ -69,17 +63,33 @@ export default class Entity extends Node<Scene> {
         const ys = points.map((p) => p.y)
         const width = Math.max(...xs) - Math.min(...xs)
         const height = Math.max(...ys) - Math.min(...ys)
-        if (Math.abs(response.overlapV.x) <= width)
+        if (Math.abs(response.overlapV.x) <= width || !response.aInB)
           result.x =
             Math.abs(Math.abs(response.overlapV.x) - width) *
             Math.sign(response.overlapV.x)
-        if (Math.abs(response.overlapV.y) <= height)
+        if (Math.abs(response.overlapV.y) <= height || !response.aInB)
           result.y =
             Math.abs(Math.abs(response.overlapV.y) - height) *
             Math.sign(response.overlapV.y)
       } else result = result.add(response.overlapV)
+
+      if (!bodyCollide) bodyCollide = collide
     })
-    return new Collision(result.x, result.y, collide)
+    return new Collision(result.x, result.y, bodyCollide)
+  }
+
+  private SATcollide(
+    body1: SAT.Polygon | SAT.Circle,
+    body2: SAT.Polygon | SAT.Circle,
+    response: SAT.Response
+  ) {
+    if (body2 instanceof SAT.Circle) {
+      if (body1 instanceof SAT.Circle)
+        return SAT.testCircleCircle(body1, body2, response)
+      else return SAT.testPolygonCircle(body1, body2, response)
+    } else if (body1 instanceof SAT.Circle)
+      return SAT.testCirclePolygon(body1, body2, response)
+    else return SAT.testPolygonPolygon(body1, body2, response)
   }
 
   move(delta: number, ...forces: Vector2[]) {

@@ -11,6 +11,11 @@ export default class BoundingBox {
     public radius?: number
   ) {}
 
+  setPoints(points: Vector2[]) {
+    this.points = points
+    return this
+  }
+
   isCircle() {
     return isDefined(this.radius)
   }
@@ -18,9 +23,12 @@ export default class BoundingBox {
   toSATBox() {
     if (!isDefined(this.radius))
       return new SAT.Polygon(
-        this.parent.origin.toSATVector(),
+        new SAT.Vector(0, 0),
         this.points.map((p) => {
-          return p.rotate(this.parent.angle).toSATVector()
+          return p
+            .rotate(this.parent.angle)
+            .add(this.parent.origin)
+            .toSATVector()
         })
       )
     return new SAT.Circle(

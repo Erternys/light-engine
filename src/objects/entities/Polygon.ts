@@ -91,7 +91,7 @@ export default class Polygon extends Entity {
     } else {
       const { points } = this.body.toSATBox() as SAT.Polygon
       this.drawer
-        .points(points.map((p) => Vector2.from(p).add(this.origin)))
+        .points(points.map((p) => Vector2.from(p)))
         .alpha(0.8)
         .alpha(this.alpha)
         .angle(this.angle)

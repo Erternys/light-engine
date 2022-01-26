@@ -190,8 +190,8 @@ export default class Drawer extends EventEmitter {
       context.arc(0, 0, this.r, 0, 2 * Math.PI, true)
     }
     const [x, y] = [
-      this.x - (this._camera?.x ?? 0) - this._origin.x,
-      this.y - (this._camera?.y ?? 0) - this._origin.y,
+      this.x + (this._camera?.x ?? 0) - this._origin.x,
+      this.y + (this._camera?.y ?? 0) - this._origin.y,
     ]
     if (isDefined(this._image)) {
       context.translate(
