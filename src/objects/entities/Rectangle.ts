@@ -1,5 +1,6 @@
 import { Polygon } from "."
 import { Scene } from ".."
+import { isDefined } from "../../helper"
 import Vector2 from "../Vector2"
 
 export default class Rectangle extends Polygon {
@@ -28,6 +29,7 @@ export default class Rectangle extends Polygon {
   draw(context: CanvasRenderingContext2D) {
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .points(this.points)
       .alpha(this.alpha)

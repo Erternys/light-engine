@@ -10,18 +10,13 @@ import {
 } from "./helper"
 import { Scene } from "./objects"
 import FpsCtrl from "./FpsController"
-import {
-  NodeManager,
-  Manager,
-  SaveManager,
-  SceneManager,
-  AudioManager,
-} from "./managers"
+import { Manager, SaveManager, SceneManager, AudioManager } from "./managers"
 import { ConfigOption } from "../types/private"
 import Mouse from "./objects/Mouse"
 import Keyboard from "./objects/Keyboard"
 import Gamepad from "./objects/Gamepad"
 import Storage from "./objects/Storage"
+import ResourceManager from "./managers/ResourceManager"
 
 const memory = new Map<string, AudioManager>()
 
@@ -88,7 +83,7 @@ export default class Game extends EventEmitter {
       toLoad = toLoad.filter((v) => !toPreloading.includes(v))
       toPreloading.forEach((name: string) => {
         config.load[name]
-          .then((media) => NodeManager.addMedia(name, media))
+          .then((media) => ResourceManager.add(name, media))
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
       currentScene = this.sceneManager.add(config.loadScene).play(0)
@@ -101,7 +96,7 @@ export default class Game extends EventEmitter {
       const name = toLoad[i]
       config.load[name]
         .then((media) => {
-          NodeManager.addMedia(name, media)
+          ResourceManager.add(name, media)
           if (currentScene)
             currentScene.emit("progress", (i + 1) / toLoad.length)
         })
@@ -142,7 +137,7 @@ export default class Game extends EventEmitter {
   }
   getAudio(name: string): AudioManager | null {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
-    const audio = NodeManager.audios.get(name)
+    const audio = ResourceManager.audios.get(name)
     if (audio) {
       const manager = new AudioManager(this, audio, name)
       memory.set(name, manager)
@@ -185,25 +180,23 @@ export default class Game extends EventEmitter {
 
     customStorage.set("currentObject", this.currentScene)
     this.currentScene.hookIndex = 0
-    this.currentScene.beforeUpdate()
+    this.currentScene.beforeUpdate(this.delta)
     for (const node of nodes) {
       customStorage.set("currentObject", node)
       node.hookIndex = 0
       node.beforeRedraw(this.delta)
       node.redraw(this.delta)
-      node.emit("move:velocity", node)
     }
     for (const scene of this.playedWithOpacity) {
       const nodes = scene.nodes.getAll()
       customStorage.set("currentObject", scene)
       scene.hookIndex = 0
-      scene.beforeUpdate()
+      scene.beforeUpdate(this.delta)
       for (const node of nodes) {
         customStorage.set("currentObject", node)
         node.hookIndex = 0
         node.beforeRedraw(this.delta)
         node.redraw(this.delta)
-        node.emit("move:velocity", node)
       }
     }
     for (const manager of this.currentScene.managers.getAllType("Entity")) {
@@ -256,9 +249,8 @@ export default class Game extends EventEmitter {
       }
       customStorage.set("currentObject", scene)
       scene.update(this.delta)
-      scene.afterUpdate()
+      scene.afterUpdate(this.delta)
     }
-    this.context.globalAlpha = 1
     if (this.debug) {
       this.context.save()
       this.mouse.debug(this.context)
@@ -266,7 +258,8 @@ export default class Game extends EventEmitter {
     }
     customStorage.set("currentObject", this.currentScene)
     this.currentScene.update(this.delta)
-    this.currentScene.afterUpdate()
+    this.currentScene.afterUpdate(this.delta)
+    this.globals.emit("freeing")
   }
   private eventsAndErrors() {
     const gee = new GlobalEventEmitter()

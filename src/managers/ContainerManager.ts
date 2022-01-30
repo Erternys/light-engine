@@ -10,18 +10,18 @@ export default class ContainerManager extends Manager {
     this.scene = scene
     this.list = []
   }
-  public add(...nodes: Array<typeof Manager | Manager>) {
+  public add(...managers: Array<typeof Manager | Manager>) {
     this.list = [
       ...this.list,
-      ...nodes.map((entity) => {
+      ...managers.map((entity) => {
         if (!(entity instanceof Function)) return entity
         return new entity()
       }),
     ]
     return this
   }
-  public remove(...nodes: Array<Manager>) {
-    this.list = this.list.filter((e) => !nodes.includes(e))
+  public remove(...managers: Array<Manager>) {
+    this.list = this.list.filter((e) => !managers.includes(e))
     return this
   }
   public setManagers(...list: Array<typeof Manager | Manager>) {

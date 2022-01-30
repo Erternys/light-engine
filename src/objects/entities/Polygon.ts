@@ -3,6 +3,7 @@ import SAT from "sat"
 import Entity from "../Entity"
 import { Scene } from ".."
 import Vector2 from "../Vector2"
+import { isDefined } from "../../helper"
 
 export default class Polygon extends Entity {
   public get points(): Array<Vector2> {
@@ -22,6 +23,7 @@ export default class Polygon extends Entity {
   draw(context: CanvasRenderingContext2D) {
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .points(this.points)
       .alpha(this.alpha)
@@ -36,6 +38,7 @@ export default class Polygon extends Entity {
     // draw the origin of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .move(this.origin.x, this.origin.y)
       .radius(2)

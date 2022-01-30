@@ -1,5 +1,6 @@
 import { Scene } from ".."
 import { isDefined } from "../../helper"
+import ResourceManager from "../../managers/ResourceManager"
 import Image from "./Image"
 
 export default class Sprite extends Image {
@@ -14,12 +15,12 @@ export default class Sprite extends Image {
     }
   }
   draw(context: CanvasRenderingContext2D) {
-    const image = this.manager.medias.images.get(this.src)
+    const image = ResourceManager.images.get(this.src)
     if (!isDefined(image)) return
 
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .move(this.x, this.y)
       .alpha(this.alpha)
@@ -27,7 +28,7 @@ export default class Sprite extends Image {
       .origin(this.origin)
       .image(image, this.sprite)
       .size(this.width, this.height)
-      .invert(this.invert)
+      .invert(this.flip)
       .draw(context)
   }
 }

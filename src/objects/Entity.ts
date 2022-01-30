@@ -5,7 +5,7 @@ import { isDefined } from "../helper"
 import BoundingBox from "./BoundingBox"
 import { NodeManager } from "../managers"
 import Vector2 from "./Vector2"
-import Node from "./Node"
+import Node from "./nodes/Node"
 import Box from "./Box"
 import Collision from "./Collision"
 

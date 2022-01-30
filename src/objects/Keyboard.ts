@@ -34,21 +34,31 @@ export default class Keyboard extends EventEmitter {
       for (const x in keyMap) {
         if (keyMap[x].includes(key)) {
           this.pressed.add(x.toLowerCase())
+          this.emit("down", x)
           added = true
           break
         }
       }
-      if (!added) this.pressed.add(key.toLowerCase())
+      if (!added) {
+        this.pressed.add(key.toLowerCase())
+        this.emit("down", key)
+      }
     })
 
     this.globals.on("key:up", (key) => {
+      let removed = false
       for (const x in keyMap) {
         if (keyMap[x].includes(key)) {
           this.pressed.delete(x.toLowerCase())
+          this.emit("down", x)
+          removed = true
           break
         }
       }
-      this.pressed.delete(key.toLowerCase())
+      if (!removed) {
+        this.pressed.delete(key.toLowerCase())
+        this.emit("down", key)
+      }
     })
   }
   query(...keys: string[]) {

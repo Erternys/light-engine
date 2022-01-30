@@ -1,4 +1,4 @@
-export { default as Node } from "./Node"
+export { default as Node } from "./nodes/Node"
 export { default as AudioLoader } from "./AudioLoader"
 export { default as Scene } from "./Scene"
 export { default as Entity } from "./Entity"

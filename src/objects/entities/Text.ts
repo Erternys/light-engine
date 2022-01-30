@@ -1,6 +1,7 @@
 import { Scene } from ".."
 import Rectangle from "./Rectangle"
 import { TextStyle } from "../../../types/private"
+import { isDefined } from "../../helper"
 
 export default class Text extends Rectangle {
   public content: string
@@ -54,6 +55,7 @@ export default class Text extends Rectangle {
   draw(context: CanvasRenderingContext2D) {
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
 
     const { width, height } = this.drawer
       .text(this.content)

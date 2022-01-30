@@ -16,6 +16,7 @@ export default class Circle extends Entity {
   draw(context: CanvasRenderingContext2D) {
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .move(this.x, this.y)
       .radius(this.radius)
@@ -31,6 +32,7 @@ export default class Circle extends Entity {
     // draw the origin of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .move(this.origin.x, this.origin.y)
       .radius(2)
@@ -42,6 +44,7 @@ export default class Circle extends Entity {
     // draw the bounds of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .move(this.x, this.y)
       .radius(this.radius)
