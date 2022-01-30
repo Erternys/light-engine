@@ -1,7 +1,7 @@
-import { Scene } from ".."
 import Rectangle from "./Rectangle"
 import { TextStyle } from "../../../types/private"
 import { isDefined } from "../../helper"
+import Scene from "../Scene"
 
 export default class Text extends Rectangle {
   public content: string

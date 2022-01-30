@@ -1,6 +1,6 @@
 import Game from "../Game"
 import { Warning, numberSuffix, stringToPixelNum } from "../helper"
-import { Scene } from "../objects"
+import Scene from "../objects/Scene"
 import Manager from "./Manager"
 
 export default class SceneManager extends Manager {

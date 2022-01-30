@@ -1,15 +1,13 @@
 import { EventEmitter } from "../EventEmitter"
 import { SceneOption } from "../../types/private"
-import {
-  SceneManager,
-  NodeManager,
-  AudioManager,
-  ContainerManager,
-} from "../managers"
 import World from "./World"
 import { StateEnum } from "../helper"
 import Camera from "./entities/Camera"
 import Game from "../Game"
+import SceneManager from "../managers/SceneManager"
+import NodeManager from "../managers/NodeManager"
+import ContainerManager from "../managers/ContainerManager"
+import AudioManager from "../managers/AudioManager"
 
 export default class Scene extends EventEmitter {
   public name: string

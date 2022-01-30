@@ -1,6 +1,7 @@
 export { default as AudioManager } from "./AudioManager"
 export { default as ContainerManager } from "./ContainerManager"
-export { default as NodeManager } from "./NodeManager"
 export { default as Manager } from "./Manager"
+export { default as NodeManager } from "./NodeManager"
+export { default as ResourceManager } from "./ResourceManager"
 export { default as SaveManager } from "./SaveManager"
 export { default as SceneManager } from "./SceneManager"

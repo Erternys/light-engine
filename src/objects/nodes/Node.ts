@@ -1,10 +1,11 @@
-import { Vector2 } from ".."
 import { EventEmitter } from "../../EventEmitter"
 import Game from "../../Game"
-import { AudioManager, NodeManager } from "../../managers"
 import Drawer from "../Drawer"
 import GroupNode from "./GroupNode"
 import Scene from "../Scene"
+import NodeManager from "../../managers/NodeManager"
+import Vector2 from "../Vector2"
+import AudioManager from "../../managers/AudioManager"
 
 export default class Node<P extends Game | Scene> extends EventEmitter {
   public drawer: Drawer

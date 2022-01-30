@@ -1,8 +1,9 @@
 import SAT from "sat"
 
 import Entity from "../Entity"
-import { Scene, Vector2 } from ".."
 import { isDefined } from "../../helper"
+import Scene from "../Scene"
+import Vector2 from "../Vector2"
 
 export default class Circle extends Entity {
   public radius: number
@@ -61,6 +62,7 @@ export default class Circle extends Entity {
       if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
+      if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
       this.drawer
         .move(this.origin.x, this.origin.y)
         .points([Vector2.Zero(), this.velocity])
@@ -75,6 +77,7 @@ export default class Circle extends Entity {
     // draw the body of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     if (this.body.isCircle()) {
       const { x, y } = this.body.toSATBox().pos
       this.drawer
@@ -99,5 +102,10 @@ export default class Circle extends Entity {
         .fill("transparent")
         .draw(context)
     }
+  }
+
+  toSATEntity(): SAT.Circle {
+    const move = new SAT.Vector(this.group?.x ?? 0, this.group?.y ?? 0)
+    return new SAT.Circle(new SAT.Vector(this.x, this.y).add(move), this.radius)
   }
 }

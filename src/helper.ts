@@ -5,8 +5,6 @@ import {
   VibrationOptions,
 } from "../types/private"
 import { EventEmitter } from "./EventEmitter"
-import { Entity, Mouse } from "./objects"
-import { Circle } from "./objects/entities"
 import Storage from "./objects/Storage"
 import Vector2 from "./objects/Vector2"
 

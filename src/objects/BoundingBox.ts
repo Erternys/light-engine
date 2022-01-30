@@ -1,8 +1,9 @@
 import SAT from "sat"
 
-import { Entity, Vector2 } from "."
 import { isDefined } from "../helper"
 import Box from "./Box"
+import Entity from "./Entity"
+import Vector2 from "./Vector2"
 
 export default class BoundingBox {
   constructor(

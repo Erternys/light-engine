@@ -1,10 +1,10 @@
-import { Manager } from "."
 import { Warning } from "../helper"
-import { Node, Scene } from "../objects"
-import GroupNode from "../objects/nodes/GroupNode"
+import Node from "../objects/nodes/Node"
+import Scene from "../objects/Scene"
+import Manager from "./Manager"
 
 export default class NodeManager extends Manager {
-  public nodes: Node<Scene>[] = []
+  public nodes: Array<Node<Scene>> = []
   constructor(
     public scene: Scene,
     nodes: Array<typeof Node | Node<Scene>> = []
@@ -79,8 +79,7 @@ export default class NodeManager extends Manager {
   public getNode(name: string): Node<Scene> | null {
     for (const node of this.nodes) {
       if (node.name === name) return node
-
-      if (node instanceof GroupNode) {
+      if (node instanceof NodeManager) {
         const result = node.getNode(name)
         if (result) return result
       }
@@ -91,7 +90,7 @@ export default class NodeManager extends Manager {
   }
   public getNodes(name: string): Node<Scene>[] {
     const nodes = this.nodes.flatMap((node) => {
-      if (node instanceof GroupNode) {
+      if (node instanceof NodeManager) {
         return node.getNodes(name)
       }
       if (node.name === name) return node

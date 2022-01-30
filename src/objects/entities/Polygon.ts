@@ -1,9 +1,9 @@
 import SAT from "sat"
 
 import Entity from "../Entity"
-import { Scene } from ".."
 import Vector2 from "../Vector2"
 import { isDefined } from "../../helper"
+import Scene from "../Scene"
 
 export default class Polygon extends Entity {
   public get points(): Array<Vector2> {
@@ -50,6 +50,7 @@ export default class Polygon extends Entity {
     // draw the bounds of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
       .points(this.points)
       .alpha(0.8)
@@ -65,6 +66,7 @@ export default class Polygon extends Entity {
       if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
+      if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
       this.drawer
         .move(this.origin.x, this.origin.y)
         .points([Vector2.Zero(), this.velocity])
@@ -79,6 +81,7 @@ export default class Polygon extends Entity {
     // draw the body of the entity
     if (!this.fixed) this.drawer.camera(this.parent.camera)
     if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     if (this.body.isCircle()) {
       const { x, y } = this.body.toSATBox().pos
       this.drawer
@@ -107,7 +110,7 @@ export default class Polygon extends Entity {
 
   toSATEntity(): SAT.Polygon {
     return new SAT.Polygon(
-      new SAT.Vector(0, 0),
+      new SAT.Vector(this.group?.x ?? 0, this.group?.y ?? 0),
       this.points.map((v) => v.toSATVector())
     )
   }

@@ -1,4 +1,7 @@
-import { BoundingBox, Node, Scene, Vector2 } from "."
+import BoundingBox from "./BoundingBox"
+import Node from "./nodes/Node"
+import Scene from "./Scene"
+import Vector2 from "./Vector2"
 
 export default class Box extends Node<Scene> {
   public bounds: BoundingBox

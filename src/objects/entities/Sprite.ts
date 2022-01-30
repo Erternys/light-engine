@@ -1,6 +1,6 @@
-import { Scene } from ".."
 import { isDefined } from "../../helper"
 import ResourceManager from "../../managers/ResourceManager"
+import Scene from "../Scene"
 import Image from "./Image"
 
 export default class Sprite extends Image {

@@ -1,6 +1,7 @@
-import { Scene, Vector2 } from ".."
 import { isDefined } from "../../helper"
 import ResourceManager from "../../managers/ResourceManager"
+import Scene from "../Scene"
+import Vector2 from "../Vector2"
 import Rectangle from "./Rectangle"
 
 export default class Image extends Rectangle {

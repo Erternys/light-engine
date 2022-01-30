@@ -1,8 +1,8 @@
-import { Scale, Vector2 } from "."
 import { TextStyle } from "../../types/private"
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
-import { Camera } from "./entities"
+import Camera from "./entities/Camera"
+import Vector2 from "./Vector2"
 
 type RGBA =
   | [number, number, number, number]

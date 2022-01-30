@@ -1,6 +1,7 @@
 import { arrayDiff, customStorage, isDefined } from "../helper"
-import type { Manager } from "../managers"
-import type { Entity, Scene } from "../objects"
+import Manager from "../managers/Manager"
+import Entity from "../objects/Entity"
+import Scene from "../objects/Scene"
 
 type effectHook = {
   cleanerFn: Function | undefined

@@ -1,5 +1,5 @@
 import { Warning } from "../helper"
-import { Scene } from "../objects"
+import Scene from "../objects/Scene"
 import Manager from "./Manager"
 
 export default class ContainerManager extends Manager {

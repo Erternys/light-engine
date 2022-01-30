@@ -1,5 +1,5 @@
-import { Manager } from "."
-import { AudioLoader } from "../objects"
+import AudioLoader from "../objects/AudioLoader"
+import Manager from "./Manager"
 
 export default class ResourceManager extends Manager {
   public static images: Map<any, HTMLImageElement> = new Map()

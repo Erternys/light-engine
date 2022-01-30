@@ -8,15 +8,18 @@ import {
   Warning,
   customStorage,
 } from "./helper"
-import { Scene } from "./objects"
 import FpsCtrl from "./FpsController"
-import { Manager, SaveManager, SceneManager, AudioManager } from "./managers"
 import { ConfigOption } from "../types/private"
 import Mouse from "./objects/Mouse"
 import Keyboard from "./objects/Keyboard"
 import Gamepad from "./objects/Gamepad"
 import Storage from "./objects/Storage"
 import ResourceManager from "./managers/ResourceManager"
+import AudioManager from "./managers/AudioManager"
+import SceneManager from "./managers/SceneManager"
+import Scene from "./objects/Scene"
+import SaveManager from "./managers/SaveManager"
+import Manager from "./managers/Manager"
 
 const memory = new Map<string, AudioManager>()
 

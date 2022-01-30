@@ -1,9 +1,21 @@
 import { EventEmitter } from "./EventEmitter"
 
-import * as Managers from "./managers"
-import * as Objects from "./objects"
-import { default as Game } from "./Game"
 import * as Loaders from "./loaders"
 import * as Hooks from "./hooks"
+import { default as Game } from "./Game"
+import * as Objects from "./objects"
+import * as Managers from "./managers"
 
-export { Managers, Objects, Game, Loaders, EventEmitter, Hooks }
+import * as Nodes from "./objects/nodes"
+import * as Entities from "./objects/entities"
+
+export {
+  Managers,
+  Objects,
+  Game,
+  Loaders,
+  EventEmitter,
+  Hooks,
+  Nodes,
+  Entities,
+}

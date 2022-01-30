@@ -1,5 +1,6 @@
-import { Scene, Vector2 } from "."
 import Box from "./Box"
+import Scene from "./Scene"
+import Vector2 from "./Vector2"
 
 export default class World extends Box {
   constructor(scene: Scene) {

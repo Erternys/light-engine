@@ -1,5 +1,6 @@
-import { Node, Scene } from ".."
+import Scene from "../Scene"
 import GroupNode from "./GroupNode"
+import Node from "./Node"
 
 export default class XSortNodes extends GroupNode {
   constructor(scene: Scene, nodes: Array<typeof Node | Node<Scene>> = []) {

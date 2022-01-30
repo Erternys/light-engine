@@ -1,13 +1,13 @@
 import SAT from "sat"
 
-import { Scene } from "."
 import { isDefined } from "../helper"
 import BoundingBox from "./BoundingBox"
-import { NodeManager } from "../managers"
 import Vector2 from "./Vector2"
 import Node from "./nodes/Node"
 import Box from "./Box"
 import Collision from "./Collision"
+import Scene from "./Scene"
+import NodeManager from "../managers/NodeManager"
 
 export default class Entity extends Node<Scene> {
   public box: Box | null = null

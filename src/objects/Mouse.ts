@@ -1,7 +1,8 @@
 import SAT from "sat"
 
 import { Game } from "../app"
-import { Node, Vector2 } from "."
+import Node from "./nodes/Node"
+import Vector2 from "./Vector2"
 
 export default class Mouse extends Node<Game> {
   public click = false

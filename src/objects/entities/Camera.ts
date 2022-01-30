@@ -1,5 +1,5 @@
-import type Scene from "../Scene"
-import { Node } from ".."
+import Node from "../nodes/Node"
+import Scene from "../Scene"
 
 export default class Camera extends Node<Scene> {
   public target: Node<any> | null = null
