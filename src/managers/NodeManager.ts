@@ -19,7 +19,7 @@ export default class NodeManager extends Manager {
         }
         return node
       }
-      const current = new node(this.parent)
+      const current = new node(this.scene)
       current.setManager(this)
       if (!current.inited) {
         current.init()
@@ -41,7 +41,7 @@ export default class NodeManager extends Manager {
           }
           return node
         }
-        const current = new node(this.parent)
+        const current = new node(this.scene)
         current.setManager(this)
         if (!current.inited) {
           current.init()
@@ -66,7 +66,7 @@ export default class NodeManager extends Manager {
         }
         return node
       }
-      const current = new node(this.parent)
+      const current = new node(this.scene)
       current.setManager(this)
       if (!current.inited) {
         current.init()

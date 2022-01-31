@@ -22,9 +22,6 @@ export default class Mouse extends Node<Game> {
           game.currentScene.camera.x
         )
       },
-      set: (v: number) => {
-        this.pos.x = v
-      },
     })
     Object.defineProperty(this, "y", {
       get: () => {
@@ -32,9 +29,6 @@ export default class Mouse extends Node<Game> {
           this.pos.rotate(-game.currentScene.camera.angle).y -
           game.currentScene.camera.y
         )
-      },
-      set: (v: number) => {
-        this.pos.y = v
       },
     })
 

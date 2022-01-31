@@ -155,22 +155,6 @@ export class GamepadInteractor extends EventEmitter {
 }
 
 export const customStorage = new Storage()
-export function numberSuffix(number: number): string {
-  const partsNumber = number.toString().split("")
-  if (partsNumber[partsNumber.length - 1] === "1") return number + "st"
-  if (partsNumber[partsNumber.length - 1] === "2") return number + "nd"
-  if (partsNumber[partsNumber.length - 1] === "3") return number + "rd"
-  return number + "th"
-}
-export function stringToPixelNum(value: string | number, nu: number): number {
-  if (typeof value === "number") return value
-  if (value.trim().endsWith("px")) return Number(value.replace(/px$/, ""))
-  if (value.trim().endsWith("%")) {
-    let p = Number(value.replace(/%$/, "")) / 100
-    return nu * p
-  }
-  return 0
-}
 export function isDefined(v: any) {
   return v !== undefined && v !== null
 }

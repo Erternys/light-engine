@@ -1,5 +1,5 @@
 import Game from "../Game"
-import { Warning, numberSuffix, stringToPixelNum } from "../helper"
+import { Warning } from "../helper"
 import Scene from "../objects/Scene"
 import Manager from "./Manager"
 
@@ -44,12 +44,12 @@ export default class SceneManager extends Manager {
   }
   public playWithOpacity(
     name: string | number | Scene,
-    opacity: string | number
+    opacity: number
   ): Scene {
     const scene = typeof name === "object" ? name : this.getScene(name)
     scene.played = true
     scene.isPlayed = "opacity"
-    scene.alpha = stringToPixelNum(opacity, 1)
+    scene.alpha = opacity
     if (!this.game.playedWithOpacity.includes(scene))
       this.game.playedWithOpacity = [...this.game.playedWithOpacity, scene]
     return scene
@@ -64,7 +64,7 @@ export default class SceneManager extends Manager {
       if (scene) return scene
       this.globals.emit(
         "w" + Warning.Scene,
-        `the ${name}${numberSuffix(name)} scene has not been created`
+        `the ${name} scene has not been created`
       )
     } else if (typeof name === "object") return name
     return this.list[0]

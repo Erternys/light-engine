@@ -37,11 +37,6 @@ export default class Entity extends Node<Scene> {
     return this
   }
 
-  setName(name: string) {
-    this.name = name
-    return this
-  }
-
   collide(...others: (Entity | Box)[]): Vector2 {
     let result = Vector2.Zero()
     let bodyCollide = false

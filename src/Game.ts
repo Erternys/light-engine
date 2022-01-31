@@ -31,7 +31,6 @@ export default class Game extends EventEmitter {
   public fps: number
   public loop: FpsCtrl
   public context: CanvasRenderingContext2D
-  public audioContext: AudioContext
   public sceneManager: SceneManager
   public currentScene: Scene
   public playedWithOpacity: Scene[]
@@ -50,12 +49,8 @@ export default class Game extends EventEmitter {
     private win: Window = window
   ) {
     super()
-
-    Manager.createType("Entity")
-
     customStorage.set("development", config.dev ?? false)
 
-    this.audioContext = new AudioContext()
     this.playedWithOpacity = []
     this.state = new Storage()
     this.debug = config.debug
@@ -205,7 +200,7 @@ export default class Game extends EventEmitter {
     for (const manager of this.currentScene.managers.getAllType("Entity")) {
       customStorage.set("currentObject", manager)
       manager.hookIndex = 0
-      manager.update()
+      manager.update(this.delta)
     }
 
     this.context.clearRect(0, 0, this.width, this.height)
