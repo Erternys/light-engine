@@ -1,23 +1,16 @@
-import { AudioState } from "../../types/private"
-import { Game } from "../app"
 import AudioLoader from "../objects/AudioLoader"
 import Manager from "./Manager"
 
 class CloneAudioManager extends Manager {
   public isPlaying = false
-  public isPaused = true
+  public isPaused = false
   public isDeleted = false
 
   protected context: AudioContext
 
-  private state: AudioState = {}
   private source: AudioBufferSourceNode
   private gain: GainNode
-  constructor(
-    public game: Game,
-    protected audio: AudioLoader,
-    public key?: string
-  ) {
+  constructor(protected audio: AudioLoader, public key?: string) {
     super()
     this.context = new AudioContext()
     this.changePageVisible = this.changePageVisible.bind(this)
@@ -25,7 +18,6 @@ class CloneAudioManager extends Manager {
     this.gain.connect(this.context.destination)
     this.source = this.context.createBufferSource()
 
-    this.state.started = false
     this.context.decodeAudioData(this.audio.buffer).then((buffer) => {
       this.source.buffer = buffer
       this.source.loop = this.loop
@@ -39,36 +31,54 @@ class CloneAudioManager extends Manager {
     this.globals.on("page:visibilitychange", this.changePageVisible)
   }
   public get loop(): boolean {
-    return this.state.loop
+    return this.source.loop
   }
   public set loop(value: boolean) {
     this.source.loop = value
-    this.state.loop = value
+  }
+  public get loopStart(): number {
+    return this.source.loopStart
+  }
+  public set loopStart(value: number) {
+    this.source.loopStart = value
+  }
+  public get loopEnd(): number {
+    return this.source.loopEnd
+  }
+  public set loopEnd(value: number) {
+    this.source.loopEnd = value
   }
   public get volume(): number {
-    return this.state.volume
+    return this.gain.gain.value
   }
   public set volume(value: number) {
     this.gain.gain.value = value
-    this.state.volume = value
   }
   public get speed(): number {
-    return this.state.speed
+    return this.source.playbackRate.value
   }
   public set speed(value: number) {
     this.source.playbackRate.value = value
-    this.state.speed = value
+  }
+  public get duration(): number {
+    return this.source.buffer.duration
+  }
+  public get currentTime(): number {
+    return this.context.currentTime
+  }
+  public set currentTime(value: number) {
+    this.source.stop()
+    this.source.start(this.context.currentTime, value)
   }
   public play() {
-    if (this.isPaused) {
-      if (!this.state.started) {
-        this.source.start()
-        this.state.started = true
-      } else this.context.resume()
-      this.emit("played")
-      this.isPlaying = true
-      this.isPaused = false
+    if (!this.isPaused && !this.isPlaying) {
+      this.source.start()
+    } else if (this.isPaused) {
+      this.context.resume()
     }
+    this.emit("played")
+    this.isPlaying = true
+    this.isPaused = false
   }
   public pause() {
     if (this.isPlaying) {
@@ -89,7 +99,7 @@ class CloneAudioManager extends Manager {
     this.source.disconnect()
     this.context.close()
     this.globals.off("page:visibilitychange", this.changePageVisible)
-    this.audio = null
+    this.source = null
     this.isDeleted = true
     this.emit("destroy")
   }
@@ -103,7 +113,7 @@ class CloneAudioManager extends Manager {
 export default class AudioManager extends CloneAudioManager {
   public clones: CloneAudioManager[] = []
   public createClone() {
-    const clone = new CloneAudioManager(this.game, this.audio, this.key)
+    const clone = new CloneAudioManager(this.audio, this.key)
     this.clones.push(clone)
     clone.on("destroy", () => {
       this.clones = this.clones.filter((c) => c !== clone)
