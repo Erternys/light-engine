@@ -10,4 +10,8 @@ export default class State extends EventEmitter {
   public enter() {}
   public update(delta: number) {}
   public exit() {}
+
+  public allowTransition(name: string, state: State) {
+    return true
+  }
 }
