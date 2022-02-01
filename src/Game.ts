@@ -137,7 +137,7 @@ export default class Game extends EventEmitter {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
     const audio = ResourceManager.audios.get(name)
     if (audio) {
-      const manager = new AudioManager(this, audio, name)
+      const manager = new AudioManager(audio, name)
       memory.set(name, manager)
       manager.on("destroy", () => {
         memory.delete(name)
