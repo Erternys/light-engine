@@ -6,11 +6,17 @@ import Scene from "../Scene"
 import NodeManager from "../../managers/NodeManager"
 import Vector2 from "../Vector2"
 import AudioManager from "../../managers/AudioManager"
+import Mouse from "../Mouse"
+import Keyboard from "../Keyboard"
+import Gamepad from "../Gamepad"
 
 export default class Node<P extends Game | Scene> extends EventEmitter {
   public drawer: Drawer
   public manager: NodeManager
   public group: GroupNode
+  public mouse: Mouse
+  public gamepad: Gamepad
+  public keyboard: Keyboard
 
   public hooks: any[] = []
   public hookIndex: number = 0
@@ -25,6 +31,10 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
     super()
     this.drawer = new Drawer()
     this.handleFree = this.handleFree.bind(this)
+
+    this.mouse = parent.mouse
+    this.gamepad = parent.gamepad
+    this.keyboard = parent.keyboard
   }
 
   init() {}

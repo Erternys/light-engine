@@ -2,6 +2,7 @@ import SAT from "sat"
 
 import { isDefined } from "../helper"
 import BoundingBox from "./BoundingBox"
+import Gravity from "./Gravity"
 import Vector2 from "./Vector2"
 import Node from "./nodes/Node"
 import Box from "./Box"
@@ -23,9 +24,11 @@ export default class Entity extends Node<Scene> {
   }
 
   public velocity = Vector2.Zero()
-  public gravity = Vector2.Zero()
+  public gravity = Gravity.Zero()
+  public force = Vector2.Zero()
 
   public body: BoundingBox = null
+
   constructor(public scene: Scene, x: number, y: number) {
     super(scene, x, y)
     this.origin.set(this)
@@ -66,7 +69,10 @@ export default class Entity extends Node<Scene> {
           result.y =
             Math.abs(Math.abs(response.overlapV.y) - height) *
             Math.sign(response.overlapV.y)
-      } else result = result.add(response.overlapV)
+      } else {
+        if (response.overlapV.x > result.x) result.x = response.overlapV.x
+        if (response.overlapV.y > result.y) result.y = response.overlapV.y
+      }
 
       if (!bodyCollide) bodyCollide = collide
     })
@@ -88,21 +94,25 @@ export default class Entity extends Node<Scene> {
   }
 
   move(delta: number, ...forces: Vector2[]) {
-    const force = [...forces, this.velocity, this.gravity]
+    if (this.fixed) return
+
+    const g = this.gravity.g(delta)
+
+    this.force = [...forces, this.velocity, g]
       .reduce((acc, f) => acc.add(f))
       .mul(delta)
 
-    this.origin = this.origin.add(force)
-    this.x += force.x
-    this.y += force.y
+    this.origin = this.origin.add(this.force)
+    this.x += this.force.x
+    this.y += this.force.y
 
     if (isDefined(this.box)) {
       const boxVector = this.collide(this.box)
       this.origin = this.origin.add(boxVector)
       this.x += boxVector.x
       this.y += boxVector.y
+      this.gravity.reset()
     }
-
     return this
   }
 }

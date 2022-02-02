@@ -4,11 +4,11 @@ type VectorValue = number | { x: number; y: number }
 
 export default class Vector2 {
   static Zero() {
-    return new Vector2(0, 0)
+    return new this(0, 0)
   }
   static from(v: VectorValue) {
-    if (typeof v === "object") return new Vector2(v.x, v.y)
-    return new Vector2(v, v)
+    if (typeof v === "object") return new this(v.x, v.y)
+    return new this(v, v)
   }
   constructor(public x = 0, public y = 0) {}
   set(set: VectorValue) {
@@ -55,6 +55,11 @@ export default class Vector2 {
 
     return new Vector2(this.x - sub, this.y - sub)
   }
+  pow(pow: VectorValue) {
+    if (typeof pow === "object")
+      return new Vector2(Math.pow(this.x, pow.x), Math.pow(this.y, pow.y))
+    return new Vector2(this.x ** pow, this.y ** pow)
+  }
   inverse() {
     return this.mul(-1)
   }
@@ -80,7 +85,10 @@ export default class Vector2 {
     return new Vector2(this.x + (v.x - this.x) * s, this.y + (v.y - this.y) * s)
   }
   normalize() {
-    return this.div(this.length())
+    const vec = this.div(this.length())
+    if (Number.isNaN(vec.x)) vec.x = 0
+    if (Number.isNaN(vec.y)) vec.y = 0
+    return vec
   }
   truncate(max: number) {
     if (this.length() > max) {

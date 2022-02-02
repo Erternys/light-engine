@@ -188,6 +188,9 @@ export function arrayDiff(arr1: any[], arr2: any[]) {
   }
   return false
 }
+export function clamp(num: number, min: number, max: number) {
+  return Math.min(Math.max(num, min), max)
+}
 export enum StateEnum {
   Next,
   Prev,

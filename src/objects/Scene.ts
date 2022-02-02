@@ -8,6 +8,9 @@ import SceneManager from "../managers/SceneManager"
 import NodeManager from "../managers/NodeManager"
 import ContainerManager from "../managers/ContainerManager"
 import AudioManager from "../managers/AudioManager"
+import Mouse from "./Mouse"
+import Keyboard from "./Keyboard"
+import Gamepad from "./Gamepad"
 
 export default class Scene extends EventEmitter {
   public name: string
@@ -26,6 +29,10 @@ export default class Scene extends EventEmitter {
   public hookIndex: number = 0
   public inited = false
 
+  public mouse: Mouse
+  public gamepad: Gamepad
+  public keyboard: Keyboard
+
   constructor(public game: Game, option: SceneOption) {
     super()
     this.managers = new ContainerManager(this)
@@ -37,6 +44,12 @@ export default class Scene extends EventEmitter {
     this.played = false
     this.alpha = 1
     this.nodes.add(this.camera)
+
+    console.log(game.mouse)
+
+    this.mouse = game.mouse
+    this.gamepad = game.gamepad
+    this.keyboard = game.keyboard
   }
   init() {}
   beforeUpdate(delta: number) {}

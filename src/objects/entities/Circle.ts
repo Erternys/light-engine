@@ -58,14 +58,14 @@ export default class Circle extends Entity {
       .draw(context)
 
     // draw the velocity vector of the entity
-    if (this.velocity.length() > 0) {
+    if (this.force.length() > 0) {
       if (!this.fixed) this.drawer.camera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
         this.drawer.alpha(this.parent.alpha)
       if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
       this.drawer
         .move(this.origin.x, this.origin.y)
-        .points([Vector2.Zero(), this.velocity])
+        .points([Vector2.Zero(), this.force.div(delta)])
         .alpha(0.8)
         .alpha(this.alpha)
         .fill("#0f0")

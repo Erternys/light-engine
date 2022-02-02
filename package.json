@@ -21,20 +21,20 @@
     "for-publish": "npm run build & npm publish"
   },
   "devDependencies": {
+    "@types/localforage": "^0.0.34",
     "@types/sat": "^0.0.31",
-    "builtin-modules": "^3.1.0",
-    "prettier": "^2.0.5",
-    "rollup": "^2.10.9",
+    "builtin-modules": "^3.2.0",
+    "prettier": "^2.5.1",
+    "rollup": "^2.67.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^6.0.1",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript": "^1.0.1",
-    "tslib": "^2.0.0",
-    "typescript": "^3.9.3"
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.5"
   },
   "dependencies": {
-    "@types/localforage": "^0.0.34",
     "localforage": "^1.9.0",
     "sat": "^0.9.0"
   }

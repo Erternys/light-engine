@@ -72,6 +72,11 @@ export default class Game extends EventEmitter {
         : "crisp-edges"
 
     this.context = this.canvas.getContext("2d")
+
+    this.mouse = new Mouse(this)
+    this.keyboard = new Keyboard()
+    this.gamepad = new Gamepad()
+
     this.sceneManager = config.scene(this)
     let toLoad = Object.keys(config.load || {})
     let currentScene: Scene | null = null
@@ -102,9 +107,6 @@ export default class Game extends EventEmitter {
     }
     if (!currentScene) this.sceneManager.play(0)
     this.loop = new FpsCtrl(240, this.update)
-    this.mouse = new Mouse(this)
-    this.keyboard = new Keyboard()
-    this.gamepad = new Gamepad()
     this.save = new SaveManager()
     this.eventsAndErrors()
   }
@@ -261,9 +263,9 @@ export default class Game extends EventEmitter {
   }
   private eventsAndErrors() {
     const gee = new GlobalEventEmitter()
-    this.doc.addEventListener("visibilitychange", () =>
+    this.doc.addEventListener("visibilitychange", () => {
       gee.emit("page:visibilitychange")
-    )
+    })
     this.win.addEventListener("load", () => {
       this.loop.start()
     })
