@@ -70,8 +70,10 @@ export default class Entity extends Node<Scene> {
             Math.abs(Math.abs(response.overlapV.y) - height) *
             Math.sign(response.overlapV.y)
       } else {
-        if (response.overlapV.x > result.x) result.x = response.overlapV.x
-        if (response.overlapV.y > result.y) result.y = response.overlapV.y
+        if (Math.abs(response.overlapV.x) > Math.abs(result.x))
+          result.x = response.overlapV.x
+        if (Math.abs(response.overlapV.y) > Math.abs(result.y))
+          result.y = response.overlapV.y
       }
 
       if (!bodyCollide) bodyCollide = collide
@@ -111,7 +113,8 @@ export default class Entity extends Node<Scene> {
       this.origin = this.origin.add(boxVector)
       this.x += boxVector.x
       this.y += boxVector.y
-      this.gravity.reset()
+
+      if (!boxVector.isZero()) this.gravity.reset()
     }
     return this
   }

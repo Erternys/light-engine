@@ -2,31 +2,67 @@
   "name": "light-engine",
   "version": "1.10.4",
   "description": "Light Engine is a game engine by Grozzlo",
-  "main": "lib/light.js",
+  "main": "light.js",
   "types": "types/index.d.ts",
   "jsnext:main": "lib/light.esm.js",
   "module": "lib/light.esm.js",
   "files": [
     "lib/**/*.js",
-    "src/**/*.js",
-    "types/**/*.d.ts",
+    "**/*.d.ts",
     "README.md"
   ],
+  "exports": {
+    ".": {
+      "require": "./light.js",
+      "import": "./light.esm.js"
+    },
+    "./core": {
+      "require": "./core/index.js",
+      "import": "./core/index.esm.js"
+    },
+    "./hooks": {
+      "require": "./hooks/index.js",
+      "import": "./hooks/index.esm.js"
+    },
+    "./managers": {
+      "require": "./managers/index.js",
+      "import": "./managers/index.esm.js"
+    },
+    "./gameobjects": {
+      "require": "./gameobjects/index.js",
+      "import": "./gameobjects/index.esm.js"
+    },
+    "./entities": {
+      "require": "./entities/index.js",
+      "import": "./entities/index.esm.js"
+    },
+    "./states": {
+      "require": "./states/index.js",
+      "import": "./states/index.esm.js"
+    },
+    "./nodes": {
+      "require": "./nodes/index.js",
+      "import": "./nodes/index.esm.js"
+    }
+  },
   "repository": "https://github.com/Grozzlo/light-engine",
   "author": "ashikuri",
   "license": "CC0-1.0",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -w -c rollup.dev.config.js",
-    "for-publish": "npm run build & npm publish"
+    "build": "cross-env BUILD=true rollup -c",
+    "dev": "rollup -w -c",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "@types/localforage": "^0.0.34",
+    "@types/node": "^17.0.14",
     "@types/sat": "^0.0.31",
     "builtin-modules": "^3.2.0",
+    "cross-env": "^7.0.3",
     "prettier": "^2.5.1",
     "rollup": "^2.67.0",
     "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^7.0.2",

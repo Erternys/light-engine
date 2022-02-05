@@ -43,14 +43,10 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
   draw(context: CanvasRenderingContext2D) {}
   debug(context: CanvasRenderingContext2D, delta: number) {}
   afterRedraw(delta: number) {}
-  destroy() {
-    this.free()
-  }
+  destroy() {}
   free() {
+    this.destroy()
     this.manager.remove(this as Node<Scene>)
-  }
-  queue_destroy() {
-    this.queue_free()
   }
   queue_free() {
     this.globals.once("freeing", this.handleFree)

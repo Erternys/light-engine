@@ -45,8 +45,6 @@ export default class Scene extends EventEmitter {
     this.alpha = 1
     this.nodes.add(this.camera)
 
-    console.log(game.mouse)
-
     this.mouse = game.mouse
     this.gamepad = game.gamepad
     this.keyboard = game.keyboard

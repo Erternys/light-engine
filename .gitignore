@@ -2,3 +2,13 @@
 node_modules
 dist
 lib
+
+light.js
+light.esm.js
+core
+hooks
+managers
+gameobjects
+entities
+states
+nodes

@@ -4,7 +4,6 @@ import {
   StateEnum,
   isDefined,
   isChromium,
-  typeOf,
   Warning,
   customStorage,
 } from "./helper"
@@ -19,7 +18,6 @@ import AudioManager from "./managers/AudioManager"
 import SceneManager from "./managers/SceneManager"
 import Scene from "./objects/Scene"
 import SaveManager from "./managers/SaveManager"
-import Manager from "./managers/Manager"
 
 const memory = new Map<string, AudioManager>()
 
@@ -43,8 +41,8 @@ export default class Game extends EventEmitter {
   private oldTimeStamp = 0
   constructor(
     config: ConfigOption,
-    public width: number = 800,
-    public height: number = 600,
+    width = 800,
+    height = 600,
     private doc: Document = document,
     private win: Window = window
   ) {
@@ -63,8 +61,8 @@ export default class Game extends EventEmitter {
         ? config.canvas
         : this.doc.body.appendChild(this.doc.createElement("canvas"))
 
-    this.canvas.width = this.width
-    this.canvas.height = this.height
+    this.width = width
+    this.height = height
 
     if (config.pixel)
       this.canvas.style.imageRendering = isChromium()
@@ -81,7 +79,7 @@ export default class Game extends EventEmitter {
     let toLoad = Object.keys(config.load || {})
     let currentScene: Scene | null = null
 
-    if (typeOf(config.loadScene) !== "undefined") {
+    if (isDefined(config.loadScene)) {
       const toPreloading = config.loadScene.preload || []
       toLoad = toLoad.filter((v) => !toPreloading.includes(v))
       toPreloading.forEach((name: string) => {
@@ -106,10 +104,24 @@ export default class Game extends EventEmitter {
         .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
     }
     if (!currentScene) this.sceneManager.play(0)
-    this.loop = new FpsCtrl(240, this.update)
+    this.loop = new FpsCtrl(60, this.update)
     this.save = new SaveManager()
     this.eventsAndErrors()
   }
+
+  get width(): number {
+    return this.canvas.width
+  }
+  set width(value: number) {
+    this.canvas.width = value
+  }
+  get height(): number {
+    return this.canvas.height
+  }
+  set height(value: number) {
+    this.canvas.height = value
+  }
+
   changeScene(name: Scene | string | number) {
     const scene = this.sceneManager.getScene(name)
     if (
@@ -168,13 +180,13 @@ export default class Game extends EventEmitter {
   private update(o: { time: number; frame: number }) {
     this.initScene(this.currentScene)
 
-    this.delta = (o.time - this.oldTimeStamp) / 1000
+    this.delta = Math.abs(o.time - this.oldTimeStamp) / 1000
+
     this.oldTimeStamp = o.time
     this.fps = Math.round(1 / this.delta)
 
     this.mouse.update()
     this.globals.emit("updated")
-    this.globals.emit("window:resize")
 
     const nodes = this.currentScene.nodes.getAll()
 
@@ -263,7 +275,8 @@ export default class Game extends EventEmitter {
   }
   private eventsAndErrors() {
     const gee = new GlobalEventEmitter()
-    this.doc.addEventListener("visibilitychange", () => {
+    this.doc.addEventListener("visibilitychange", (e) => {
+      this.oldTimeStamp = e.timeStamp
       gee.emit("page:visibilitychange")
     })
     this.win.addEventListener("load", () => {
