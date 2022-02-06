@@ -1,10 +1,13 @@
 import NodeManager from "../../managers/NodeManager"
 import Scene from "../Scene"
+import Mask from "../Mask"
 import Node from "./Node"
 
 export default class GroupNode extends NodeManager {
   public x: number
   public y: number
+
+  public mask: Mask = null
 
   constructor(scene: Scene, nodes: Array<typeof Node | Node<Scene>> = []) {
     super(scene, nodes)

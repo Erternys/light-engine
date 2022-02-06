@@ -20,25 +20,25 @@ type Crop = {
 }
 
 export default class Drawer extends EventEmitter {
-  protected _points: Vector2[] = []
-  protected _fill: RGBA = "#000"
-  protected _stroke: RGBA = "transparent"
-  protected _origin: Vector2 = Vector2.Zero()
-  protected _flip: Flip = new Flip()
-  protected _angle = 0
-  protected _alpha = 1
-  protected _lineWidth = 1
-  protected _image: HTMLImageElement | null = null
-  protected _crop: Crop = { x: 0, y: 0, width: -1, height: -1 }
+  protected _points: Vector2[]
+  protected _fill: RGBA
+  protected _stroke: RGBA
+  protected _origin: Vector2
+  protected _flip: Flip
+  protected _angle: number
+  protected _alpha: number
+  protected _lineWidth: number
+  protected _image: HTMLImageElement | null
+  protected _crop: Crop
   protected _style: TextStyle
-  protected _text: string = ""
-  protected _camera: Camera | null = null
-  protected r: number | null = null
-  protected x = 0
-  protected y = 0
-  protected width = 0
-  protected height = 0
-  protected _mask: Mask
+  protected _text: string
+  protected _camera: Camera | null
+  protected r: number | null
+  protected x: number
+  protected y: number
+  protected width: number
+  protected height: number
+  protected _masks: Mask[]
 
   constructor() {
     super()
@@ -49,8 +49,13 @@ export default class Drawer extends EventEmitter {
     if (isDefined(camera)) this._camera = camera
     return this
   }
-  mask(mask: Mask) {
-    if (isDefined(mask)) this._mask = mask
+  masks(...masks: Mask[]) {
+    this._masks = masks
+    return this
+  }
+  position(x: number, y: number) {
+    this.x = x
+    this.y = y
     return this
   }
   move(x: number, y: number) {
@@ -146,7 +151,7 @@ export default class Drawer extends EventEmitter {
     }
     this._text = null
     this._camera = null
-    this._mask = null
+    this._masks = null
     this.width = 0
     this.height = 0
     return this
@@ -168,13 +173,16 @@ export default class Drawer extends EventEmitter {
   }
   draw(context: CanvasRenderingContext2D) {
     context.save()
-    if (isDefined(this._mask) && this._mask._fixed) {
-      this._mask.fill("#f00").draw(context)
-    }
+
+    this._masks.map((mask) => {
+      if (isDefined(mask) && mask._fixed) mask.draw(context)
+    })
+
     this.transforms(context)
-    if (isDefined(this._mask) && !this._mask._fixed) {
-      this._mask.fill("#f00").draw(context)
-    }
+
+    this._masks.map((mask) => {
+      if (isDefined(mask) && mask._fixed) mask.draw(context)
+    })
 
     this.drawContent(context)
 

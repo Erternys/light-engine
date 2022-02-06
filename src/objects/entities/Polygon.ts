@@ -32,7 +32,7 @@ export default class Polygon extends Entity {
       .fill(this.fillColor)
       .stroke(this.strokeColor)
       .lineWidth(this.lineWidth)
-      .mask(this.mask)
+      .masks(this.group?.mask, this.mask)
       .draw(context)
   }
   debug(context: CanvasRenderingContext2D, delta: number): void {

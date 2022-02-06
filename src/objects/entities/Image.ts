@@ -30,7 +30,7 @@ export default class Image extends Rectangle {
       .size(this.width, this.height)
       .flip(this.flip)
       .image(image)
-      .mask(this.mask)
+      .masks(this.group?.mask, this.mask)
       .draw(context)
   }
 }

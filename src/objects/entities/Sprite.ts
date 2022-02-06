@@ -31,7 +31,7 @@ export default class Sprite extends Image {
       .image(image, this.frame)
       .size(this.width, this.height)
       .flip(this.flip)
-      .mask(this.mask)
+      .masks(this.group?.mask, this.mask)
       .draw(context)
   }
 
