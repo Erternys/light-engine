@@ -1,11 +1,11 @@
 import { isDefined } from "../../helper"
 import ResourceManager from "../../managers/ResourceManager"
+import Flip from "../Flip"
 import Scene from "../Scene"
-import Vector2 from "../Vector2"
 import Rectangle from "./Rectangle"
 
 export default class Image extends Rectangle {
-  public flip: Vector2 = new Vector2(1, 1)
+  public flip: Flip = new Flip()
   constructor(scene: Scene, x: number, y: number, src: string) {
     super(scene, x, y, null, null)
     const image = ResourceManager.images.get(src)
@@ -28,7 +28,7 @@ export default class Image extends Rectangle {
       .angle(this.angle)
       .origin(this.origin)
       .size(this.width, this.height)
-      .invert(this.flip)
+      .flip(this.flip)
       .image(image)
       .draw(context)
   }

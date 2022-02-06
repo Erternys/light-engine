@@ -30,7 +30,7 @@ export default class Sprite extends Image {
       .origin(this.origin)
       .image(image, this.frame)
       .size(this.width, this.height)
-      .invert(this.flip)
+      .flip(this.flip)
       .draw(context)
   }
 

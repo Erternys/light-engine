@@ -2,6 +2,7 @@ import { TextStyle } from "../../types/private"
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 import Camera from "./entities/Camera"
+import Flip from "./Flip"
 import Vector2 from "./Vector2"
 
 type RGBA =
@@ -22,7 +23,7 @@ export default class Drawer extends EventEmitter {
   private _fill: RGBA = "#000"
   private _stroke: RGBA = "transparent"
   private _origin: Vector2 = Vector2.Zero()
-  private _invert: Vector2 = new Vector2(1, 1)
+  private _flip: Flip = new Flip()
   private _angle = 0
   private _alpha = 1
   private _lineWidth = 1
@@ -83,8 +84,8 @@ export default class Drawer extends EventEmitter {
     if (isDefined(width)) this._lineWidth = width
     return this
   }
-  invert(invert: Vector2) {
-    if (isDefined(invert)) this._invert = invert
+  flip(flip: Flip) {
+    if (isDefined(flip)) this._flip = flip
 
     return this
   }
@@ -113,7 +114,7 @@ export default class Drawer extends EventEmitter {
     this.x = 0
     this.y = 0
     this._origin = Vector2.Zero()
-    this._invert = new Vector2(1, 1)
+    this._flip = new Flip()
     this._angle = 0
     this._alpha = 1
     this._fill = "#fff"
@@ -199,16 +200,20 @@ export default class Drawer extends EventEmitter {
         this._origin.y - this.y - (this._camera?.y ?? 0)
       )
       context.rotate(-this._angle - (this._camera?.angle ?? 0))
+      context.scale(
+        -2 * Number(this._flip.width) + 1,
+        -2 * Number(this._flip.height) + 1
+      )
       context.drawImage(
         this._image,
         this._crop.x,
         this._crop.y,
         this._crop.width,
         this._crop.height,
-        x - (this._invert.x < 0 ? this.width * this._invert.x : 0),
-        y - (this._invert.y < 0 ? this.height * this._invert.y : 0),
-        this.width * this._invert.x,
-        this.height * this._invert.y
+        x - Number(this._flip.width) * this.width,
+        y - Number(this._flip.height) * this.height,
+        this.width,
+        this.height
       )
     }
     if (isDefined(this._text)) {
