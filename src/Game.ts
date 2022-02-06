@@ -277,10 +277,11 @@ export default class Game extends EventEmitter {
     const gee = new GlobalEventEmitter()
     this.doc.addEventListener("visibilitychange", (e) => {
       this.oldTimeStamp = e.timeStamp
+      this.loop.oldTimeStamp = e.timeStamp
       gee.emit("page:visibilitychange")
     })
     this.win.addEventListener("load", () => {
-      this.loop.start()
+      this.loop.play()
     })
     this.win.addEventListener("keydown", (e) => {
       gee.emit("key:down", e.key)

@@ -6,7 +6,7 @@ documentation coming soon...
 ## TODO
 
 - Mask
-- Animation
+- ~~Animation~~
 - Network
 - Math
 - Tilemap

@@ -4,15 +4,17 @@ export default class FpsCtrl {
   public isPlaying = false
   private delay: number
   private time: number
-  private frame = -1
   private tref: number
-  private callback: (o: { time: number; frame: number }) => void
+  private frame = -1
+
+  public delta: number
+  public fps: number
+  public oldTimeStamp = 0
   constructor(
     fps: number,
-    callback: (o: { time: number; frame: number }) => void
+    protected callback: (o: { time: number; frame: number }) => void
   ) {
     this.loop = this.loop.bind(this)
-    this.callback = callback
     this.delay = 1000 / fps
   }
   private loop(timestamp: number) {
@@ -20,6 +22,9 @@ export default class FpsCtrl {
     var seg = Math.floor((timestamp - this.time) / this.delay)
     if (seg > this.frame) {
       this.frame = seg
+      this.delta = Math.abs(timestamp - this.oldTimeStamp) / 1000
+      this.oldTimeStamp = timestamp
+      this.fps = Math.round(1 / this.delta)
       this.callback({
         time: timestamp,
         frame: this.frame,
@@ -27,14 +32,14 @@ export default class FpsCtrl {
     }
     this.tref = requestAnimationFrame(this.loop)
   }
-  frameRate(newfps: number) {
+  frameRate(newfps?: number) {
     const fps = 1000 * this.delay
     if (!arguments.length) return fps
     this.delay = 1000 / newfps
     this.frame = -1
     this.time = null
   }
-  start() {
+  play() {
     if (!this.isPlaying) {
       this.isPlaying = true
       this.tref = requestAnimationFrame(this.loop)
