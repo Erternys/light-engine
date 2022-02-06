@@ -72,6 +72,7 @@ export default class Text extends Rectangle {
       .origin(this.origin)
       .fill(this.fillColor)
       .stroke(this.strokeColor)
+      .mask(this.mask)
       .draw(context)
   }
   setText(content: string) {

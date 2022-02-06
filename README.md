@@ -5,7 +5,7 @@ documentation coming soon...
 
 ## TODO
 
-- Mask
+- ~~Mask~~
 - ~~Animation~~
 - Network
 - Math

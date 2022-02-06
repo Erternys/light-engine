@@ -9,6 +9,7 @@ import AudioManager from "../../managers/AudioManager"
 import Mouse from "../Mouse"
 import Keyboard from "../Keyboard"
 import Gamepad from "../Gamepad"
+import Mask from "../Mask"
 
 export default class Node<P extends Game | Scene> extends EventEmitter {
   public drawer: Drawer
@@ -17,6 +18,7 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
   public mouse: Mouse
   public gamepad: Gamepad
   public keyboard: Keyboard
+  public mask: Mask = null
 
   public hooks: any[] = []
   public hookIndex: number = 0
@@ -63,6 +65,11 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
 
   setGroup(group: GroupNode) {
     this.group = group
+    return this
+  }
+
+  setMask(mask: Mask) {
+    this.mask = mask
     return this
   }
 

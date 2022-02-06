@@ -3,6 +3,7 @@ import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 import Camera from "./entities/Camera"
 import Flip from "./Flip"
+import type Mask from "./Mask"
 import Vector2 from "./Vector2"
 
 type RGBA =
@@ -19,24 +20,25 @@ type Crop = {
 }
 
 export default class Drawer extends EventEmitter {
-  private _points: Vector2[] = []
-  private _fill: RGBA = "#000"
-  private _stroke: RGBA = "transparent"
-  private _origin: Vector2 = Vector2.Zero()
-  private _flip: Flip = new Flip()
-  private _angle = 0
-  private _alpha = 1
-  private _lineWidth = 1
-  private _image: HTMLImageElement | null = null
-  private _crop: Crop = { x: 0, y: 0, width: -1, height: -1 }
-  private _style: TextStyle
-  private _text: string = ""
-  private _camera: Camera | null = null
-  private r: number | null = null
-  private x = 0
-  private y = 0
-  private width = 0
-  private height = 0
+  protected _points: Vector2[] = []
+  protected _fill: RGBA = "#000"
+  protected _stroke: RGBA = "transparent"
+  protected _origin: Vector2 = Vector2.Zero()
+  protected _flip: Flip = new Flip()
+  protected _angle = 0
+  protected _alpha = 1
+  protected _lineWidth = 1
+  protected _image: HTMLImageElement | null = null
+  protected _crop: Crop = { x: 0, y: 0, width: -1, height: -1 }
+  protected _style: TextStyle
+  protected _text: string = ""
+  protected _camera: Camera | null = null
+  protected r: number | null = null
+  protected x = 0
+  protected y = 0
+  protected width = 0
+  protected height = 0
+  protected _mask: Mask
 
   constructor() {
     super()
@@ -45,6 +47,10 @@ export default class Drawer extends EventEmitter {
 
   camera(camera: Camera) {
     if (isDefined(camera)) this._camera = camera
+    return this
+  }
+  mask(mask: Mask) {
+    if (isDefined(mask)) this._mask = mask
     return this
   }
   move(x: number, y: number) {
@@ -140,6 +146,7 @@ export default class Drawer extends EventEmitter {
     }
     this._text = null
     this._camera = null
+    this._mask = null
     this.width = 0
     this.height = 0
     return this
@@ -161,11 +168,33 @@ export default class Drawer extends EventEmitter {
   }
   draw(context: CanvasRenderingContext2D) {
     context.save()
+    if (isDefined(this._mask) && this._mask._fixed) {
+      this._mask.fill("#f00").draw(context)
+    }
+    this.transforms(context)
+    if (isDefined(this._mask) && !this._mask._fixed) {
+      this._mask.fill("#f00").draw(context)
+    }
+
+    this.drawContent(context)
+
+    context.fill()
+    context.stroke()
+    context.resetTransform()
+    context.restore()
+    this.reset()
+
+    return this
+  }
+
+  protected transforms(context: CanvasRenderingContext2D) {
     context.rotate((Math.PI * -(this._camera?.angle ?? 0)) / 180)
     context.translate(
       this.x + (this._camera?.x ?? 0),
       this.y + (this._camera?.y ?? 0)
     )
+  }
+  protected drawContent(context: CanvasRenderingContext2D) {
     context.lineWidth = this._lineWidth
     context.globalAlpha = this._alpha
 
@@ -237,12 +266,5 @@ export default class Drawer extends EventEmitter {
     }
 
     context.closePath()
-    context.fill()
-    context.stroke()
-    context.resetTransform()
-    context.restore()
-    this.reset()
-
-    return this
   }
 }

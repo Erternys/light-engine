@@ -38,6 +38,7 @@ export default class Rectangle extends Polygon {
       .fill(this.fillColor)
       .stroke(this.strokeColor)
       .lineWidth(this.lineWidth)
+      .mask(this.mask)
       .draw(context)
   }
 }
