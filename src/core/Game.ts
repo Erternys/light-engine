@@ -1,4 +1,4 @@
-import { EventEmitter, GlobalEventEmitter } from "./EventEmitter"
+import { EventEmitter, GlobalEventEmitter } from "../EventEmitter"
 import {
   Errors,
   StateEnum,
@@ -6,70 +6,61 @@ import {
   isChromium,
   Warning,
   customStorage,
-} from "./helper"
-import FpsCtrl from "./FpsController"
-import { ConfigOption } from "../types/private"
-import Mouse from "./objects/Mouse"
-import Keyboard from "./objects/Keyboard"
-import Gamepad from "./objects/Gamepad"
-import Storage from "./objects/Storage"
-import ResourceManager from "./managers/ResourceManager"
-import AudioManager from "./managers/AudioManager"
-import SceneManager from "./managers/SceneManager"
-import Scene from "./objects/Scene"
-import SaveManager from "./managers/SaveManager"
+} from "../helper"
+import FpsCtrl from "../FpsController"
+import { ConfigOption } from "../../types/private"
+import Mouse from "../objects/Mouse"
+import Keyboard from "../objects/Keyboard"
+import Gamepad from "../objects/Gamepad"
+import Storage from "../objects/Storage"
+import ResourceManager from "../managers/ResourceManager"
+import AudioManager from "../managers/AudioManager"
+import SceneManager from "../managers/SceneManager"
+import Scene from "../objects/Scene"
+import SaveManager from "../managers/SaveManager"
+import Canvas from "./Canvas"
 
 const memory = new Map<string, AudioManager>()
 
 export default class Game extends EventEmitter {
-  public canvas: HTMLCanvasElement
-  public state: Storage<any>
+  public canvas: Canvas
+  public context: CanvasRenderingContext2D
+  public playedWithOpacity: Scene[]
+  public currentScene: Scene
+  public keyboard: Keyboard
+  public gamepad: Gamepad
+  public mouse: Mouse
+  public loop: FpsCtrl
+
+  public sceneManager: SceneManager
+  public save: SaveManager
+
   public debug: boolean
   public pixel: boolean
   public fps: number
-  public loop: FpsCtrl
-  public context: CanvasRenderingContext2D
-  public sceneManager: SceneManager
-  public currentScene: Scene
-  public playedWithOpacity: Scene[]
-  public mouse: Mouse
-  public keyboard: Keyboard
-  public gamepad: Gamepad
-  public save: SaveManager
 
   public delta = 0
   private oldTimeStamp = 0
-  constructor(
-    config: ConfigOption,
-    width = 800,
-    height = 600,
-    private doc: Document = document,
-    private win: Window = window
-  ) {
+  constructor(config: ConfigOption, width = 800, height = 600) {
     super()
     customStorage.set("development", config.dev ?? false)
 
     this.playedWithOpacity = []
-    this.state = new Storage()
     this.debug = config.debug
     this.pixel = config.pixel
     this.update = this.update.bind(this)
     this.initScene = this.initScene.bind(this)
-    this.canvas =
-      typeof config.canvas === "object" &&
-      config.canvas instanceof HTMLCanvasElement
-        ? config.canvas
-        : this.doc.body.appendChild(this.doc.createElement("canvas"))
+    this.canvas = config.canvas
 
     this.width = width
     this.height = height
 
-    if (config.pixel)
-      this.canvas.style.imageRendering = isChromium()
-        ? "pixelated"
-        : "crisp-edges"
+    // if (config.pixel)
+    //   this.canvas.style.imageRendering = isChromium()
+    //     ? "pixelated"
+    //     : "crisp-edges"
 
-    this.context = this.canvas.getContext("2d")
+    this.context = this.canvas.get2DContext()
 
     this.mouse = new Mouse(this)
     this.keyboard = new Keyboard()
@@ -274,36 +265,34 @@ export default class Game extends EventEmitter {
     this.globals.emit("freeing")
   }
   private eventsAndErrors() {
-    const gee = new GlobalEventEmitter()
-    this.doc.addEventListener("visibilitychange", (e) => {
-      this.oldTimeStamp = e.timeStamp
+    this.globals.on("visibilitychange", (e) => {
       this.loop.oldTimeStamp = e.timeStamp
-      gee.emit("page:visibilitychange")
+      this.oldTimeStamp = e.timeStamp
     })
-    this.win.addEventListener("load", () => {
+    window.addEventListener("load", () => {
       this.loop.play()
     })
-    this.win.addEventListener("keydown", (e) => {
-      gee.emit("key:down", e.key)
+    window.addEventListener("keydown", (e) => {
+      this.globals.emit("key:down", e.key)
     })
-    this.win.addEventListener("keyup", (e) => {
-      gee.emit("key:up", e.key)
+    window.addEventListener("keyup", (e) => {
+      this.globals.emit("key:up", e.key)
     })
-    this.win.addEventListener("gamepadconnected", (e) => {
-      gee.emit("gamepad:add", e)
+    window.addEventListener("gamepadconnected", (e) => {
+      this.globals.emit("gamepad:add", e)
     })
-    this.win.addEventListener("gamepaddisconnected", (e) => {
-      gee.emit("gamepad:remove", e)
+    window.addEventListener("gamepaddisconnected", (e) => {
+      this.globals.emit("gamepad:remove", e)
     })
     for (const id in Errors) {
       if (/\d/.test(id))
-        gee.on(`e${id}`, (reason: string) =>
+        this.globals.on(`e${id}`, (reason: string) =>
           console.error(`[${Errors[id]}]: ${reason}`)
         )
     }
     for (const id in Warning) {
       if (/\d/.test(id))
-        gee.on(`w${id}`, (reason: string) =>
+        this.globals.on(`w${id}`, (reason: string) =>
           console.warn(`[${Warning[id]}]: ${reason}`)
         )
     }

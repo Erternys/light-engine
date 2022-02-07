@@ -1,5 +1,5 @@
-import { Drawer } from "."
 import { isDefined } from "../helper"
+import Drawer from "./Drawer"
 
 export default class Mask extends Drawer {
   public _fixed = false

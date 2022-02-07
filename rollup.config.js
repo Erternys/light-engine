@@ -52,7 +52,12 @@ const config = [generate("LightEngine", "./src/app.ts", "./light.js")]
 if ("BUILD" in process.env) {
   plugins.push(terser())
   config.push(
-    generate("Core", "./src/Game.ts", "./core/index.js", "./types/core.d.ts"),
+    generate(
+      "Core",
+      "./src/core/index.ts",
+      "./core/index.js",
+      "./types/core.d.ts"
+    ),
     generate(
       "Hooks",
       "./src/hooks/index.ts",
@@ -79,7 +84,7 @@ if ("BUILD" in process.env) {
     ),
     generate(
       "States",
-      "./src/objects/state/index.ts",
+      "./src/states/index.ts",
       "./states/index.js",
       "./types/states.d.ts"
     ),

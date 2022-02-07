@@ -1,6 +1,6 @@
-import Game from "../Game"
 import { Warning } from "../helper"
 import Scene from "../objects/Scene"
+import Game from "../core/Game"
 import Manager from "./Manager"
 
 export default class SceneManager extends Manager {

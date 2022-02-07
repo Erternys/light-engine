@@ -1,7 +1,8 @@
 import { Entity, Scene } from "../src/objects"
-import { Game } from "../src/app"
 import { SceneManager } from "../src/managers"
 import AudioLoader from "../src/objects/AudioLoader"
+import Canvas from "../src/core/Canvas"
+import Game from "../src/core/Game"
 
 export type LoadEntityTypes = HTMLImageElement | AudioLoader | Text
 export interface SceneOption {
@@ -23,7 +24,7 @@ export interface ConfigOption {
   debug?: boolean
   dev?: boolean
   pixel?: boolean
-  canvas?: HTMLCanvasElement
+  canvas?: Canvas
   load: { [x: string]: Promise<LoadEntityTypes> }
   loadScene: Scene & { preload: Array<string> }
   scene: (g: Game) => SceneManager

@@ -1,15 +1,15 @@
 import { EventEmitter } from "../../EventEmitter"
-import Game from "../../Game"
-import Drawer from "../Drawer"
 import GroupNode from "./GroupNode"
-import Scene from "../Scene"
-import NodeManager from "../../managers/NodeManager"
-import Vector2 from "../Vector2"
-import AudioManager from "../../managers/AudioManager"
-import Mouse from "../Mouse"
 import Keyboard from "../Keyboard"
 import Gamepad from "../Gamepad"
+import Vector2 from "../Vector2"
+import Drawer from "../Drawer"
+import Scene from "../Scene"
+import Mouse from "../Mouse"
 import Mask from "../Mask"
+import NodeManager from "../../managers/NodeManager"
+import AudioManager from "../../managers/AudioManager"
+import Game from "../../core/Game"
 
 export default class Node<P extends Game | Scene> extends EventEmitter {
   public drawer: Drawer
