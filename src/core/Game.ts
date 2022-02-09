@@ -8,22 +8,31 @@ import {
   customStorage,
 } from "../helper"
 import FpsCtrl from "../FpsController"
-import { ConfigOption } from "../../types/private"
 import Mouse from "../objects/Mouse"
 import Keyboard from "../objects/Keyboard"
 import Gamepad from "../objects/Gamepad"
-import Storage from "../objects/Storage"
 import ResourceManager from "../managers/ResourceManager"
 import AudioManager from "../managers/AudioManager"
 import SceneManager from "../managers/SceneManager"
 import Scene from "../objects/Scene"
 import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
+import AudioLoader from "../objects/AudioLoader"
+
+type LoadEntityTypes = HTMLImageElement | AudioLoader | Text
+interface ConfigOption<C extends Canvas> {
+  dev?: boolean
+  debug?: boolean
+  pixel?: boolean
+  canvas?: C
+  load: { [x: string]: Promise<LoadEntityTypes> }
+  loadScene: Scene & { preload: Array<string> }
+  scene: (g: Game<C>) => SceneManager
+}
 
 const memory = new Map<string, AudioManager>()
-
-export default class Game extends EventEmitter {
-  public canvas: Canvas
+export default class Game<C extends Canvas = Canvas> extends EventEmitter {
+  public canvas: C
   public context: CanvasRenderingContext2D
   public playedWithOpacity: Scene[]
   public currentScene: Scene
@@ -41,7 +50,7 @@ export default class Game extends EventEmitter {
 
   public delta = 0
   private oldTimeStamp = 0
-  constructor(config: ConfigOption, width = 800, height = 600) {
+  constructor(config: ConfigOption<C>, width = 800, height = 600) {
     super()
     customStorage.set("development", config.dev ?? false)
 

@@ -1,6 +1,16 @@
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 
+type CursorCanvas =
+  | "default"
+  | "none"
+  | "pointer"
+  | "wait"
+  | "crosshair"
+  | "text"
+  | "grab"
+  | "grabbing"
+
 export default class Canvas extends EventEmitter {
   private element: HTMLCanvasElement | null = null
 
@@ -13,11 +23,32 @@ export default class Canvas extends EventEmitter {
           document.createElement("canvas")
         )
 
+      this.cursor = "default"
       document.addEventListener("visibilitychange", (e) => {
         this.globals.emit("page:visibilitychange", {
           timeStamp: e.timeStamp,
           visible: document.visibilityState == "visible",
         })
+      })
+
+      this.element.addEventListener("mousedown", (e) => {
+        this.emit("mouse:down", e)
+      })
+      this.element.addEventListener("mousemove", (e) => {
+        this.emit("mouse:move", e)
+      })
+      this.element.addEventListener("mouseup", (e) => {
+        this.emit(`mouse:up`, e)
+      })
+
+      this.element.addEventListener("touchstart", (e) => {
+        this.emit("touchstart", this.element, e)
+      })
+      this.element.addEventListener("touchmove", (e) => {
+        this.emit("mouse:move", this.element, e)
+      })
+      this.element.addEventListener("touchend", (e) => {
+        this.emit("touchend", this.element, e)
       })
     }
   }
@@ -33,6 +64,12 @@ export default class Canvas extends EventEmitter {
   }
   set height(value: number) {
     this.element.height = value
+  }
+  get cursor(): CursorCanvas {
+    return (this.element.style?.cursor as CursorCanvas) ?? "default"
+  }
+  set cursor(value: CursorCanvas) {
+    this.element.style.cursor = value
   }
 
   get2DContext() {

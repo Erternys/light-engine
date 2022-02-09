@@ -1,6 +1,6 @@
 import SAT from "sat"
 
-import { Game } from "../app"
+import Game from "../core/Game"
 import Node from "./nodes/Node"
 import Vector2 from "./Vector2"
 
@@ -37,39 +37,41 @@ export default class Mouse extends Node<Game> {
       "center",
       "right",
     ]
-    game.canvas.addEventListener("mousedown", (e) => {
+    game.canvas.on("mouse:down", (e) => {
       this.click = true
       this.currentClickPos.set(clickPos[e.button], e)
       this.globals.emit(`mouse:down-${clickPos[e.button]}`, e)
     })
-    game.canvas.addEventListener("mousemove", (e) => {
+    game.canvas.on("mouse:move", (e) => {
       this.pos.set({
         x: e.offsetX,
         y: e.offsetY,
       })
       this.globals.emit("mouse:move", e)
     })
-    game.canvas.addEventListener("mouseup", (e) => {
+    game.canvas.on("mouse:up", (e) => {
       this.click = false
       this.currentClickPos.delete(clickPos[e.button])
       this.globals.emit(`mouse:up-${clickPos[e.button]}`, e)
     })
 
-    game.canvas.addEventListener("touchstart", (e) => {
-      const rect = game.canvas.getBoundingClientRect()
+    game.canvas.on(
+      "touch:start",
+      (canvas: HTMLCanvasElement, e: TouchEvent) => {
+        const rect = canvas.getBoundingClientRect()
 
-      this.pos.set({
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
-      })
+        this.pos.set({
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top,
+        })
 
-      this.click = true
-      this.currentClickPos.set("left", e)
-      this.globals.emit("mouse:down-left", e)
-    })
-    game.canvas.addEventListener("touchmove", (e) => {
-      const rect = game.canvas.getBoundingClientRect()
-
+        this.click = true
+        this.currentClickPos.set("left", e)
+        this.globals.emit("mouse:down-left", e)
+      }
+    )
+    game.canvas.on("touch:move", (canvas: HTMLCanvasElement, e: TouchEvent) => {
+      const rect = canvas.getBoundingClientRect()
       this.pos.set({
         x: e.touches[0].clientX - rect.left,
         y: e.touches[0].clientY - rect.top,
@@ -77,12 +79,20 @@ export default class Mouse extends Node<Game> {
 
       this.globals.emit("mouse:move", e)
     })
-    game.canvas.addEventListener("touchend", (e) => {
+    game.canvas.on("touch:end", (_: any, e: TouchEvent) => {
       this.click = false
       this.currentClickPos.delete("left")
       this.globals.emit("mouse:up-left", e)
     })
   }
+
+  get cursor() {
+    return this.parent.canvas.cursor
+  }
+  set cursor(value) {
+    this.parent.canvas.cursor = value
+  }
+
   update() {
     this.currentClickPos.forEach((e, n) => {
       this.globals.emit(`mouse:down-${n}`, e)
