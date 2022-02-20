@@ -3,9 +3,10 @@ node_modules
 dist
 lib
 
-light.js
-light.esm.js
+*.js
+animations
 core
+loaders
 hooks
 managers
 gameobjects
@@ -14,3 +15,4 @@ states
 nodes
 
 !src/**/*
+!types/**/*

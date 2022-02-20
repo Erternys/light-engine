@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import { Scene } from "../objects"
+import { Scene } from "../gameobjects"
 
 export default class Manager extends EventEmitter {
   public type: symbol = Symbol(null)

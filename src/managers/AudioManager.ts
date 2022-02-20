@@ -1,4 +1,4 @@
-import AudioLoader from "../objects/AudioLoader"
+import AudioLoader from "../gameobjects/AudioLoader"
 import Manager from "./Manager"
 
 class CloneAudioManager extends Manager {

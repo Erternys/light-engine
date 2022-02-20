@@ -1,5 +1,5 @@
 import { Warning } from "../helper"
-import Scene from "../objects/Scene"
+import Scene from "../gameobjects/Scene"
 import Game from "../core/Game"
 import Manager from "./Manager"
 

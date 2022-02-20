@@ -1,6 +1,6 @@
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
-import Storage from "../objects/Storage"
+import Storage from "../gameobjects/Storage"
 import State from "./State"
 
 export default class StateMachine<V = unknown> extends EventEmitter {

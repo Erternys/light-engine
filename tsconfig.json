@@ -2,18 +2,17 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES6",
-    "module": "commonjs",
+    "module": "ES6",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
-    "sourceMap": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "outDir": "./lib",
+    "outDir": "./",
     "rootDir": "./src",
     "lib": ["ESNext", "dom"],
     "noEmitOnError": true
   },
-  "include": ["src/**/*"]
-  // "exclude": [ "node_modules" ]
+  "include": ["src/**/*", "types/**/*"],
+  "exclude": ["node_modules"]
 }

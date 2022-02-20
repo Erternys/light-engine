@@ -1,8 +1,8 @@
 import { customStorage } from "../helper"
 import Manager from "../managers/Manager"
-import Entity from "../objects/Entity"
-import Scene from "../objects/Scene"
-import Timer from "../objects/Timer"
+import Entity from "../gameobjects/Entity"
+import Scene from "../gameobjects/Scene"
+import Timer from "../gameobjects/Timer"
 import useMemo from "./useMemo"
 
 type timerHook = {

@@ -1,6 +1,6 @@
 import { EventEmitter } from "../EventEmitter"
-import Node from "../objects/nodes/Node"
-import Scene from "../objects/Scene"
+import Node from "../nodes/Node"
+import Scene from "../gameobjects/Scene"
 
 export default class State extends EventEmitter {
   constructor(public name: string, public node: Node<Scene>) {

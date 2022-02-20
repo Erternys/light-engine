@@ -1,23 +1,16 @@
-import { EventEmitter, GlobalEventEmitter } from "../EventEmitter"
-import {
-  Errors,
-  StateEnum,
-  isDefined,
-  isChromium,
-  Warning,
-  customStorage,
-} from "../helper"
+import { EventEmitter } from "../EventEmitter"
+import { Errors, StateEnum, isDefined, Warning, customStorage } from "../helper"
 import FpsCtrl from "../FpsController"
-import Mouse from "../objects/Mouse"
-import Keyboard from "../objects/Keyboard"
-import Gamepad from "../objects/Gamepad"
+import Mouse from "../gameobjects/Mouse"
+import Keyboard from "../gameobjects/Keyboard"
+import Gamepad from "../gameobjects/Gamepad"
 import ResourceManager from "../managers/ResourceManager"
 import AudioManager from "../managers/AudioManager"
 import SceneManager from "../managers/SceneManager"
-import Scene from "../objects/Scene"
+import Scene from "../gameobjects/Scene"
 import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
-import AudioLoader from "../objects/AudioLoader"
+import AudioLoader from "../gameobjects/AudioLoader"
 
 type LoadEntityTypes = HTMLImageElement | AudioLoader | Text
 interface ConfigOption<C extends Canvas> {
@@ -56,7 +49,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
 
     this.playedWithOpacity = []
     this.debug = config.debug
-    this.pixel = config.pixel
+    this.pixel = config.pixel ?? false
     this.update = this.update.bind(this)
     this.initScene = this.initScene.bind(this)
     this.canvas = config.canvas
@@ -64,10 +57,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.width = width
     this.height = height
 
-    // if (config.pixel)
-    //   this.canvas.style.imageRendering = isChromium()
-    //     ? "pixelated"
-    //     : "crisp-edges"
+    this.canvas.pixel = this.pixel
 
     this.context = this.canvas.get2DContext()
 

@@ -1,7 +1,7 @@
 import localforage from "localforage"
 
 import Manager from "./Manager"
-import Store from "../objects/Store"
+import Store from "../gameobjects/Store"
 
 class TempSaveManager extends Manager {
   private stores: Map<string, Store>

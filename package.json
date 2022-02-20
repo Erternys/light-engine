@@ -1,77 +1,73 @@
 {
   "name": "light-engine",
-  "version": "1.10.4",
+  "version": "2.0.0",
   "description": "Light Engine is a game engine by Grozzlo",
   "main": "light.js",
+  "type": "module",
   "types": "types/index.d.ts",
-  "jsnext:main": "lib/light.esm.js",
-  "module": "lib/light.esm.js",
+  "module": "lib/app.js",
   "files": [
-    "lib/**/*.js",
+    "app.js",
+    "EventEmitter.js",
+    "FpsController.js",
+    "helper.js",
+    "*/*.js",
     "**/*.d.ts",
     "README.md"
   ],
   "exports": {
     ".": {
-      "require": "./light.js",
-      "import": "./light.esm.js"
+      "import": "./app.js"
+    },
+    "./animations": {
+      "import": "./animations/index.js"
     },
     "./core": {
-      "require": "./core/index.js",
-      "import": "./core/index.esm.js"
-    },
-    "./hooks": {
-      "require": "./hooks/index.js",
-      "import": "./hooks/index.esm.js"
-    },
-    "./managers": {
-      "require": "./managers/index.js",
-      "import": "./managers/index.esm.js"
-    },
-    "./gameobjects": {
-      "require": "./gameobjects/index.js",
-      "import": "./gameobjects/index.esm.js"
+      "import": "./core/index.js"
     },
     "./entities": {
-      "require": "./entities/index.js",
-      "import": "./entities/index.esm.js"
+      "import": "./entities/index.js"
     },
-    "./states": {
-      "require": "./states/index.js",
-      "import": "./states/index.esm.js"
+    "./gameobjects": {
+      "import": "./gameobjects/index.js"
+    },
+    "./hooks": {
+      "import": "./hooks/index.js"
+    },
+    "./loaders": {
+      "import": "./loaders/index.js"
+    },
+    "./managers": {
+      "import": "./managers/index.js"
     },
     "./nodes": {
-      "require": "./nodes/index.js",
-      "import": "./nodes/index.esm.js"
+      "import": "./nodes/index.js"
+    },
+    "./states": {
+      "import": "./states/index.js"
     }
   },
   "repository": "https://github.com/Grozzlo/light-engine",
   "author": "ashikuri",
   "license": "CC0-1.0",
   "scripts": {
-    "build": "cross-env BUILD=true rollup -c",
-    "dev": "rollup -w -c",
+    "build": "tsc && node ./copy.js",
+    "dev": "tsc --watch",
     "prepublish": "npm run build"
   },
   "devDependencies": {
     "@types/localforage": "^0.0.34",
     "@types/node": "^17.0.14",
     "@types/sat": "^0.0.31",
-    "builtin-modules": "^3.2.0",
-    "cross-env": "^7.0.3",
     "prettier": "^2.5.1",
-    "rollup": "^2.67.0",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript": "^1.0.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.5"
   },
   "dependencies": {
     "localforage": "^1.9.0",
     "sat": "^0.9.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

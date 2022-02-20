@@ -1,6 +1,6 @@
 import { Warning } from "../helper"
-import Node from "../objects/nodes/Node"
-import Scene from "../objects/Scene"
+import Node from "../nodes/Node"
+import Scene from "../gameobjects/Scene"
 import Manager from "./Manager"
 
 export default class NodeManager extends Manager {

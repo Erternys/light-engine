@@ -1,6 +1,6 @@
-import { Entity, Scene } from "../src/objects"
+import { Scene } from "../src/gameobjects"
 import { SceneManager } from "../src/managers"
-import AudioLoader from "../src/objects/AudioLoader"
+import AudioLoader from "../src/gameobjects/AudioLoader"
 import Canvas from "../src/core/Canvas"
 import Game from "../src/core/Game"
 

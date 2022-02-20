@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import { isDefined } from "../helper"
+import { isChromium, isDefined } from "../helper"
 
 type CursorCanvas =
   | "default"
@@ -13,6 +13,7 @@ type CursorCanvas =
 
 export default class Canvas extends EventEmitter {
   private element: HTMLCanvasElement | null = null
+  private _pixel: boolean = false
 
   constructor(query: string = null) {
     super()
@@ -70,6 +71,17 @@ export default class Canvas extends EventEmitter {
   }
   set cursor(value: CursorCanvas) {
     this.element.style.cursor = value
+  }
+  get pixel(): boolean {
+    return this._pixel
+  }
+  set pixel(value: boolean) {
+    this._pixel = value
+    if (value)
+      this.element.style.imageRendering = isChromium()
+        ? "pixelated"
+        : "crisp-edges"
+    else this.element.style.removeProperty("imageRendering")
   }
 
   get2DContext() {

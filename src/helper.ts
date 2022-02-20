@@ -5,8 +5,8 @@ import {
   VibrationOptions,
 } from "../types/private"
 import { EventEmitter } from "./EventEmitter"
-import Storage from "./objects/Storage"
-import Vector2 from "./objects/Vector2"
+import Storage from "./gameobjects/Storage"
+import Vector2 from "./gameobjects/Vector2"
 
 const buttonMap = [
   ["A"],
