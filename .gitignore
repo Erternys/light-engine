@@ -5,6 +5,7 @@ lib
 
 *.tgz
 *.js
+*.d.ts
 animations
 core
 loaders
