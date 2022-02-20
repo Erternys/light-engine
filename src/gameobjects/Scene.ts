@@ -1,6 +1,4 @@
-import { SceneOption } from "../../types/private"
 import { EventEmitter } from "../EventEmitter"
-import { StateEnum } from "../helper"
 import Keyboard from "./Keyboard"
 import Gamepad from "./Gamepad"
 import Camera from "../entities/Camera"
@@ -12,6 +10,10 @@ import SceneManager from "../managers/SceneManager"
 import NodeManager from "../managers/NodeManager"
 import Game from "../core/Game"
 
+export enum StateEnum {
+  Next,
+  Prev,
+}
 export default class Scene extends EventEmitter {
   public name: string
   public manager: SceneManager
@@ -33,13 +35,13 @@ export default class Scene extends EventEmitter {
   public gamepad: Gamepad
   public keyboard: Keyboard
 
-  constructor(public game: Game, option: SceneOption) {
+  constructor(public game: Game) {
     super()
     this.managers = new ContainerManager(this)
     this.nodes = new NodeManager(this)
     this.camera = new Camera(this)
     this.world = new World(this)
-    this.name = option.name
+    this.name = this.constructor.name
     this.isPlayed = "none"
     this.played = false
     this.alpha = 1

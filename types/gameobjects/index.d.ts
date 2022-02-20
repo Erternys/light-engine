@@ -5,8 +5,6 @@ import {
   CursorCanvas,
   EventEmitter,
   RGBA,
-  SceneOption,
-  StateEnum,
   StorageKey,
   TextStyle,
   VectorValue,
@@ -20,11 +18,11 @@ import {
 } from "../managers"
 import { Node } from "../nodes"
 
-export class AudioLoader extends EventEmitter {
-  public buffer: ArrayBuffer
-  public src: string
-  constructor(src: string)
+export enum StateEnum {
+  Next,
+  Prev,
 }
+
 export class BoundingBox {
   public parent: Entity | Box
   public points: Vector2[]
@@ -143,9 +141,8 @@ export class Mouse extends Node<Game> {
   constructor(game: Game)
 }
 export class Scene extends EventEmitter {
-  public name: string
+  public name: string | number | symbol
   public manager: SceneManager
-  public preload: Array<string>
   public nodes: NodeManager
   public played: boolean
   public isPlayed: "none" | "opacity" | "main"
@@ -154,7 +151,6 @@ export class Scene extends EventEmitter {
   public world: World
   public camera: Camera
   public managers: ContainerManager
-  public create: any
   public inited: boolean
 
   public mouse: Mouse
@@ -162,7 +158,7 @@ export class Scene extends EventEmitter {
   public keyboard: Keyboard
   public game: Game
 
-  constructor(game: Game, option: SceneOption)
+  constructor(game: Game)
   init(): void
   beforeUpdate(delta: number): void
   update(delta: number): void

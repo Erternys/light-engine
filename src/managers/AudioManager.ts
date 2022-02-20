@@ -1,4 +1,4 @@
-import AudioLoader from "../gameobjects/AudioLoader"
+import AudioLoader from "../loaders/AudioLoader"
 import Manager from "./Manager"
 
 class CloneAudioManager extends Manager {
@@ -18,7 +18,7 @@ class CloneAudioManager extends Manager {
     this.gain.connect(this.context.destination)
     this.source = this.context.createBufferSource()
 
-    this.context.decodeAudioData(this.audio.buffer).then((buffer) => {
+    this.context.decodeAudioData(this.audio.getData()).then((buffer) => {
       this.source.buffer = buffer
       this.source.loop = this.loop
       this.source.connect(this.gain)

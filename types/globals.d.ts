@@ -1,6 +1,6 @@
 import { Canvas, Game } from "./core"
 import { Scene } from "./gameobjects"
-import { LoadEntityTypes } from "./loaders"
+import { Loader } from "./loaders"
 import { SceneManager } from "./managers"
 
 declare class GlobalEventEmitter {
@@ -34,11 +34,6 @@ export class FpsCtrl {
   pause(): void
 }
 
-export enum StateEnum {
-  Next,
-  Prev,
-}
-
 export type RGBA =
   | [number, number, number, number]
   | [number, number, number]
@@ -47,9 +42,6 @@ export type RGBA =
 export type StorageKey = string | symbol | number
 export type VectorValue = number | { x: number; y: number }
 
-export interface SceneOption {
-  name?: string
-}
 export interface TextStyle {
   shadow?: {
     offsetX: number
@@ -72,12 +64,12 @@ export interface VibrationOptions {
 }
 
 export interface ConfigOption<C extends Canvas> {
+  canvas: C
   dev?: boolean
   debug?: boolean
   pixel?: boolean
-  canvas?: C
-  load: { [x: string]: Promise<LoadEntityTypes> }
-  loadScene: Scene & { preload: Array<string> }
+  load: { [x: string]: Promise<Loader> }
+  loadScene?: Scene & { preload: Array<string> }
   scene: (g: Game<C>) => SceneManager
 }
 

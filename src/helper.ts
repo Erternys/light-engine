@@ -3,7 +3,7 @@ import {
   GamepadInterface,
   Control,
   VibrationOptions,
-} from "../types/private"
+} from "./private"
 import { EventEmitter } from "./EventEmitter"
 import Storage from "./gameobjects/Storage"
 import Vector2 from "./gameobjects/Vector2"
@@ -158,42 +158,12 @@ export const customStorage = new Storage()
 export function isDefined(v: any) {
   return v !== undefined && v !== null
 }
-export function isChromium() {
-  return navigator.vendor === "Google Inc."
-}
-export function typeOf(type: any, constructor = false): string {
-  if (constructor) return type.constructor.name
-  if (typeof type === "object" || typeof type === "undefined") {
-    if (type === null || type === undefined) return "undefined"
-    if (type === Promise.prototype) return "Promise"
-    const define: string = Object.prototype.toString
-      .call(type)
-      .replace(/\[object (.*)\]/, (_: any, name: string) => name)
-    if (
-      define === "global" ||
-      define === "Window" ||
-      define === "DedicatedWorkerGlobalScope" ||
-      define === "WorkerGlobalScope"
-    ) {
-      return "global"
-    }
-    return define
-  }
-  return typeof type
-}
 export function arrayDiff(arr1: any[], arr2: any[]) {
   if (arr1.length !== arr2.length) return true
   for (let i = 0; i < arr1.length; i++) {
     if (arr1[i] !== arr2[i]) return true
   }
   return false
-}
-export function clamp(num: number, min: number, max: number) {
-  return Math.min(Math.max(num, min), max)
-}
-export enum StateEnum {
-  Next,
-  Prev,
 }
 export enum Warning {
   Scene,

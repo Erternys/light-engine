@@ -42,7 +42,7 @@ export class Node<P extends Game | Scene> extends EventEmitter {
   public angle: number
   public inited: boolean
   public hidden: boolean
-  public name: string
+  public name: string | number | symbol
   public parent: P
   public x: number
   public y: number

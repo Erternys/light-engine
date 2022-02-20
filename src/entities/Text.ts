@@ -1,5 +1,5 @@
 import Rectangle from "./Rectangle"
-import { TextStyle } from "../../types/private"
+import { TextStyle } from "../private"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
 

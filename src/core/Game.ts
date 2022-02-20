@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import { Errors, StateEnum, isDefined, Warning, customStorage } from "../helper"
+import { Errors, isDefined, Warning, customStorage } from "../helper"
 import FpsCtrl from "../FpsController"
 import Mouse from "../gameobjects/Mouse"
 import Keyboard from "../gameobjects/Keyboard"
@@ -7,18 +7,16 @@ import Gamepad from "../gameobjects/Gamepad"
 import ResourceManager from "../managers/ResourceManager"
 import AudioManager from "../managers/AudioManager"
 import SceneManager from "../managers/SceneManager"
-import Scene from "../gameobjects/Scene"
+import Scene, { StateEnum } from "../gameobjects/Scene"
 import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
-import AudioLoader from "../gameobjects/AudioLoader"
-
-type LoadEntityTypes = HTMLImageElement | AudioLoader | Text
+import Loader from "../loaders/Loader"
 interface ConfigOption<C extends Canvas> {
   dev?: boolean
   debug?: boolean
   pixel?: boolean
   canvas?: C
-  load: { [x: string]: Promise<LoadEntityTypes> }
+  load: { [x: string]: Promise<Loader> }
   loadScene: Scene & { preload: Array<string> }
   scene: (g: Game<C>) => SceneManager
 }
@@ -69,12 +67,13 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     let toLoad = Object.keys(config.load || {})
     let currentScene: Scene | null = null
 
-    if (isDefined(config.loadScene)) {
+    if (isDefined(config?.loadScene)) {
       const toPreloading = config.loadScene.preload || []
       toLoad = toLoad.filter((v) => !toPreloading.includes(v))
       toPreloading.forEach((name: string) => {
         config.load[name]
-          .then((media) => ResourceManager.add(name, media))
+          .then((media) => media.load(name))
+          .then((media) => ResourceManager.add(name, media as any))
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
       currentScene = this.sceneManager.add(config.loadScene).play(0)
@@ -86,8 +85,9 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     for (let i = 0; i < toLoad.length; i++) {
       const name = toLoad[i]
       config.load[name]
+        .then((media) => media.load(name))
         .then((media) => {
-          ResourceManager.add(name, media)
+          ResourceManager.add(name, media as any)
           if (currentScene)
             currentScene.emit("progress", (i + 1) / toLoad.length)
         })

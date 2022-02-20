@@ -18,7 +18,7 @@ export default class SceneManager extends Manager {
     this.game = game
     this.list = list.map((scene) => {
       if (scene instanceof Scene) return scene.setGame(game).setManager(this)
-      return new scene(game, { name: scene.name }).setManager(this)
+      return new scene(game).setManager(this)
     })
   }
   public add(scene: typeof Scene | Scene) {
@@ -26,9 +26,7 @@ export default class SceneManager extends Manager {
       this.list = [scene.setGame(this.game).setManager(this), ...this.list]
     else
       this.list = [
-        new scene(this.game, { name: scene.name })
-          .setGame(this.game)
-          .setManager(this),
+        new scene(this.game).setGame(this.game).setManager(this),
         ...this.list,
       ]
     return this

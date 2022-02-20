@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import { isChromium, isDefined } from "../helper"
+import { isDefined } from "../helper"
 
 type CursorCanvas =
   | "default"
@@ -78,9 +78,8 @@ export default class Canvas extends EventEmitter {
   set pixel(value: boolean) {
     this._pixel = value
     if (value)
-      this.element.style.imageRendering = isChromium()
-        ? "pixelated"
-        : "crisp-edges"
+      this.element.style.imageRendering =
+        navigator.vendor === "Google Inc." ? "pixelated" : "crisp-edges"
     else this.element.style.removeProperty("imageRendering")
   }
 

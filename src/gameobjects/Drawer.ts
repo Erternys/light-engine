@@ -1,4 +1,4 @@
-import { TextStyle } from "../../types/private"
+import { TextStyle } from "../private"
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 import Camera from "../entities/Camera"
