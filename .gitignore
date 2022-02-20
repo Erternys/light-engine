@@ -3,6 +3,7 @@ node_modules
 dist
 lib
 
+*.tgz
 *.js
 animations
 core
@@ -14,5 +15,6 @@ entities
 states
 nodes
 
+!copy.js
 !src/**/*
 !types/**/*

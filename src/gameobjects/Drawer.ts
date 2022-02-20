@@ -151,7 +151,7 @@ export default class Drawer extends EventEmitter {
     }
     this._text = null
     this._camera = null
-    this._masks = null
+    this._masks = []
     this.width = 0
     this.height = 0
     return this
