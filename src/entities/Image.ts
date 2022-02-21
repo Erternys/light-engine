@@ -8,10 +8,12 @@ export default class Image extends Rectangle {
   public flip: Flip = new Flip()
   constructor(scene: Scene, x: number, y: number, src: string) {
     super(scene, x, y, null, null)
-    const image = ResourceManager.images.get(src)
     this.src = src
-    this.width = image.naturalWidth
-    this.height = image.naturalHeight
+    const image = ResourceManager.images.get(src).getData()
+    if (isDefined(image)) {
+      this.width = image.naturalWidth
+      this.height = image.naturalHeight
+    }
     this.body.points = this.points.map((p) => p.sub(this))
   }
   draw(context: CanvasRenderingContext2D) {
@@ -29,7 +31,7 @@ export default class Image extends Rectangle {
       .origin(this.origin)
       .size(this.width, this.height)
       .flip(this.flip)
-      .image(image)
+      .image(image.getData())
       .masks(this.group?.mask, this.mask)
       .draw(context)
   }

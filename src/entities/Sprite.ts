@@ -28,7 +28,7 @@ export default class Sprite extends Image {
       .alpha(this.alpha)
       .angle(this.angle)
       .origin(this.origin)
-      .image(image, this.frame)
+      .image(image.getData(), this.frame)
       .size(this.width, this.height)
       .flip(this.flip)
       .masks(this.group?.mask, this.mask)
