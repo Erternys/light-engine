@@ -235,10 +235,10 @@ export default class Drawer extends EventEmitter {
         context.lineTo(x, y)
       }
     }
-    if (this._linePoints) {
-      for (let i = 1; i < this._points.length; i++) {
-        const { x: x1, y: y1 } = this._points[i - 1]
-        const { x: x2, y: y2 } = this._points[i]
+    if (this._linePoints.length > 0) {
+      for (let i = 1; i < this._linePoints.length; i++) {
+        const { x: x1, y: y1 } = this._linePoints[i - 1]
+        const { x: x2, y: y2 } = this._linePoints[i]
         context.moveTo(x1, y1)
         context.lineTo(x2, y2)
         this.close(context)
@@ -293,7 +293,5 @@ export default class Drawer extends EventEmitter {
       context.fillText(this._text, x, y)
       context.strokeText(this._text, x, y)
     }
-
-    context.closePath()
   }
 }

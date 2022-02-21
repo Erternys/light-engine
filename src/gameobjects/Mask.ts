@@ -14,9 +14,11 @@ export default class Mask extends Drawer {
     this.transforms(context)
     this.drawContent(context)
 
+    this.close(context)
+    return this
+  }
+  protected close(context: CanvasRenderingContext2D): void {
     context.closePath()
     context.clip()
-
-    return this
   }
 }
