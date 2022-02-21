@@ -1,6 +1,7 @@
 import { Game } from "../core"
-import { AudioLoader, Scene, Store } from "../gameobjects"
+import { Scene, Store } from "../gameobjects"
 import { EventEmitter } from "../globals"
+import { AudioLoader } from "../loaders"
 import { Node } from "../nodes"
 
 export class Manager extends EventEmitter {
