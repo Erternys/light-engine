@@ -20,6 +20,7 @@ type Crop = {
 }
 
 export default class Drawer extends EventEmitter {
+  protected _linePoints: Vector2[]
   protected _points: Vector2[]
   protected _fill: RGBA
   protected _stroke: RGBA
@@ -65,6 +66,10 @@ export default class Drawer extends EventEmitter {
   }
   points(points: Vector2[]) {
     if (isDefined(points)) this._points = points
+    return this
+  }
+  line(points: Vector2[]) {
+    if (isDefined(points)) this._linePoints = points
     return this
   }
   origin(point: Vector2) {
@@ -121,6 +126,7 @@ export default class Drawer extends EventEmitter {
   }
   reset() {
     this._points = []
+    this._linePoints = []
     this.r = null
     this.x = 0
     this.y = 0
@@ -186,13 +192,18 @@ export default class Drawer extends EventEmitter {
 
     this.drawContent(context)
 
-    context.fill()
-    context.stroke()
+    this.close(context)
     context.resetTransform()
     context.restore()
     this.reset()
 
     return this
+  }
+
+  protected close(context: CanvasRenderingContext2D) {
+    context.closePath()
+    context.fill()
+    context.stroke()
   }
 
   protected transforms(context: CanvasRenderingContext2D) {
@@ -222,6 +233,16 @@ export default class Drawer extends EventEmitter {
       for (let i = 1; i < this._points.length; i++) {
         const { x, y } = this._points[i]
         context.lineTo(x, y)
+      }
+    }
+    if (this._linePoints) {
+      for (let i = 1; i < this._points.length; i++) {
+        const { x: x1, y: y1 } = this._points[i - 1]
+        const { x: x2, y: y2 } = this._points[i]
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        this.close(context)
+        context.beginPath()
       }
     }
     if (isDefined(this.r)) {
