@@ -9,20 +9,18 @@ import Box from "./Box"
 import Collision from "./Collision"
 import Scene from "./Scene"
 import NodeManager from "../managers/NodeManager"
+import { RGBA } from "../private"
 
 export default class Entity extends Node<Scene> {
   public box: Box | null = null
 
-  public fillColor: string | number
-  public strokeColor: string | number
+  public fillColor: RGBA
+  public strokeColor: RGBA
   public src: string
   public lineWidth = 1
   public alpha = 1
   public fixed = false
-  public get points(): Array<Vector2> {
-    return []
-  }
-
+  public points: Vector2[]
   public velocity = Vector2.Zero()
   public gravity = Gravity.Zero()
   public force = Vector2.Zero()
@@ -31,9 +29,11 @@ export default class Entity extends Node<Scene> {
 
   constructor(public scene: Scene, x: number, y: number) {
     super(scene, x, y)
-    this.origin.set(this)
     this.body = new BoundingBox(this, this.points)
     this.name = this.constructor.name
+
+    this.fillColor = "#fff"
+    this.strokeColor = "transparent"
   }
   setManager(manager: NodeManager) {
     this.manager = manager
@@ -104,13 +104,12 @@ export default class Entity extends Node<Scene> {
       .reduce((acc, f) => acc.add(f))
       .mul(delta)
 
-    this.origin = this.origin.add(this.force)
     this.x += this.force.x
     this.y += this.force.y
 
     if (isDefined(this.box)) {
+      // console.log((this.body.toSATBox() as any).points)
       const boxVector = this.collide(this.box)
-      this.origin = this.origin.add(boxVector)
       this.x += boxVector.x
       this.y += boxVector.y
 

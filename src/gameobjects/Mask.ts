@@ -1,24 +1,22 @@
-import { isDefined } from "../helper"
 import Drawer from "./Drawer"
 
 export default class Mask extends Drawer {
-  public _fixed = false
+  protected fixed = false
   constructor() {
     super()
   }
-  fix(fixed = true) {
-    if (isDefined(fixed)) this._fixed = fixed
+  setFix(fixed = true) {
+    this.fixed = fixed
     return this
   }
-  draw(context: CanvasRenderingContext2D) {
-    this.transforms(context)
-    this.drawContent(context)
 
-    this.close(context)
+  start(context: CanvasRenderingContext2D) {
+    context.beginPath()
     return this
   }
-  protected close(context: CanvasRenderingContext2D): void {
+  end(context: CanvasRenderingContext2D) {
     context.closePath()
     context.clip()
+    return this
   }
 }

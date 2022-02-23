@@ -22,18 +22,29 @@ export default class BoundingBox {
   }
 
   toSATBox() {
-    if (!isDefined(this.radius))
+    const groupMove = new SAT.Vector(
+      this.parent.group?.x ?? 0,
+      this.parent.group?.y ?? 0
+    )
+    if (!isDefined(this.radius)) {
       return new SAT.Polygon(
         new SAT.Vector(0, 0),
         this.points.map((p) => {
           return p
+            .add(this.parent)
+            .add(groupMove)
+            .sub(this.parent.origin)
             .rotate(this.parent.angle)
-            .add(this.parent.origin)
             .toSATVector()
         })
       )
+    }
+
     return new SAT.Circle(
-      this.points[0].add(this.parent.origin).toSATVector(),
+      new SAT.Vector(
+        this.parent.x - this.parent.origin.x,
+        this.parent.y - this.parent.origin.y
+      ).add(groupMove),
       this.radius
     )
   }

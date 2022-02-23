@@ -1,4 +1,4 @@
-import { Frame } from "../animations"
+import { Animation, Frame } from "../animations"
 import { Entity, Flip, Scene } from "../gameobjects"
 import { TextStyle } from "../globals"
 import { Node } from "../nodes"
@@ -18,6 +18,9 @@ export class Circle extends Entity {
 export class Image extends Rectangle {
   public flip: Flip
   constructor(scene: Scene, x: number, y: number, src: string)
+}
+export class Line extends Entity {
+  constructor(scene: Scene, x: number, y: number)
 }
 export class Polygon extends Entity {
   constructor(scene: Scene, x: number, y: number)

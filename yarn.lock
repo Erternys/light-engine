@@ -3,57 +3,57 @@
 
 
 "@types/localforage@^0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/localforage/-/localforage-0.0.34.tgz#5e31c32dd8791ec4b9ff3ef47c9cb55b2d0d9438"
-  integrity sha1-XjHDLdh5HsS5/z70fJy1Wy0NlDg=
+  "integrity" "sha1-XjHDLdh5HsS5/z70fJy1Wy0NlDg="
+  "resolved" "https://registry.npmjs.org/@types/localforage/-/localforage-0.0.34.tgz"
+  "version" "0.0.34"
   dependencies:
-    localforage "*"
+    "localforage" "*"
 
 "@types/node@^17.0.14":
-  version "17.0.14"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.14.tgz#33b9b94f789a8fedd30a68efdbca4dbb06b61f20"
-  integrity sha512-SbjLmERksKOGzWzPNuW7fJM7fk3YXVTFiZWB/Hs99gwhk+/dnrQRPBQjPW9aO+fi1tAffi9PrwFvsmOKmDTyng==
+  "integrity" "sha512-SbjLmERksKOGzWzPNuW7fJM7fk3YXVTFiZWB/Hs99gwhk+/dnrQRPBQjPW9aO+fi1tAffi9PrwFvsmOKmDTyng=="
+  "resolved" "https://registry.npmjs.org/@types/node/-/node-17.0.14.tgz"
+  "version" "17.0.14"
 
 "@types/sat@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/sat/-/sat-0.0.31.tgz#6f0bb95f333649fb8d77ae8909e5ed104fe477bb"
-  integrity sha512-P4SVw79XheP1p92useDVpLYYOUQ6lpw2L7IdQz4dD23DZ8DiC1STgPOh72hjR5IZJBPQbzlICAbmjCKbwyYuxg==
+  "integrity" "sha512-P4SVw79XheP1p92useDVpLYYOUQ6lpw2L7IdQz4dD23DZ8DiC1STgPOh72hjR5IZJBPQbzlICAbmjCKbwyYuxg=="
+  "resolved" "https://registry.npmjs.org/@types/sat/-/sat-0.0.31.tgz"
+  "version" "0.0.31"
 
-immediate@~3.0.5:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
-  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
+"immediate@~3.0.5":
+  "integrity" "sha1-nbHb0Pr43m++D13V5Wu2BigN5ps="
+  "resolved" "https://registry.npmjs.org/immediate/-/immediate-3.0.6.tgz"
+  "version" "3.0.6"
 
-lie@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
-  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
+"lie@3.1.1":
+  "integrity" "sha1-mkNrLMd0bKWd56QfpGmz77dr2H4="
+  "resolved" "https://registry.npmjs.org/lie/-/lie-3.1.1.tgz"
+  "version" "3.1.1"
   dependencies:
-    immediate "~3.0.5"
+    "immediate" "~3.0.5"
 
-localforage@*, localforage@^1.9.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
-  integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
+"localforage@*", "localforage@^1.9.0":
+  "integrity" "sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg=="
+  "resolved" "https://registry.npmjs.org/localforage/-/localforage-1.10.0.tgz"
+  "version" "1.10.0"
   dependencies:
-    lie "3.1.1"
+    "lie" "3.1.1"
 
-prettier@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
-  integrity sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==
+"prettier@^2.5.1":
+  "integrity" "sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg=="
+  "resolved" "https://registry.npmjs.org/prettier/-/prettier-2.5.1.tgz"
+  "version" "2.5.1"
 
-sat@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/sat/-/sat-0.9.0.tgz#02091260513c8f2482da7db9377ddfeca80f5982"
-  integrity sha512-mxdv5RZJO4tdMnUURGU3gAMcnDUEwcNJwE+lPO0/V+rBeDvFLH3wEZEOR0fH7cTN0zQaNxBEbHnyQL9DzupwQQ==
+"sat@^0.9.0":
+  "integrity" "sha512-mxdv5RZJO4tdMnUURGU3gAMcnDUEwcNJwE+lPO0/V+rBeDvFLH3wEZEOR0fH7cTN0zQaNxBEbHnyQL9DzupwQQ=="
+  "resolved" "https://registry.npmjs.org/sat/-/sat-0.9.0.tgz"
+  "version" "0.9.0"
 
-tslib@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
-  integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+"tslib@^2.3.1":
+  "integrity" "sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw=="
+  "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.3.1.tgz"
+  "version" "2.3.1"
 
-typescript@^4.5.5:
-  version "4.5.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
-  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
+"typescript@^4.7.0-dev.20220222":
+  "integrity" "sha512-gm3f2mDGIHrWi8TKsgyl/FuwZWbsmXJ8FissebhjDsqjG37Wk5M1i6UN3iinUZkX3xVebZEWYR8y8sHKgaJO2Q=="
+  "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.7.0-dev.20220222.tgz"
+  "version" "4.7.0-dev.20220222"

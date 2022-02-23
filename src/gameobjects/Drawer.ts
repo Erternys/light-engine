@@ -3,8 +3,9 @@ import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 import Camera from "../entities/Camera"
 import Flip from "./Flip"
-import type Mask from "./Mask"
 import Vector2 from "./Vector2"
+import type Mask from "./Mask"
+import { Frame } from "../animations"
 
 type RGBA =
   | [number, number, number, number]
@@ -12,164 +13,274 @@ type RGBA =
   | number
   | string
 
-type Crop = {
-  x: number
-  y: number
-  width: number
-  height: number
+interface LineStyle {
+  width?: number
+  cap?: "butt" | "round" | "square"
+  dash?: number[]
+  offset?: number
+  join?: "bevel" | "round" | "miter"
+}
+
+interface ObjectLine {
+  type: "line"
+  points: Vector2[]
+}
+interface ObjectPolygon {
+  type: "polygon"
+  points: Vector2[]
+}
+interface ObjectCircle {
+  type: "circle"
+  radius: number
+}
+interface ObjectImage {
+  type: "image"
+  image: HTMLImageElement
+  crop: Frame
+  flip: Flip
+}
+interface ObjectText {
+  type: "text"
+  text: string
 }
 
 export default class Drawer extends EventEmitter {
-  protected _linePoints: Vector2[]
-  protected _points: Vector2[]
-  protected _fill: RGBA
-  protected _stroke: RGBA
-  protected _origin: Vector2
-  protected _flip: Flip
-  protected _angle: number
-  protected _alpha: number
-  protected _lineWidth: number
-  protected _image: HTMLImageElement | null
-  protected _crop: Crop
-  protected _style: TextStyle
-  protected _text: string
-  protected _camera: Camera | null
-  protected r: number | null
-  protected x: number
-  protected y: number
+  protected pos: Vector2 = Vector2.Zero()
+  protected origin: Vector2 = Vector2.Zero()
+  protected masks: Mask[] = []
+  protected lineStyle: LineStyle = {}
+  protected textStyle: TextStyle = {}
+  protected camera: Camera | null
+  protected alpha: number = 1
+  protected angle: number = 0
+  protected fillColor: string
+  protected strokeColor: string
   protected width: number
   protected height: number
-  protected _masks: Mask[]
+  protected objects: (
+    | ObjectCircle
+    | ObjectImage
+    | ObjectLine
+    | ObjectPolygon
+    | ObjectText
+  )[] = []
 
   constructor() {
     super()
     this.reset()
   }
 
-  camera(camera: Camera) {
-    if (isDefined(camera)) this._camera = camera
+  addAlpha(a: number) {
+    this.alpha *= a
     return this
   }
-  masks(...masks: Mask[]) {
-    this._masks = masks
+  setAlpha(a: number) {
+    this.alpha = a
     return this
   }
-  position(x: number, y: number) {
-    this.x = x
-    this.y = y
+  getAlpha() {
+    return this.alpha
+  }
+  addAngle(a: number) {
+    this.angle += (Math.PI * a) / 180
     return this
   }
-  move(x: number, y: number) {
-    this.x += x
-    this.y += y
+  setAngle(a: number) {
+    this.angle = (Math.PI * a) / 180
     return this
   }
-  points(points: Vector2[]) {
-    if (isDefined(points)) this._points = points
+  getAngle() {
+    return this.angle
+  }
+  addMasks(...masks: Mask[]) {
+    this.masks = [...this.masks, ...masks]
     return this
   }
-  line(points: Vector2[]) {
-    if (isDefined(points)) this._linePoints = points
+  setMasks(...masks: Mask[]) {
+    this.masks = masks
     return this
   }
-  origin(point: Vector2) {
-    if (isDefined(point)) this._origin = point
+  getMasks(): Mask[] {
+    return this.masks
+  }
+  addPosition(x: number, y: number) {
+    this.pos = this.pos.add({ x, y })
     return this
   }
-  radius(r: number) {
-    if (isDefined(r)) this.r = r
+  setPosition(x: number, y: number) {
+    this.pos.set({ x, y })
     return this
   }
-  angle(a: number) {
-    if (isDefined(a)) this._angle = (Math.PI * a) / 180
+  getPosition(): Vector2 {
+    return this.pos
+  }
+  setOrigin(x: number, y: number) {
+    this.origin.set({ x, y })
     return this
   }
-  alpha(alpha: number) {
-    if (isDefined(alpha)) this._alpha *= Math.max(Math.min(alpha, 1), 0)
+  getOrigin() {
+    return this.origin
+  }
+  setCamera(camera: Camera) {
+    this.camera = camera
     return this
   }
-  fill(color: RGBA) {
-    if (isDefined(color)) this._fill = color
+  getCamera(): Camera {
+    return this.camera
+  }
+  setSize(width: number, height: number) {
+    this.width = width
+    this.height = height
     return this
   }
-  stroke(color: RGBA) {
-    if (isDefined(color)) this._stroke = color
-    return this
+  getSize() {
+    return {
+      width: this.width,
+      height: this.height,
+    }
   }
-  lineWidth(width: number) {
-    if (isDefined(width)) this._lineWidth = width
-    return this
-  }
-  flip(flip: Flip) {
-    if (isDefined(flip)) this._flip = flip
+  setFillColor(color: RGBA) {
+    this.fillColor =
+      typeof color === "object"
+        ? color.map((a) => a.toString(16)).join("")
+        : color.toString(16)
 
     return this
   }
-  image(image: HTMLImageElement, crop?: Crop) {
-    if (isDefined(image)) this._image = image
-    if (isDefined(crop)) this._crop = crop
-    else this._crop = { x: 0, y: 0, width: image.width, height: image.height }
+  getFillColor() {
+    return this.fillColor
+  }
+  setStrokeColor(color: RGBA) {
+    this.strokeColor =
+      typeof color === "object"
+        ? color.map((a) => a.toString(16)).join("")
+        : color.toString(16)
+
     return this
   }
-  size(width: number, height: number) {
-    if (isDefined(width)) this.width = width
-    if (isDefined(height)) this.height = height
+  getStrokeColor() {
+    return this.strokeColor
+  }
+  setLineStyle(style: LineStyle) {
+    this.lineStyle = {
+      width: 1,
+      cap: "butt",
+      dash: [],
+      offset: 0,
+      join: "miter",
+      ...style,
+    }
+
     return this
   }
-  text(text: string) {
-    if (isDefined(text)) this._text = text
-    return this
+  getLineStyle() {
+    return this.lineStyle
   }
-  style(style: TextStyle) {
-    if (isDefined(style)) this._style = style
-    return this
-  }
-  reset() {
-    this._points = []
-    this._linePoints = []
-    this.r = null
-    this.x = 0
-    this.y = 0
-    this._origin = Vector2.Zero()
-    this._flip = new Flip()
-    this._angle = 0
-    this._alpha = 1
-    this._fill = "#fff"
-    this._stroke = "transparent"
-    this._lineWidth = 1
-    this._image = null
-    this._crop = { x: 0, y: 0, width: -1, height: -1 }
-    this._style = {
+  setTextStyle(style: TextStyle) {
+    this.textStyle = {
+      font: {
+        family: "Arial",
+        size: 12,
+        ...style.font,
+      },
+      align: "left",
+      baseline: "top",
+      lineSpacing: 1.1,
+      background: "transparent",
       shadow: {
         offsetX: 0,
         offsetY: 0,
-        color: "#000",
         blur: 0,
+        color: "rgba(0,0,0,0)",
+        ...style.shadow,
       },
-      lineSpacing: 0,
-      background: "transparent",
-      align: "left",
-      baseline: "top",
-      font: {
-        size: 12,
-        family: "Arial",
-      },
+      ...style,
     }
-    this._text = null
-    this._camera = null
-    this._masks = []
-    this.width = 0
-    this.height = 0
+    this.textStyle.background =
+      typeof this.textStyle.background === "object"
+        ? this.textStyle.background.map((a) => a.toString(16)).join("")
+        : this.textStyle.background.toString(16)
+
+    this.textStyle.shadow.color =
+      typeof this.textStyle.shadow.color === "object"
+        ? this.textStyle.shadow.color.map((a) => a.toString(16)).join("")
+        : this.textStyle.shadow.color.toString(16)
+
     return this
   }
-  measureText(context: CanvasRenderingContext2D) {
-    context.save()
-    context.font = `${this._style.font.size}px ${this._style.font.family}`
+  getTextStyle() {
+    return this.textStyle
+  }
 
-    const metrics = context.measureText(this._text)
-    const width = metrics.width
-    const height =
-      metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+  createLine(points: Vector2[]) {
+    this.objects = [
+      ...this.objects,
+      {
+        type: "line",
+        points,
+      },
+    ]
+    return this
+  }
+  createPolygon(points: Vector2[]) {
+    this.objects = [
+      ...this.objects,
+      {
+        type: "polygon",
+        points,
+      },
+    ]
+    return this
+  }
+  createCircle(radius: number) {
+    this.objects = [
+      ...this.objects,
+      {
+        type: "circle",
+        radius,
+      },
+    ]
+    return this
+  }
+  createImage(image: HTMLImageElement, crop: Frame, flip: Flip) {
+    if (!isDefined(crop))
+      crop = new Frame(0, 0, image.naturalWidth, image.naturalHeight)
+    if (!isDefined(flip)) flip = new Flip()
+    this.objects = [
+      ...this.objects,
+      {
+        type: "image",
+        image,
+        crop,
+        flip,
+      },
+    ]
+    return this
+  }
+  createText(text: string) {
+    this.objects = [
+      ...this.objects,
+      {
+        type: "text",
+        text,
+      },
+    ]
+
+    return this
+  }
+  measureText(context: CanvasRenderingContext2D, text: string) {
+    context.save()
+    context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
+
+    let width = 0
+    const height = text.split("\n").reduce((acc, line) => {
+      const metrics = context.measureText(line)
+      const height =
+        metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+      width = Math.max(width, metrics.width)
+
+      return acc + height * this.textStyle.lineSpacing
+    }, 0)
     context.restore()
 
     return {
@@ -177,121 +288,131 @@ export default class Drawer extends EventEmitter {
       height,
     }
   }
-  draw(context: CanvasRenderingContext2D) {
+
+  start(context: CanvasRenderingContext2D) {
     context.save()
-
-    this._masks.map((mask) => {
-      if (isDefined(mask) && mask._fixed) mask.draw(context)
-    })
-
-    this.transforms(context)
-
-    this._masks.map((mask) => {
-      if (isDefined(mask) && mask._fixed) mask.draw(context)
-    })
-
-    this.drawContent(context)
-
-    this.close(context)
-    context.resetTransform()
+    context.beginPath()
+    return this
+  }
+  end(context: CanvasRenderingContext2D) {
+    context.fill()
+    context.stroke()
+    context.closePath()
     context.restore()
-    this.reset()
-
     return this
   }
 
-  protected close(context: CanvasRenderingContext2D) {
-    context.closePath()
-    context.fill()
-    context.stroke()
-  }
+  draw(context: CanvasRenderingContext2D) {
+    if (!isDefined(this.origin)) this.origin = Vector2.Zero()
 
-  protected transforms(context: CanvasRenderingContext2D) {
-    context.rotate((Math.PI * -(this._camera?.angle ?? 0)) / 180)
-    context.translate(
-      this.x + (this._camera?.x ?? 0),
-      this.y + (this._camera?.y ?? 0)
-    )
-  }
-  protected drawContent(context: CanvasRenderingContext2D) {
-    context.lineWidth = this._lineWidth
-    context.globalAlpha = this._alpha
+    for (const object of this.objects) {
+      this.start(context)
+      context.lineWidth = this.lineStyle.width
+      context.globalAlpha = this.alpha
 
-    context.fillStyle =
-      typeof this._fill === "object"
-        ? this._fill.map((a) => a.toString(16)).join("")
-        : this._fill.toString(16)
-    context.strokeStyle =
-      typeof this._stroke === "object"
-        ? this._stroke.map((a) => a.toString(16)).join("")
-        : this._stroke.toString(16)
+      context.fillStyle = this.fillColor
+      context.strokeStyle = this.strokeColor
+      if (object.type === "line") {
+        context.translate(
+          this.pos.x + (this.camera?.x ?? 0),
+          this.pos.y + (this.camera?.x ?? 0)
+        )
+        for (let i = 1; i < object.points.length; i++) {
+          const { x: x1, y: y1 } = object.points[i - 1]
+            .rotate(this.angle, this.origin)
+            .sub(this.origin)
 
-    context.beginPath()
-    if (this._points.length > 0) {
-      const { x, y } = this._points[0]
-      context.moveTo(x, y)
-      for (let i = 1; i < this._points.length; i++) {
-        const { x, y } = this._points[i]
+          const { x: x2, y: y2 } = object.points[i]
+            .rotate(this.angle, this.origin)
+            .sub(this.origin)
+
+          context.moveTo(x1, y1)
+          context.lineTo(x2, y2)
+          this.end(context)
+          this.start(context)
+        }
+      } else if (object.type === "polygon") {
+        context.translate(
+          this.pos.x + (this.camera?.x ?? 0),
+          this.pos.y + (this.camera?.x ?? 0)
+        )
+        // this.masks.map((mask) => {
+        //   if (isDefined(mask) && mask._fixed) mask.draw(context)
+        // })
+        const { x, y } = object.points[0]
+          .rotate(this.angle, this.origin)
+          .sub(this.origin)
+
+        context.moveTo(x, y)
+        for (let i = 1; i < object.points.length; i++) {
+          const { x, y } = object.points[i]
+            .rotate(this.angle, this.origin)
+            .sub(this.origin)
+
+          context.lineTo(x, y)
+        }
         context.lineTo(x, y)
+      } else if (object.type === "circle") {
+        const translation = this.origin
+        context.translate(-translation.x, -translation.y)
+        context.arc(this.pos.x, this.pos.y, object.radius, 0, 2 * Math.PI)
+      } else if (object.type === "image") {
+        const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
+        context.translate(translation.x, translation.y)
+        context.rotate(-this.angle - (this.camera?.angle ?? 0))
+        context.scale(
+          -2 * Number(object.flip.width) + 1,
+          -2 * Number(object.flip.height) + 1
+        )
+        context.drawImage(
+          object.image,
+          object.crop.x,
+          object.crop.y,
+          object.crop.width,
+          object.crop.height,
+          -Number(object.flip.width) * this.width,
+          -Number(object.flip.height) * this.height,
+          this.width,
+          this.height
+        )
+      } else if (object.type === "text") {
+        const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
+        context.translate(translation.x, translation.y)
+        context.rotate(this.angle)
+        context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
+        context.textAlign = this.textStyle.align
+        context.textBaseline = this.textStyle.baseline
+        context.shadowColor = this.textStyle.shadow.color as string
+        context.shadowOffsetX = this.textStyle.shadow.offsetX
+        context.shadowOffsetY = this.textStyle.shadow.offsetY
+        context.shadowBlur = this.textStyle.shadow.blur
+        object.text.split("\n").forEach((line, i) => {
+          const height = this.measureText(context, line).height
+          context.fillText(line, 0, height * this.textStyle.lineSpacing * i)
+          context.strokeText(line, 0, height * this.textStyle.lineSpacing * i)
+        })
       }
+      this.end(context)
     }
-    if (this._linePoints.length > 0) {
-      for (let i = 1; i < this._linePoints.length; i++) {
-        const { x: x1, y: y1 } = this._linePoints[i - 1]
-        const { x: x2, y: y2 } = this._linePoints[i]
-        context.moveTo(x1, y1)
-        context.lineTo(x2, y2)
-        this.close(context)
-        context.beginPath()
-      }
-    }
-    if (isDefined(this.r)) {
-      context.arc(0, 0, this.r, 0, 2 * Math.PI, true)
-    }
-    const [x, y] = [
-      this.x + (this._camera?.x ?? 0) - this._origin.x,
-      this.y + (this._camera?.y ?? 0) - this._origin.y,
-    ]
-    if (isDefined(this._image)) {
-      context.translate(
-        this._origin.x - this.x - (this._camera?.x ?? 0),
-        this._origin.y - this.y - (this._camera?.y ?? 0)
-      )
-      context.rotate(-this._angle - (this._camera?.angle ?? 0))
-      context.scale(
-        -2 * Number(this._flip.width) + 1,
-        -2 * Number(this._flip.height) + 1
-      )
-      context.drawImage(
-        this._image,
-        this._crop.x,
-        this._crop.y,
-        this._crop.width,
-        this._crop.height,
-        x - Number(this._flip.width) * this.width,
-        y - Number(this._flip.height) * this.height,
-        this.width,
-        this.height
-      )
-    }
-    if (isDefined(this._text)) {
-      context.translate(
-        this._origin.x - this.x - (this._camera?.x ?? 0),
-        this._origin.y - this.y - (this._camera?.y ?? 0)
-      )
-      context.rotate(-this._angle)
-      context.font = `${this._style.font.size}px ${this._style.font.family}`
-      context.textAlign = this._style.align
-      context.textBaseline = this._style.baseline
-      context.shadowColor =
-        typeof this._style.shadow.color === "object"
-          ? this._style.shadow.color.map((a) => a.toString(16)).join("")
-          : this._style.shadow.color.toString(16)
-      context.shadowOffsetX = this._style.shadow.offsetX
-      context.shadowOffsetY = this._style.shadow.offsetY
-      context.shadowBlur = this._style.shadow.blur
-      context.fillText(this._text, x, y)
-      context.strokeText(this._text, x, y)
-    }
+
+    this.reset()
+    return this
+  }
+
+  reset() {
+    this.offAll("draw")
+    this.setAlpha(1)
+    this.setAngle(0)
+    this.setPosition(0, 0)
+    this.setFillColor("transparent")
+    this.setStrokeColor("transparent")
+    this.setLineStyle({})
+    this.setMasks()
+    this.setTextStyle({})
+    this.setOrigin(0, 0)
+    this.setCamera(null)
+    this.setSize(0, 0)
+
+    this.objects = []
   }
 }

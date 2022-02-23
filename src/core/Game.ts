@@ -16,7 +16,7 @@ interface ConfigOption<C extends Canvas> {
   debug?: boolean
   pixel?: boolean
   canvas?: C
-  load: { [x: string]: Promise<Loader> }
+  load: { [x: string]: Loader }
   loadScene: Scene & { preload: Array<string> }
   scene: (g: Game<C>) => SceneManager
 }
@@ -63,8 +63,15 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
 
+    const medias = config.load || {}
+
+    for (const name in medias) {
+      const media = medias[name]
+      ResourceManager.add(name, media as any)
+    }
+
     this.sceneManager = config.scene(this)
-    let toLoad = Object.keys(config.load || {})
+    let toLoad = Object.keys(medias)
     let currentScene: Scene | null = null
 
     if (isDefined(config?.loadScene)) {
@@ -72,28 +79,27 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
       toLoad = toLoad.filter((v) => !toPreloading.includes(v))
       toPreloading.forEach((name: string) => {
         config.load[name]
-          .then((media) => media.load(name))
-          .then((media) => ResourceManager.add(name, media as any))
+          .load(name)
           .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
       })
       currentScene = this.sceneManager.add(config.loadScene).play(0)
       this.initScene(currentScene)
-      currentScene.on("progress", (progress) => {
-        if (progress === 1) currentScene.emit("progress:ended")
+      this.on("progress", (progress) => {
+        if (progress === 1) this.emit("progress:ended")
       })
     }
     for (let i = 0; i < toLoad.length; i++) {
       const name = toLoad[i]
       config.load[name]
-        .then((media) => media.load(name))
+        .load(name)
         .then((media) => {
-          ResourceManager.add(name, media as any)
-          if (currentScene)
-            currentScene.emit("progress", (i + 1) / toLoad.length)
+          this.emit("progress", (i + 1) / toLoad.length)
         })
         .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
     }
+
     if (!currentScene) this.sceneManager.play(0)
+
     this.loop = new FpsCtrl(60, this.update)
     this.save = new SaveManager()
     this.eventsAndErrors()

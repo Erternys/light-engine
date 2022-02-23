@@ -6,113 +6,123 @@ import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
 
 export default class Polygon extends Entity {
-  public get points(): Array<Vector2> {
-    return [
-      new Vector2(0, 0).add(this),
-      new Vector2(0, 1).add(this),
-      new Vector2(1, 1).add(this),
-      new Vector2(1, 0).add(this),
-    ]
-  }
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y)
-    this.fillColor = "#fff"
-    this.origin.set(this)
+    this.points = [
+      new Vector2(0, 0),
+      new Vector2(0, 1),
+      new Vector2(1, 1),
+      new Vector2(1, 0),
+    ]
     this.body.points = this.points
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
+
     this.drawer
-      .points(this.points)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .fill(this.fillColor)
-      .stroke(this.strokeColor)
-      .lineWidth(this.lineWidth)
-      .masks(this.group?.mask, this.mask)
+      .addPosition(this.x, this.y)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setFillColor(this.fillColor)
+      .setStrokeColor(this.strokeColor)
+      .setLineStyle({ width: this.lineWidth })
+      .setMasks(this.group?.mask, this.mask)
+      .createPolygon(this.points)
       .draw(context)
   }
   debug(context: CanvasRenderingContext2D, delta: number): void {
     // draw the origin of the entity
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
+
     this.drawer
-      .move(this.origin.x, this.origin.y)
-      .radius(2)
-      .alpha(0.8)
-      .alpha(this.alpha)
-      .fill("#f00")
+      .addPosition(this.x, this.y)
+      .addAlpha(0.8)
+      .addAlpha(this.alpha)
+      .setFillColor("#f00")
+      .createCircle(2)
       .draw(context)
 
     // draw the bounds of the entity
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
+
     this.drawer
-      .points(this.points)
-      .alpha(0.8)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .stroke("#00f")
-      .fill("transparent")
+      .addPosition(this.x, this.y)
+      .addAlpha(0.8)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setStrokeColor("#00f")
+      .createPolygon(this.points)
       .draw(context)
 
     // draw the velocity vector of the entity
     if (this.force.length() > 0) {
-      if (!this.fixed) this.drawer.camera(this.parent.camera)
+      if (!this.fixed) this.drawer.setCamera(this.parent.camera)
       if (this.parent.isPlayed === "opacity")
-        this.drawer.alpha(this.parent.alpha)
-      if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+        this.drawer.addAlpha(this.parent.alpha)
+      if (isDefined(this.group))
+        this.drawer.addPosition(this.group.x, this.group.y)
+
       this.drawer
-        .move(this.origin.x, this.origin.y)
-        .points([Vector2.Zero(), this.force.div(delta)])
-        .alpha(0.8)
-        .alpha(this.alpha)
-        .fill("#0f0")
-        .stroke("#0f0")
-        .lineWidth(2)
+        .addPosition(this.x, this.y)
+        .addAlpha(0.8)
+        .addAlpha(this.alpha)
+        .setStrokeColor("#0f0")
+        .setLineStyle({ width: 2 })
+        .createLine([Vector2.Zero(), this.force.div(delta)])
         .draw(context)
     }
 
     // draw the body of the entity
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
-    if (this.body.isCircle()) {
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
+
+    if (isDefined(this.body) && this.body.isCircle()) {
       const { x, y } = this.body.toSATBox().pos
       this.drawer
-        .move(x, y)
-        .radius(this.body.radius)
-        .alpha(0.8)
-        .alpha(this.alpha)
-        .angle(this.angle)
-        .origin(this.origin)
-        .stroke("#f0f")
-        .fill("transparent")
+        .addPosition(x, y)
+        .addAlpha(0.8)
+        .addAlpha(this.alpha)
+        .addAngle(this.angle)
+        .setOrigin(this.origin.x, this.origin.y)
+        .setStrokeColor("#f0f")
+        .createCircle(this.body.radius)
         .draw(context)
-    } else {
+    } else if (isDefined(this.body)) {
       const { points } = this.body.toSATBox() as SAT.Polygon
       this.drawer
-        .points(points.map((p) => Vector2.from(p)))
-        .alpha(0.8)
-        .alpha(this.alpha)
-        .angle(this.angle)
-        .origin(this.origin)
-        .stroke("#f0f")
-        .fill("transparent")
+        .addAlpha(0.8)
+        .addAlpha(this.alpha)
+        .addAngle(this.angle)
+        .setStrokeColor("#f0f")
+        .createPolygon(points.map((p) => Vector2.from(p)))
         .draw(context)
     }
   }
 
   toSATEntity(): SAT.Polygon {
+    const groupMove = Vector2.from(this.group ?? 0)
     return new SAT.Polygon(
-      new SAT.Vector(this.group?.x ?? 0, this.group?.y ?? 0),
-      this.points.map((v) => v.toSATVector())
+      new SAT.Vector(this.x, this.y),
+      this.points.map((v) =>
+        v.add(this).add(groupMove).sub(this.origin).toSATVector()
+      )
     )
   }
 }

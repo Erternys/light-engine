@@ -6,38 +6,35 @@ import Polygon from "./Polygon"
 export default class Rectangle extends Polygon {
   public width: number
   public height: number
-  public get points(): Array<Vector2> {
-    return [
-      new Vector2(this.x, this.y).rotate(this.angle, this.origin),
-      new Vector2(this.x + this.width, this.y).rotate(this.angle, this.origin),
-      new Vector2(this.x + this.width, this.y + this.height).rotate(
-        this.angle,
-        this.origin
-      ),
-      new Vector2(this.x, this.y + this.height).rotate(this.angle, this.origin),
-    ]
-  }
   constructor(scene: Scene, x: number, y: number, w: number, h: number) {
     super(scene, x, y)
     this.width = w
     this.height = h
-    this.fillColor = "#fff"
-    this.origin.set(this)
-    this.body.points = this.points.map((p) => p.sub(this))
+    this.points = [
+      new Vector2(0, 0),
+      new Vector2(this.width, 0),
+      new Vector2(this.width, this.height),
+      new Vector2(0, this.height),
+    ]
+    this.body.points = this.points
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
+
     this.drawer
-      .points(this.points)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .fill(this.fillColor)
-      .stroke(this.strokeColor)
-      .lineWidth(this.lineWidth)
-      .masks(this.group?.mask, this.mask)
+      .addPosition(this.x, this.y)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setFillColor(this.fillColor)
+      .setStrokeColor(this.strokeColor)
+      .setLineStyle({ width: this.lineWidth })
+      .setMasks(this.group?.mask, this.mask)
+      .createPolygon(this.points)
       .draw(context)
   }
 }

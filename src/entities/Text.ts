@@ -2,6 +2,7 @@ import Rectangle from "./Rectangle"
 import { TextStyle } from "../private"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
+import Vector2 from "../gameobjects/Vector2"
 
 export default class Text extends Rectangle {
   public content: string
@@ -11,72 +12,76 @@ export default class Text extends Rectangle {
     x: number,
     y: number,
     content: string,
-    style: TextStyle
+    style: TextStyle = {}
   ) {
     super(scene, x, y, null, null)
     this.content = content
-    this.style = Object.assign(
-      {
-        shadow: null,
-        lineSpacing: 6,
-        background: null,
-        align: "left",
-        baseline: "top",
-        font: null,
+    this.style = {
+      font: {
+        family: "Arial",
+        size: 12,
+        ...style.font,
       },
-      style
-    )
-    this.style.shadow = Object.assign(
-      {
+      align: "left",
+      baseline: "top",
+      lineSpacing: 1.1,
+      background: "transparent",
+      shadow: {
         offsetX: 0,
         offsetY: 0,
-        color: "#000",
         blur: 0,
+        color: "rgba(0,0,0,0)",
+        ...style.shadow,
       },
-      this.style.shadow
-    )
-    this.style.font = Object.assign(
-      {
-        size: 16,
-        family: "Arial",
-      },
-      this.style.font
-    )
-
-    const { width, height } = this.drawer
-      .text(content)
-      .style(this.style)
-      .measureText(scene.game.context)
+      ...style,
+    }
+    this.setTextSize()
     this.drawer.reset()
-
-    this.width = width
-    this.height = height
   }
   draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
 
-    const { width, height } = this.drawer
-      .text(this.content)
-      .style(this.style)
-      .measureText(context)
-
-    this.width = width
-    this.height = height
+    this.setTextSize()
 
     this.drawer
-      .move(this.x, this.y)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .fill(this.fillColor)
-      .stroke(this.strokeColor)
-      .masks(this.group?.mask, this.mask)
+      .addPosition(this.x, this.y)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setFillColor(this.fillColor)
+      .setStrokeColor(this.strokeColor)
+      .addMasks(this.group?.mask, this.mask)
+      .createText(this.content)
       .draw(context)
   }
   setText(content: string) {
     this.content = content
     return this
+  }
+  getText() {
+    return this.content
+  }
+
+  private setTextSize() {
+    const { width, height } = this.drawer
+      .setTextStyle(this.style)
+      .measureText(this.scene.game.context, this.content)
+
+    if (width != this.width || height != this.height) {
+      this.width = width
+      this.height = height
+
+      this.points = [
+        new Vector2(0, 0),
+        new Vector2(this.width, 0),
+        new Vector2(this.width, this.height),
+        new Vector2(0, this.height),
+      ]
+      this.body.points = this.points
+    }
   }
 }

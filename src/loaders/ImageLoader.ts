@@ -11,14 +11,18 @@ export default class ImageLoader extends Loader {
     return this.image
   }
 
+  getNaturalSize(): [number, number] {
+    return [this.image.naturalWidth, this.image.naturalHeight]
+  }
+
   load(): Promise<this> {
     return new Promise((wait, fail) => {
-      const img = document.createElement("img")
-      img.src = this.src
-      img.onload = () => {
+      this.image = document.createElement("img")
+      this.image.src = this.src
+      this.image.onload = () => {
         wait(this)
       }
-      img.onerror = fail
+      this.image.onerror = fail
     })
   }
 }

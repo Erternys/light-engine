@@ -85,6 +85,6 @@ export default class Canvas extends EventEmitter {
 
   get2DContext() {
     if (!isDefined(this.element)) return null
-    return this.element.getContext("2d")
+    return this.element.getContext("2d", { desynchronized: true })
   }
 }

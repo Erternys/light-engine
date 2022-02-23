@@ -7,32 +7,27 @@ import Rectangle from "./Rectangle"
 export default class Image extends Rectangle {
   public flip: Flip = new Flip()
   constructor(scene: Scene, x: number, y: number, src: string) {
-    super(scene, x, y, null, null)
+    super(scene, x, y, ...ResourceManager.images.get(src).getNaturalSize())
     this.src = src
-    const image = ResourceManager.images.get(src).getData()
-    if (isDefined(image)) {
-      this.width = image.naturalWidth
-      this.height = image.naturalHeight
-    }
-    this.body.points = this.points.map((p) => p.sub(this))
   }
   draw(context: CanvasRenderingContext2D) {
     const image = ResourceManager.images.get(this.src)
     if (!isDefined(image)) return
 
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
 
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
     this.drawer
-      .move(this.x, this.y)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .size(this.width, this.height)
-      .flip(this.flip)
-      .image(image.getData())
-      .masks(this.group?.mask, this.mask)
+      .addPosition(this.x, this.y)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setSize(this.width, this.height)
+      .setMasks(this.group?.mask, this.mask)
+      .createImage(image.getData(), null, this.flip)
       .draw(context)
   }
 }

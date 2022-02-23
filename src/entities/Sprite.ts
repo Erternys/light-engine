@@ -1,6 +1,6 @@
+import { isDefined } from "../helper"
 import Animation from "../animations/Animation"
 import Frame from "../animations/Frame"
-import { isDefined } from "../helper"
 import ResourceManager from "../managers/ResourceManager"
 import Scene from "../gameobjects/Scene"
 import Image from "./Image"
@@ -19,24 +19,28 @@ export default class Sprite extends Image {
     if (isDefined(this.animation) && isDefined(this.animation.currentFrame))
       this.frame = this.animation.currentFrame
 
-    if (!this.fixed) this.drawer.camera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity") this.drawer.alpha(this.parent.alpha)
-    if (isDefined(this.group)) this.drawer.move(this.group.x, this.group.y)
+    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity")
+      this.drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group))
+      this.drawer.addPosition(this.group.x, this.group.y)
 
     this.drawer
-      .move(this.x, this.y)
-      .alpha(this.alpha)
-      .angle(this.angle)
-      .origin(this.origin)
-      .image(image.getData(), this.frame)
-      .size(this.width, this.height)
-      .flip(this.flip)
-      .masks(this.group?.mask, this.mask)
+      .addPosition(this.x, this.y)
+      .addAlpha(this.alpha)
+      .addAngle(this.angle)
+      .setOrigin(this.origin.x, this.origin.y)
+      .setSize(this.width, this.height)
+      .setMasks(this.group?.mask, this.mask)
+      .createImage(image.getData(), this.frame, this.flip)
       .draw(context)
   }
 
   setAnimation(animation: Animation) {
     this.animation = animation
     return this
+  }
+  getAnimation(): Animation {
+    return this.animation
   }
 }

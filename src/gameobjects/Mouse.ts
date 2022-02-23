@@ -101,11 +101,11 @@ export default class Mouse extends Node<Game> {
   debug(context: CanvasRenderingContext2D) {
     // draw the center of the mouse
     this.drawer
-      .camera(this.parent.currentScene.camera)
-      .move(this.x, this.y)
-      .radius(2)
-      .fill("#f00")
-      .alpha(0.8)
+      .setCamera(this.parent.currentScene.camera)
+      .addPosition(this.x, this.y)
+      .addAlpha(0.8)
+      .setFillColor("#f00")
+      .createCircle(2)
       .draw(context)
   }
 
