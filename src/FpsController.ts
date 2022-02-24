@@ -18,6 +18,8 @@ export default class FpsCtrl {
     this.delay = 1000 / fps
   }
   private loop(timestamp: number) {
+    if (!this.isPlaying) return cancelAnimationFrame(this.tref)
+
     if (!isDefined(this.time)) this.time = timestamp
     var seg = Math.floor((timestamp - this.time) / this.delay)
     if (seg > this.frame) {
