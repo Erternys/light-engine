@@ -14,13 +14,13 @@ import Loader from "../loaders/Loader"
 import AudioLoader from "../loaders/AudioLoader"
 
 interface ConfigOption<C extends Canvas> {
-  dev?: boolean
+  canvas: C
+  scenes: Scene[]
+  loads?: { [x: string]: Loader }
+  loadScene?: Scene & { preload: Array<string> }
   debug?: boolean
   pixel?: boolean
-  canvas?: C
-  loads: { [x: string]: Loader }
-  loadScene: Scene & { preload: Array<string> }
-  scene: (g: Game<C>) => SceneManager
+  dev?: boolean
 }
 
 const memory = new Map<string, AudioManager>()
@@ -50,7 +50,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     customStorage.set("development", config.dev ?? false)
 
     this.playedWithOpacity = []
-    this.debug = config.debug
+    this.debug = config.debug ?? false
     this.pixel = config.pixel ?? false
     this.update = this.update.bind(this)
     this.initScene = this.initScene.bind(this)
@@ -67,7 +67,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
 
-    this.sceneManager = config.scene(this)
+    this.sceneManager = new SceneManager(this, config.scenes)
     this.resources = new ResourceManager()
 
     this.resourcesNames = Object.keys(config.loads ?? {})

@@ -6,13 +6,7 @@ class SceneError extends Error {}
 export default class SceneManager extends Manager {
   private list: Array<Scene> = []
   private game: Game
-  public static create(
-    list: Array<typeof Scene | Scene>
-  ): (game: Game) => SceneManager {
-    return (game: Game) => {
-      return new SceneManager(game, list)
-    }
-  }
+
   constructor(game: Game, list: Array<typeof Scene | Scene>) {
     super()
     this.game = game
