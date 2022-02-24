@@ -1,7 +1,9 @@
 import { EventEmitter } from "../EventEmitter"
 
 export default class Loader extends EventEmitter {
-  constructor(public src: string, public type: "image" | "audio" | "font") {
+  public loaded = false
+  public loading = false
+  constructor(public src: string, public type: string) {
     super()
   }
   getData(): any {

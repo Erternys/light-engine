@@ -154,7 +154,7 @@ export class GamepadInteractor extends EventEmitter {
   }
 }
 
-export const customStorage = new Storage()
+export const customStorage = new Storage<any>()
 export function isDefined(v: any) {
   return v !== undefined && v !== null
 }
@@ -164,14 +164,4 @@ export function arrayDiff(arr1: any[], arr2: any[]) {
     if (arr1[i] !== arr2[i]) return true
   }
   return false
-}
-export enum Warning {
-  Scene,
-  Entity,
-  Manager,
-}
-export enum Errors {
-  Load,
-  Audio,
-  ClientKey,
 }

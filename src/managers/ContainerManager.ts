@@ -1,6 +1,7 @@
-import { Warning } from "../helper"
 import Scene from "../gameobjects/Scene"
 import Manager from "./Manager"
+
+class ContainerError extends Error {}
 
 export default class ContainerManager extends Manager {
   public scene: Scene
@@ -13,9 +14,9 @@ export default class ContainerManager extends Manager {
   public add(...managers: Array<typeof Manager | Manager>) {
     this.list = [
       ...this.list,
-      ...managers.map((entity) => {
-        if (!(entity instanceof Function)) return entity
-        return new entity()
+      ...managers.map((manager) => {
+        if (!(manager instanceof Function)) return manager
+        return new manager()
       }),
     ]
     return this
@@ -25,20 +26,17 @@ export default class ContainerManager extends Manager {
     return this
   }
   public setManagers(...list: Array<typeof Manager | Manager>) {
-    this.list = list.map((entity) => {
-      if (entity instanceof Manager) return entity
-      return new entity()
+    this.list = list.map((manager) => {
+      if (manager instanceof Manager) return manager
+      return new manager()
     })
     return this
   }
   public getManager(name: string): Manager {
-    const entity = this.list.find((manager) => manager.name === name)
-    if (entity) return entity
-    this.globals.emit(
-      "w" + Warning.Manager,
-      `this manager ${name} is not create`
-    )
-    return new Manager()
+    const manager = this.list.find((manager) => manager.name === name)
+    if (manager) return manager
+
+    throw new ContainerError(`this manager ${name} is not create`)
   }
   public getAllType(type: string) {
     return this.list.filter((manager) => manager.type.description === type)

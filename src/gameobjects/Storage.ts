@@ -12,7 +12,7 @@ export default class Storage<V> extends EventEmitter {
   get size() {
     return this.keys().length
   }
-  get(key: StorageKey, defaultValue: V = null) {
+  get(key: StorageKey, defaultValue: V = null): V {
     if (!this.has(key)) return defaultValue
     return (this as any)[key]
   }

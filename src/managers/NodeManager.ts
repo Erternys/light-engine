@@ -1,4 +1,3 @@
-import { Warning } from "../helper"
 import Node from "../nodes/Node"
 import Scene from "../gameobjects/Scene"
 import Manager from "./Manager"
@@ -85,7 +84,6 @@ export default class NodeManager extends Manager {
       }
     }
 
-    this.globals.emit("w" + Warning.Entity, `this entity ${name} is not create`)
     return null
   }
   public getNodes(name: string): Node<Scene>[] {

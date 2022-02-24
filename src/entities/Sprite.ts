@@ -1,9 +1,9 @@
 import { isDefined } from "../helper"
 import Animation from "../animations/Animation"
 import Frame from "../animations/Frame"
-import ResourceManager from "../managers/ResourceManager"
 import Scene from "../gameobjects/Scene"
 import Image from "./Image"
+import ImageLoader from "../loaders/ImageLoader"
 
 export default class Sprite extends Image {
   public animation: Animation
@@ -13,8 +13,7 @@ export default class Sprite extends Image {
     this.frame = new Frame(0, 0, this.width, this.height)
   }
   draw(context: CanvasRenderingContext2D) {
-    const image = ResourceManager.images.get(this.src)
-    if (!isDefined(image)) return
+    const image = this.parent.game.resources.get<ImageLoader>("image", this.src)
 
     if (isDefined(this.animation) && isDefined(this.animation.currentFrame))
       this.frame = this.animation.currentFrame

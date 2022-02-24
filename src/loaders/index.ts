@@ -3,6 +3,7 @@ import FontLoader from "./FontLoader"
 import ImageLoader from "./ImageLoader"
 
 export { default as Loader } from "./Loader"
+
 export function Image(link: string) {
   return new ImageLoader(link)
 }

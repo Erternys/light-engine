@@ -1,17 +1,40 @@
-import AudioLoader from "../loaders/AudioLoader"
-import FontLoader from "../loaders/FontLoader"
-import ImageLoader from "../loaders/ImageLoader"
+import Storage from "../gameobjects/Storage"
+import Loader from "../loaders/Loader"
 import Manager from "./Manager"
+import { isDefined } from "../helper"
+
+class ResourceError extends Error {}
 
 export default class ResourceManager extends Manager {
-  public static images: Map<string, ImageLoader> = new Map()
-  public static audios: Map<string, AudioLoader> = new Map()
-  public static fonts: Map<string, FontLoader> = new Map()
+  public resources: Storage<Loader>
 
-  static add(name: string, resource: AudioLoader | FontLoader | ImageLoader) {
-    if (resource.type === "image") this.images.set(name, resource)
-    else if (resource.type === "audio") this.audios.set(name, resource)
-    else if (resource.type === "font") this.fonts.set(name, resource)
+  constructor() {
+    super()
+    this.resources = new Storage()
+  }
+
+  add(name: string, resource: Loader) {
+    this.resources.set(name, resource)
     return this
+  }
+
+  async load(...names: string[]) {
+    for (const name of names) {
+      const resource = this.resources.get(name)
+      if (isDefined(resource)) await resource.load(name)
+    }
+  }
+
+  get<T>(type: string, name: string): T {
+    if (!this.resources.has(name))
+      throw new ResourceError(`"${name}" doesn't exist`)
+    const resource = this.resources.get(name)
+
+    if (!resource.loaded && !resource.loading) resource.load(name)
+
+    if (resource.type !== "image")
+      throw new ResourceError(`"${name}" hasn't the type "${type}"`)
+
+    return resource as unknown as T
   }
 }

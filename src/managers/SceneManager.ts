@@ -1,8 +1,8 @@
-import { Warning } from "../helper"
 import Scene from "../gameobjects/Scene"
 import Game from "../core/Game"
 import Manager from "./Manager"
 
+class SceneError extends Error {}
 export default class SceneManager extends Manager {
   private list: Array<Scene> = []
   private game: Game
@@ -38,7 +38,7 @@ export default class SceneManager extends Manager {
     return this.getScene(this.list.length - 1)
   }
   public play(name: string | number | Scene): Scene {
-    return this.game.playScene(this.getScene(name))
+    return this.game.changeScene(this.getScene(name))
   }
   public playWithOpacity(
     name: string | number | Scene,
@@ -56,16 +56,12 @@ export default class SceneManager extends Manager {
     if (typeof name === "string") {
       const scene = this.list.find((scene) => scene.name === name)
       if (scene) return scene
-      this.globals.emit("w" + Warning.Scene, `this scene ${name} is not create`)
     } else if (typeof name === "number") {
       const scene = this.list[name]
       if (scene) return scene
-      this.globals.emit(
-        "w" + Warning.Scene,
-        `the ${name} scene has not been created`
-      )
     } else if (typeof name === "object") return name
-    return this.list[0]
+
+    throw new SceneError(`the scene ${name} doesn't exist`)
   }
   public getScenes(filter = (scene: Scene) => true) {
     return this.list.filter(filter)

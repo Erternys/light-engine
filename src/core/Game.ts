@@ -1,5 +1,5 @@
 import { EventEmitter } from "../EventEmitter"
-import { Errors, isDefined, Warning, customStorage } from "../helper"
+import { isDefined, customStorage } from "../helper"
 import FpsCtrl from "../FpsController"
 import Mouse from "../gameobjects/Mouse"
 import Keyboard from "../gameobjects/Keyboard"
@@ -11,12 +11,14 @@ import Scene, { StateEnum } from "../gameobjects/Scene"
 import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
 import Loader from "../loaders/Loader"
+import AudioLoader from "../loaders/AudioLoader"
+
 interface ConfigOption<C extends Canvas> {
   dev?: boolean
   debug?: boolean
   pixel?: boolean
   canvas?: C
-  load: { [x: string]: Loader }
+  loads: { [x: string]: Loader }
   loadScene: Scene & { preload: Array<string> }
   scene: (g: Game<C>) => SceneManager
 }
@@ -24,6 +26,7 @@ interface ConfigOption<C extends Canvas> {
 const memory = new Map<string, AudioManager>()
 export default class Game<C extends Canvas = Canvas> extends EventEmitter {
   public canvas: C
+  public resources: ResourceManager
   public context: CanvasRenderingContext2D
   public playedWithOpacity: Scene[]
   public currentScene: Scene
@@ -41,6 +44,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
 
   public delta = 0
   private oldTimeStamp = 0
+  private resourcesNames: string[]
   constructor(config: ConfigOption<C>, width = 800, height = 600) {
     super()
     customStorage.set("development", config.dev ?? false)
@@ -63,46 +67,31 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.keyboard = new Keyboard()
     this.gamepad = new Gamepad()
 
-    const medias = config.load || {}
-
-    for (const name in medias) {
-      const media = medias[name]
-      ResourceManager.add(name, media as any)
-    }
-
     this.sceneManager = config.scene(this)
-    let toLoad = Object.keys(medias)
-    let currentScene: Scene | null = null
+    this.resources = new ResourceManager()
+
+    this.resourcesNames = Object.keys(config.loads ?? {})
+    for (const name of this.resourcesNames) {
+      this.resources.add(name, config.loads[name])
+    }
 
     if (isDefined(config?.loadScene)) {
-      const toPreloading = config.loadScene.preload || []
-      toLoad = toLoad.filter((v) => !toPreloading.includes(v))
-      toPreloading.forEach((name: string) => {
-        config.load[name]
-          .load(name)
-          .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
-      })
-      currentScene = this.sceneManager.add(config.loadScene).play(0)
-      this.initScene(currentScene)
-      this.on("progress", (progress) => {
-        if (progress === 1) this.emit("progress:ended")
-      })
-    }
-    for (let i = 0; i < toLoad.length; i++) {
-      const name = toLoad[i]
-      config.load[name]
-        .load(name)
-        .then((media) => {
-          this.emit("progress", (i + 1) / toLoad.length)
-        })
-        .catch((reason) => this.globals.emit("e" + Errors.Load, reason))
+      this.sceneManager.add(config.loadScene)
+
+      if (isDefined(config.loadScene.preload)) {
+        this.resourcesNames = this.resourcesNames.filter(
+          (v) => !config.loadScene.preload.includes(v)
+        )
+        this.resources.load(...config.loadScene.preload)
+      }
+      this.sceneManager.play(config.loadScene)
     }
 
-    if (!currentScene) this.sceneManager.play(0)
+    if (!isDefined(this.currentScene)) this.sceneManager.play(0)
 
     this.loop = new FpsCtrl(60, this.update)
     this.save = new SaveManager()
-    this.eventsAndErrors()
+    this.handler()
   }
 
   get width(): number {
@@ -137,24 +126,16 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     }
     return this.currentScene
   }
-  /***
-   * @alias changeScene
-   */
-  playScene(scene: Scene | string | number) {
-    return this.changeScene(scene)
-  }
-  getAudio(name: string): AudioManager | null {
+  getAudio(name: string): AudioManager {
     if (memory.has(name) && !memory.get(name).isDeleted) return memory.get(name)
-    const audio = ResourceManager.audios.get(name)
-    if (audio) {
-      const manager = new AudioManager(audio, name)
-      memory.set(name, manager)
-      manager.on("destroy", () => {
-        memory.delete(name)
-      })
-      return manager
-    }
-    return null
+
+    const audio = this.resources.get<AudioLoader>("audio", name)
+    const manager = new AudioManager(audio, name)
+    memory.set(name, manager)
+    manager.on("destroy", () => {
+      memory.delete(name)
+    })
+    return manager
   }
   private initScene(scene: Scene) {
     if (!scene.inited) {
@@ -269,13 +250,14 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.currentScene.afterUpdate(this.delta)
     this.globals.emit("freeing")
   }
-  private eventsAndErrors() {
+  private handler() {
     this.globals.on("visibilitychange", (e) => {
       this.loop.oldTimeStamp = e.timeStamp
       this.oldTimeStamp = e.timeStamp
     })
     window.addEventListener("load", () => {
       this.loop.play()
+      this.resources.load(...this.resourcesNames)
     })
     window.addEventListener("keydown", (e) => {
       this.globals.emit("key:down", e.key)
@@ -289,17 +271,5 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     window.addEventListener("gamepaddisconnected", (e) => {
       this.globals.emit("gamepad:remove", e)
     })
-    for (const id in Errors) {
-      if (/\d/.test(id))
-        this.globals.on(`e${id}`, (reason: string) =>
-          console.error(`[${Errors[id]}]: ${reason}`)
-        )
-    }
-    for (const id in Warning) {
-      if (/\d/.test(id))
-        this.globals.on(`w${id}`, (reason: string) =>
-          console.warn(`[${Warning[id]}]: ${reason}`)
-        )
-    }
   }
 }

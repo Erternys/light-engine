@@ -1,18 +1,22 @@
 import { isDefined } from "../helper"
-import ResourceManager from "../managers/ResourceManager"
 import Flip from "../gameobjects/Flip"
 import Scene from "../gameobjects/Scene"
 import Rectangle from "./Rectangle"
+import ImageLoader from "../loaders/ImageLoader"
 
 export default class Image extends Rectangle {
   public flip: Flip = new Flip()
   constructor(scene: Scene, x: number, y: number, src: string) {
-    super(scene, x, y, ...ResourceManager.images.get(src).getNaturalSize())
+    super(
+      scene,
+      x,
+      y,
+      ...scene.game.resources.get<ImageLoader>("image", src).getNaturalSize()
+    )
     this.src = src
   }
   draw(context: CanvasRenderingContext2D) {
-    const image = ResourceManager.images.get(this.src)
-    if (!isDefined(image)) return
+    const image = this.parent.game.resources.get<ImageLoader>("image", this.src)
 
     if (!this.fixed) this.drawer.setCamera(this.parent.camera)
     if (this.parent.isPlayed === "opacity")

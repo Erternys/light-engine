@@ -1,8 +1,7 @@
 import Loader from "./Loader"
 
 export default class ImageLoader extends Loader {
-  public image: HTMLImageElement
-  public type: "image"
+  private image: HTMLImageElement
   constructor(src: string) {
     super(src, "image")
   }
@@ -17,12 +16,15 @@ export default class ImageLoader extends Loader {
 
   load(): Promise<this> {
     return new Promise((wait, fail) => {
+      this.loading = true
       this.image = document.createElement("img")
-      this.image.src = this.src
       this.image.onload = () => {
+        this.loading = false
+        this.loaded = true
         wait(this)
       }
       this.image.onerror = fail
+      this.image.src = this.src
     })
   }
 }
