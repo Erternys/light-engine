@@ -44,4 +44,25 @@ export default class GroupNode extends NodeManager {
       node.beforeRedraw(delta)
     })
   }
+  public redraw(delta: number) {
+    this.nodes = this.nodes.sort((a, b) => a.y - b.y)
+    this.nodes.forEach((node) => {
+      node.redraw(delta)
+    })
+  }
+  public draw(context: CanvasRenderingContext2D) {
+    this.nodes.forEach((node) => {
+      node.draw(context)
+    })
+  }
+  public debug(context: CanvasRenderingContext2D, delta: number) {
+    this.nodes.forEach((node) => {
+      node.debug(context, delta)
+    })
+  }
+  public afterRedraw(delta: number) {
+    this.nodes.forEach((node) => {
+      node.afterRedraw(delta)
+    })
+  }
 }
