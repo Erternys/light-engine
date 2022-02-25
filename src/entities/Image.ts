@@ -3,6 +3,7 @@ import Flip from "../gameobjects/Flip"
 import Scene from "../gameobjects/Scene"
 import Rectangle from "./Rectangle"
 import ImageLoader from "../loaders/ImageLoader"
+import Drawer from "../gameobjects/Drawer"
 
 export default class Image extends Rectangle {
   public flip: Flip = new Flip()
@@ -15,16 +16,14 @@ export default class Image extends Rectangle {
     )
     this.src = src
   }
-  draw(context: CanvasRenderingContext2D) {
+  draw(drawer: Drawer) {
     const image = this.parent.game.resources.get<ImageLoader>("image", this.src)
 
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-    this.drawer
+    drawer
       .addPosition(this.x, this.y)
       .addAlpha(this.alpha)
       .addAngle(this.angle)
@@ -32,6 +31,6 @@ export default class Image extends Rectangle {
       .setSize(this.width, this.height)
       .setMasks(this.group?.mask, this.mask)
       .createImage(image.getData(), null, this.flip)
-      .draw(context)
+      .draw()
   }
 }

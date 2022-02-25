@@ -65,7 +65,7 @@ export default class Drawer extends EventEmitter {
     | ObjectText
   )[] = []
 
-  constructor() {
+  constructor(protected context: CanvasRenderingContext2D) {
     super()
     this.reset()
   }
@@ -268,20 +268,20 @@ export default class Drawer extends EventEmitter {
 
     return this
   }
-  measureText(context: CanvasRenderingContext2D, text: string) {
-    context.save()
-    context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
+  measureText(text: string) {
+    this.context.save()
+    this.context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
 
     let width = 0
     const height = text.split("\n").reduce((acc, line) => {
-      const metrics = context.measureText(line)
+      const metrics = this.context.measureText(line)
       const height =
         metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
       width = Math.max(width, metrics.width)
 
       return acc + height * this.textStyle.lineSpacing
     }, 0)
-    context.restore()
+    this.context.restore()
 
     return {
       width,
@@ -289,31 +289,31 @@ export default class Drawer extends EventEmitter {
     }
   }
 
-  start(context: CanvasRenderingContext2D) {
-    context.save()
-    context.beginPath()
+  start() {
+    this.context.save()
+    this.context.beginPath()
     return this
   }
-  end(context: CanvasRenderingContext2D) {
-    context.fill()
-    context.stroke()
-    context.closePath()
-    context.restore()
+  end() {
+    this.context.fill()
+    this.context.stroke()
+    this.context.closePath()
+    this.context.restore()
     return this
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  draw() {
     if (!isDefined(this.origin)) this.origin = Vector2.Zero()
 
     for (const object of this.objects) {
-      this.start(context)
-      context.lineWidth = this.lineStyle.width
-      context.globalAlpha = this.alpha
+      this.start()
+      this.context.lineWidth = this.lineStyle.width
+      this.context.globalAlpha = this.alpha
 
-      context.fillStyle = this.fillColor
-      context.strokeStyle = this.strokeColor
+      this.context.fillStyle = this.fillColor
+      this.context.strokeStyle = this.strokeColor
       if (object.type === "line") {
-        context.translate(
+        this.context.translate(
           this.pos.x + (this.camera?.x ?? 0),
           this.pos.y + (this.camera?.x ?? 0)
         )
@@ -326,13 +326,13 @@ export default class Drawer extends EventEmitter {
             .rotate(this.angle, this.origin)
             .sub(this.origin)
 
-          context.moveTo(x1, y1)
-          context.lineTo(x2, y2)
-          this.end(context)
-          this.start(context)
+          this.context.moveTo(x1, y1)
+          this.context.lineTo(x2, y2)
+          this.end()
+          this.start()
         }
       } else if (object.type === "polygon") {
-        context.translate(
+        this.context.translate(
           this.pos.x + (this.camera?.x ?? 0),
           this.pos.y + (this.camera?.x ?? 0)
         )
@@ -343,28 +343,28 @@ export default class Drawer extends EventEmitter {
           .rotate(this.angle, this.origin)
           .sub(this.origin)
 
-        context.moveTo(x, y)
+        this.context.moveTo(x, y)
         for (let i = 1; i < object.points.length; i++) {
           const { x, y } = object.points[i]
             .rotate(this.angle, this.origin)
             .sub(this.origin)
 
-          context.lineTo(x, y)
+          this.context.lineTo(x, y)
         }
-        context.lineTo(x, y)
+        this.context.lineTo(x, y)
       } else if (object.type === "circle") {
         const translation = this.origin
-        context.translate(-translation.x, -translation.y)
-        context.arc(this.pos.x, this.pos.y, object.radius, 0, 2 * Math.PI)
+        this.context.translate(-translation.x, -translation.y)
+        this.context.arc(this.pos.x, this.pos.y, object.radius, 0, 2 * Math.PI)
       } else if (object.type === "image") {
         const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
-        context.translate(translation.x, translation.y)
-        context.rotate(-this.angle - (this.camera?.angle ?? 0))
-        context.scale(
+        this.context.translate(translation.x, translation.y)
+        this.context.rotate(-this.angle - (this.camera?.angle ?? 0))
+        this.context.scale(
           -2 * Number(object.flip.width) + 1,
           -2 * Number(object.flip.height) + 1
         )
-        context.drawImage(
+        this.context.drawImage(
           object.image,
           object.crop.x,
           object.crop.y,
@@ -377,22 +377,30 @@ export default class Drawer extends EventEmitter {
         )
       } else if (object.type === "text") {
         const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
-        context.translate(translation.x, translation.y)
-        context.rotate(this.angle)
-        context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
-        context.textAlign = this.textStyle.align
-        context.textBaseline = this.textStyle.baseline
-        context.shadowColor = this.textStyle.shadow.color as string
-        context.shadowOffsetX = this.textStyle.shadow.offsetX
-        context.shadowOffsetY = this.textStyle.shadow.offsetY
-        context.shadowBlur = this.textStyle.shadow.blur
+        this.context.translate(translation.x, translation.y)
+        this.context.rotate(this.angle)
+        this.context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
+        this.context.textAlign = this.textStyle.align
+        this.context.textBaseline = this.textStyle.baseline
+        this.context.shadowColor = this.textStyle.shadow.color as string
+        this.context.shadowOffsetX = this.textStyle.shadow.offsetX
+        this.context.shadowOffsetY = this.textStyle.shadow.offsetY
+        this.context.shadowBlur = this.textStyle.shadow.blur
         object.text.split("\n").forEach((line, i) => {
-          const height = this.measureText(context, line).height
-          context.fillText(line, 0, height * this.textStyle.lineSpacing * i)
-          context.strokeText(line, 0, height * this.textStyle.lineSpacing * i)
+          const height = this.measureText(line).height
+          this.context.fillText(
+            line,
+            0,
+            height * this.textStyle.lineSpacing * i
+          )
+          this.context.strokeText(
+            line,
+            0,
+            height * this.textStyle.lineSpacing * i
+          )
         })
       }
-      this.end(context)
+      this.end()
     }
 
     this.reset()

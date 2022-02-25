@@ -3,6 +3,7 @@ import { TextStyle } from "../private"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
 import Vector2 from "../gameobjects/Vector2"
+import Drawer from "../gameobjects/Drawer"
 
 export default class Text extends Rectangle {
   public content: string
@@ -35,19 +36,17 @@ export default class Text extends Rectangle {
       },
       ...style,
     }
-    this.setTextSize()
-    this.drawer.reset()
+    this.setTextSize(this.scene.game.drawer)
+    this.scene.game.drawer.reset()
   }
-  draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+  draw(drawer: Drawer) {
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-    this.setTextSize()
+    this.setTextSize(drawer)
 
-    this.drawer
+    drawer
       .addPosition(this.x, this.y)
       .addAlpha(this.alpha)
       .addAngle(this.angle)
@@ -56,7 +55,7 @@ export default class Text extends Rectangle {
       .setStrokeColor(this.strokeColor)
       .addMasks(this.group?.mask, this.mask)
       .createText(this.content)
-      .draw(context)
+      .draw()
   }
   setText(content: string) {
     this.content = content
@@ -66,10 +65,10 @@ export default class Text extends Rectangle {
     return this.content
   }
 
-  private setTextSize() {
-    const { width, height } = this.drawer
+  private setTextSize(drawer: Drawer) {
+    const { width, height } = drawer
       .setTextStyle(this.style)
-      .measureText(this.scene.game.context, this.content)
+      .measureText(this.content)
 
     if (width != this.width || height != this.height) {
       this.width = width

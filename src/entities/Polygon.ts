@@ -4,6 +4,7 @@ import Entity from "../gameobjects/Entity"
 import Vector2 from "../gameobjects/Vector2"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
+import Drawer from "../gameobjects/Drawer"
 
 export default class Polygon extends Entity {
   constructor(scene: Scene, x: number, y: number) {
@@ -16,14 +17,12 @@ export default class Polygon extends Entity {
     ]
     this.body.points = this.points
   }
-  draw(context: CanvasRenderingContext2D) {
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+  draw(drawer: Drawer) {
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-    this.drawer
+    drawer
       .addPosition(this.x, this.y)
       .addAlpha(this.alpha)
       .addAngle(this.angle)
@@ -33,32 +32,28 @@ export default class Polygon extends Entity {
       .setLineStyle({ width: this.lineWidth })
       .setMasks(this.group?.mask, this.mask)
       .createPolygon(this.points)
-      .draw(context)
+      .draw()
   }
-  debug(context: CanvasRenderingContext2D, delta: number): void {
+  debug(drawer: Drawer, delta: number): void {
     // draw the origin of the entity
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-    this.drawer
+    drawer
       .addPosition(this.x, this.y)
       .addAlpha(0.8)
       .addAlpha(this.alpha)
       .setFillColor("#f00")
       .createCircle(2)
-      .draw(context)
+      .draw()
 
     // draw the bounds of the entity
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-    this.drawer
+    drawer
       .addPosition(this.x, this.y)
       .addAlpha(0.8)
       .addAlpha(this.alpha)
@@ -66,36 +61,32 @@ export default class Polygon extends Entity {
       .setOrigin(this.origin.x, this.origin.y)
       .setStrokeColor("#00f")
       .createPolygon(this.points)
-      .draw(context)
+      .draw()
 
     // draw the velocity vector of the entity
     if (this.force.length() > 0) {
-      if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-      if (this.parent.isPlayed === "opacity")
-        this.drawer.addAlpha(this.parent.alpha)
-      if (isDefined(this.group))
-        this.drawer.addPosition(this.group.x, this.group.y)
+      if (!this.fixed) drawer.setCamera(this.parent.camera)
+      if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+      if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
-      this.drawer
+      drawer
         .addPosition(this.x, this.y)
         .addAlpha(0.8)
         .addAlpha(this.alpha)
         .setStrokeColor("#0f0")
         .setLineStyle({ width: 2 })
         .createLine([Vector2.Zero(), this.force.div(delta)])
-        .draw(context)
+        .draw()
     }
 
     // draw the body of the entity
-    if (!this.fixed) this.drawer.setCamera(this.parent.camera)
-    if (this.parent.isPlayed === "opacity")
-      this.drawer.addAlpha(this.parent.alpha)
-    if (isDefined(this.group))
-      this.drawer.addPosition(this.group.x, this.group.y)
+    if (!this.fixed) drawer.setCamera(this.parent.camera)
+    if (this.parent.isPlayed === "opacity") drawer.addAlpha(this.parent.alpha)
+    if (isDefined(this.group)) drawer.addPosition(this.group.x, this.group.y)
 
     if (isDefined(this.body) && this.body.isCircle()) {
       const { x, y } = this.body.toSATBox().pos
-      this.drawer
+      drawer
         .addPosition(x, y)
         .addAlpha(0.8)
         .addAlpha(this.alpha)
@@ -103,16 +94,16 @@ export default class Polygon extends Entity {
         .setOrigin(this.origin.x, this.origin.y)
         .setStrokeColor("#f0f")
         .createCircle(this.body.radius)
-        .draw(context)
+        .draw()
     } else if (isDefined(this.body)) {
       const { points } = this.body.toSATBox() as SAT.Polygon
-      this.drawer
+      drawer
         .addAlpha(0.8)
         .addAlpha(this.alpha)
         .addAngle(this.angle)
         .setStrokeColor("#f0f")
         .createPolygon(points.map((p) => Vector2.from(p)))
-        .draw(context)
+        .draw()
     }
   }
 

@@ -12,6 +12,7 @@ import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
 import Loader from "../loaders/Loader"
 import AudioLoader from "../loaders/AudioLoader"
+import Drawer from "../gameobjects/Drawer"
 
 interface ConfigOption<C extends Canvas> {
   canvas: C
@@ -34,6 +35,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
   public gamepad: Gamepad
   public mouse: Mouse
   public loop: FpsCtrl
+  public drawer: Drawer
 
   public sceneManager: SceneManager
   public save: SaveManager
@@ -62,6 +64,7 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     this.canvas.pixel = this.pixel
 
     this.context = this.canvas.get2DContext()
+    this.drawer = new Drawer(this.context)
 
     this.mouse = new Mouse(this)
     this.keyboard = new Keyboard()
@@ -208,14 +211,8 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
       customStorage.set("currentObject", node)
 
       if (!node.hidden) {
-        this.context.save()
-        node.draw(this.context)
-        this.context.restore()
-        if (this.debug) {
-          this.context.save()
-          node.debug(this.context, this.delta)
-          this.context.restore()
-        }
+        node.draw(this.drawer)
+        if (this.debug) node.debug(this.drawer, this.delta)
       }
       node.afterRedraw(this.delta)
     }
@@ -225,14 +222,8 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
         customStorage.set("currentObject", node)
 
         if (!node.hidden) {
-          this.context.save()
-          node.draw(this.context)
-          this.context.restore()
-          if (this.debug) {
-            this.context.save()
-            node.debug(this.context, this.delta)
-            this.context.restore()
-          }
+          node.draw(this.drawer)
+          if (this.debug) node.debug(this.drawer, this.delta)
         }
         node.afterRedraw(this.delta)
       }
@@ -240,11 +231,8 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
       scene.update(this.delta)
       scene.afterUpdate(this.delta)
     }
-    if (this.debug) {
-      this.context.save()
-      this.mouse.debug(this.context)
-      this.context.restore()
-    }
+    if (this.debug) this.mouse.debug(this.drawer)
+
     customStorage.set("currentObject", this.currentScene)
     this.currentScene.update(this.delta)
     this.currentScene.afterUpdate(this.delta)

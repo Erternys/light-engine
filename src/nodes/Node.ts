@@ -12,7 +12,6 @@ import AudioManager from "../managers/AudioManager"
 import Game from "../core/Game"
 
 export default class Node<P extends Game | Scene> extends EventEmitter {
-  public drawer: Drawer
   public manager: NodeManager
   public group: GroupNode
   public mouse: Mouse
@@ -31,7 +30,6 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
 
   constructor(public parent: P, public x = 0, public y = 0) {
     super()
-    this.drawer = new Drawer()
     this.handleFree = this.handleFree.bind(this)
 
     this.mouse = parent.mouse
@@ -42,8 +40,8 @@ export default class Node<P extends Game | Scene> extends EventEmitter {
   init() {}
   beforeRedraw(delta: number) {}
   redraw(delta: number) {}
-  draw(context: CanvasRenderingContext2D) {}
-  debug(context: CanvasRenderingContext2D, delta: number) {}
+  draw(drawer: Drawer) {}
+  debug(drawer: Drawer, delta: number) {}
   afterRedraw(delta: number) {}
   destroy() {}
   free() {

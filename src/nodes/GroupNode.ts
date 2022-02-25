@@ -2,6 +2,7 @@ import NodeManager from "../managers/NodeManager"
 import Scene from "../gameobjects/Scene"
 import Mask from "../gameobjects/Mask"
 import Node from "./Node"
+import Drawer from "../gameobjects/Drawer"
 
 export default class GroupNode extends NodeManager {
   public x: number
@@ -50,14 +51,14 @@ export default class GroupNode extends NodeManager {
       node.redraw(delta)
     })
   }
-  public draw(context: CanvasRenderingContext2D) {
+  public draw(drawer: Drawer) {
     this.nodes.forEach((node) => {
-      node.draw(context)
+      node.draw(drawer)
     })
   }
-  public debug(context: CanvasRenderingContext2D, delta: number) {
+  public debug(drawer: Drawer, delta: number) {
     this.nodes.forEach((node) => {
-      node.debug(context, delta)
+      node.debug(drawer, delta)
     })
   }
   public afterRedraw(delta: number) {

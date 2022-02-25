@@ -3,6 +3,7 @@ import SAT from "sat"
 import Game from "../core/Game"
 import Node from "../nodes/Node"
 import Vector2 from "./Vector2"
+import Drawer from "./Drawer"
 
 export default class Mouse extends Node<Game> {
   public click = false
@@ -98,15 +99,15 @@ export default class Mouse extends Node<Game> {
       this.globals.emit(`mouse:down-${n}`, e)
     })
   }
-  debug(context: CanvasRenderingContext2D) {
+  debug(drawer: Drawer) {
     // draw the center of the mouse
-    this.drawer
+    drawer
       .setCamera(this.parent.currentScene.camera)
       .addPosition(this.x, this.y)
       .addAlpha(0.8)
       .setFillColor("#f00")
       .createCircle(2)
-      .draw(context)
+      .draw()
   }
 
   toSATEntity(): SAT.Polygon {
