@@ -7,12 +7,12 @@ import Gamepad from "../gameobjects/Gamepad"
 import ResourceManager from "../managers/ResourceManager"
 import AudioManager from "../managers/AudioManager"
 import SceneManager from "../managers/SceneManager"
-import Scene, { StateEnum } from "../gameobjects/Scene"
+import Scene, { SceneStateEnum } from "../gameobjects/Scene"
 import SaveManager from "../managers/SaveManager"
 import Canvas from "./Canvas"
 import Loader from "../loaders/Loader"
 import AudioLoader from "../loaders/AudioLoader"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 interface ConfigOption<C extends Canvas> {
   canvas: C
@@ -114,8 +114,8 @@ export default class Game<C extends Canvas = Canvas> extends EventEmitter {
     const scene = this.sceneManager.getScene(name)
     if (
       !isDefined(this.currentScene) ||
-      this.currentScene.changeAllow(scene, StateEnum.Next) ||
-      (isDefined(scene) && scene.changeAllow(this.currentScene, StateEnum.Prev))
+      this.currentScene.changeAllow(scene, SceneStateEnum.Next) ||
+      scene?.changeAllow?.(this.currentScene, SceneStateEnum.Prev)
     ) {
       scene.emit("called", this.currentScene)
       if (this.currentScene) {

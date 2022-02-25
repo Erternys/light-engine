@@ -4,7 +4,7 @@ import Entity from "../gameobjects/Entity"
 import Vector2 from "../gameobjects/Vector2"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class Polygon extends Entity {
   constructor(scene: Scene, x: number, y: number) {

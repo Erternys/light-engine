@@ -1,8 +1,8 @@
 import NodeManager from "../managers/NodeManager"
 import Scene from "../gameobjects/Scene"
-import Mask from "../gameobjects/Mask"
+import Mask from "../drawing/Mask"
 import Node from "./Node"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class GroupNode extends NodeManager {
   public x: number

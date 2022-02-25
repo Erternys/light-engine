@@ -1,4 +1,4 @@
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 import Scene from "../gameobjects/Scene"
 import Vector2 from "../gameobjects/Vector2"
 import { isDefined } from "../helper"

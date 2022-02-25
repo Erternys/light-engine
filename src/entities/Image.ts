@@ -3,7 +3,7 @@ import Flip from "../gameobjects/Flip"
 import Scene from "../gameobjects/Scene"
 import Rectangle from "./Rectangle"
 import ImageLoader from "../loaders/ImageLoader"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class Image extends Rectangle {
   public flip: Flip = new Flip()

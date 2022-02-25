@@ -6,8 +6,8 @@ import * as Core from "./core"
 import * as Objects from "./gameobjects"
 import * as Managers from "./managers"
 import * as Animations from "./animations"
+import * as Drawing from "./drawing"
 import * as States from "./states"
-
 import * as Nodes from "./nodes"
 import * as Entities from "./entities"
 
@@ -22,4 +22,5 @@ export {
   Entities,
   States,
   Animations,
+  Drawing
 }

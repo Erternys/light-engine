@@ -4,7 +4,7 @@ import Frame from "../animations/Frame"
 import Scene from "../gameobjects/Scene"
 import Image from "./Image"
 import ImageLoader from "../loaders/ImageLoader"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class Sprite extends Image {
   public animation: Animation

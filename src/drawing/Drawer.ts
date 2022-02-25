@@ -2,10 +2,16 @@ import { TextStyle } from "../private"
 import { EventEmitter } from "../EventEmitter"
 import { isDefined } from "../helper"
 import Camera from "../entities/Camera"
-import Flip from "./Flip"
-import Vector2 from "./Vector2"
-import type Mask from "./Mask"
-import { Frame } from "../animations"
+import Flip from "../gameobjects/Flip"
+import Vector2 from "../gameobjects/Vector2"
+import Mask from "./Mask"
+import Frame from "../animations/Frame"
+import Text from "./Text"
+import Line from "./Line"
+import Polygon from "./Polygon"
+import Circle from "./Circle"
+import Image from "./Image"
+import Entity from "./Entity"
 
 type RGBA =
   | [number, number, number, number]
@@ -21,29 +27,6 @@ interface LineStyle {
   join?: "bevel" | "round" | "miter"
 }
 
-interface ObjectLine {
-  type: "line"
-  points: Vector2[]
-}
-interface ObjectPolygon {
-  type: "polygon"
-  points: Vector2[]
-}
-interface ObjectCircle {
-  type: "circle"
-  radius: number
-}
-interface ObjectImage {
-  type: "image"
-  image: HTMLImageElement
-  crop: Frame
-  flip: Flip
-}
-interface ObjectText {
-  type: "text"
-  text: string
-}
-
 export default class Drawer extends EventEmitter {
   protected pos: Vector2 = Vector2.Zero()
   protected origin: Vector2 = Vector2.Zero()
@@ -57,13 +40,7 @@ export default class Drawer extends EventEmitter {
   protected strokeColor: string
   protected width: number
   protected height: number
-  protected objects: (
-    | ObjectCircle
-    | ObjectImage
-    | ObjectLine
-    | ObjectPolygon
-    | ObjectText
-  )[] = []
+  protected objects: Entity[] = []
 
   constructor(protected context: CanvasRenderingContext2D) {
     super()
@@ -213,33 +190,15 @@ export default class Drawer extends EventEmitter {
   }
 
   createLine(points: Vector2[]) {
-    this.objects = [
-      ...this.objects,
-      {
-        type: "line",
-        points,
-      },
-    ]
+    this.objects = [...this.objects, new Line(this, this.context, points)]
     return this
   }
   createPolygon(points: Vector2[]) {
-    this.objects = [
-      ...this.objects,
-      {
-        type: "polygon",
-        points,
-      },
-    ]
+    this.objects = [...this.objects, new Polygon(this, this.context, points)]
     return this
   }
   createCircle(radius: number) {
-    this.objects = [
-      ...this.objects,
-      {
-        type: "circle",
-        radius,
-      },
-    ]
+    this.objects = [...this.objects, new Circle(this, this.context, radius)]
     return this
   }
   createImage(image: HTMLImageElement, crop: Frame, flip: Flip) {
@@ -248,23 +207,12 @@ export default class Drawer extends EventEmitter {
     if (!isDefined(flip)) flip = new Flip()
     this.objects = [
       ...this.objects,
-      {
-        type: "image",
-        image,
-        crop,
-        flip,
-      },
+      new Image(this, this.context, image, crop, flip),
     ]
     return this
   }
   createText(text: string) {
-    this.objects = [
-      ...this.objects,
-      {
-        type: "text",
-        text,
-      },
-    ]
+    this.objects = [...this.objects, new Text(this, this.context, text)]
 
     return this
   }
@@ -306,101 +254,7 @@ export default class Drawer extends EventEmitter {
     if (!isDefined(this.origin)) this.origin = Vector2.Zero()
 
     for (const object of this.objects) {
-      this.start()
-      this.context.lineWidth = this.lineStyle.width
-      this.context.globalAlpha = this.alpha
-
-      this.context.fillStyle = this.fillColor
-      this.context.strokeStyle = this.strokeColor
-      if (object.type === "line") {
-        this.context.translate(
-          this.pos.x + (this.camera?.x ?? 0),
-          this.pos.y + (this.camera?.x ?? 0)
-        )
-        for (let i = 1; i < object.points.length; i++) {
-          const { x: x1, y: y1 } = object.points[i - 1]
-            .rotate(this.angle, this.origin)
-            .sub(this.origin)
-
-          const { x: x2, y: y2 } = object.points[i]
-            .rotate(this.angle, this.origin)
-            .sub(this.origin)
-
-          this.context.moveTo(x1, y1)
-          this.context.lineTo(x2, y2)
-          this.end()
-          this.start()
-        }
-      } else if (object.type === "polygon") {
-        this.context.translate(
-          this.pos.x + (this.camera?.x ?? 0),
-          this.pos.y + (this.camera?.x ?? 0)
-        )
-        // this.masks.map((mask) => {
-        //   if (isDefined(mask) && mask._fixed) mask.draw(context)
-        // })
-        const { x, y } = object.points[0]
-          .rotate(this.angle, this.origin)
-          .sub(this.origin)
-
-        this.context.moveTo(x, y)
-        for (let i = 1; i < object.points.length; i++) {
-          const { x, y } = object.points[i]
-            .rotate(this.angle, this.origin)
-            .sub(this.origin)
-
-          this.context.lineTo(x, y)
-        }
-        this.context.lineTo(x, y)
-      } else if (object.type === "circle") {
-        const translation = this.origin
-        this.context.translate(-translation.x, -translation.y)
-        this.context.arc(this.pos.x, this.pos.y, object.radius, 0, 2 * Math.PI)
-      } else if (object.type === "image") {
-        const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
-        this.context.translate(translation.x, translation.y)
-        this.context.rotate(-this.angle - (this.camera?.angle ?? 0))
-        this.context.scale(
-          -2 * Number(object.flip.width) + 1,
-          -2 * Number(object.flip.height) + 1
-        )
-        this.context.drawImage(
-          object.image,
-          object.crop.x,
-          object.crop.y,
-          object.crop.width,
-          object.crop.height,
-          -Number(object.flip.width) * this.width,
-          -Number(object.flip.height) * this.height,
-          this.width,
-          this.height
-        )
-      } else if (object.type === "text") {
-        const translation = this.pos.sub(this.camera ?? 0).sub(this.origin)
-        this.context.translate(translation.x, translation.y)
-        this.context.rotate(this.angle)
-        this.context.font = `${this.textStyle.font.size}px ${this.textStyle.font.family}`
-        this.context.textAlign = this.textStyle.align
-        this.context.textBaseline = this.textStyle.baseline
-        this.context.shadowColor = this.textStyle.shadow.color as string
-        this.context.shadowOffsetX = this.textStyle.shadow.offsetX
-        this.context.shadowOffsetY = this.textStyle.shadow.offsetY
-        this.context.shadowBlur = this.textStyle.shadow.blur
-        object.text.split("\n").forEach((line, i) => {
-          const height = this.measureText(line).height
-          this.context.fillText(
-            line,
-            0,
-            height * this.textStyle.lineSpacing * i
-          )
-          this.context.strokeText(
-            line,
-            0,
-            height * this.textStyle.lineSpacing * i
-          )
-        })
-      }
-      this.end()
+      object.draw()
     }
 
     this.reset()

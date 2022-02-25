@@ -3,7 +3,7 @@ import { TextStyle } from "../private"
 import { isDefined } from "../helper"
 import Scene from "../gameobjects/Scene"
 import Vector2 from "../gameobjects/Vector2"
-import Drawer from "../gameobjects/Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class Text extends Rectangle {
   public content: string

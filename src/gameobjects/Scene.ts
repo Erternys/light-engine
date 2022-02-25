@@ -10,7 +10,7 @@ import SceneManager from "../managers/SceneManager"
 import NodeManager from "../managers/NodeManager"
 import Game from "../core/Game"
 
-export enum StateEnum {
+export enum SceneStateEnum {
   Next,
   Prev,
 }
@@ -55,7 +55,7 @@ export default class Scene extends EventEmitter {
   beforeUpdate(delta: number) {}
   update(delta: number) {}
   afterUpdate(delta: number) {}
-  changeAllow(scene: Scene, state: StateEnum) {
+  changeAllow(scene: Scene, state: SceneStateEnum) {
     return true
   }
   getAudio(name: string): AudioManager | null {

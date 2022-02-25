@@ -3,7 +3,7 @@ import SAT from "sat"
 import Game from "../core/Game"
 import Node from "../nodes/Node"
 import Vector2 from "./Vector2"
-import Drawer from "./Drawer"
+import Drawer from "../drawing/Drawer"
 
 export default class Mouse extends Node<Game> {
   public click = false
