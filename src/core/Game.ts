@@ -16,7 +16,7 @@ import Drawer from "../drawing/Drawer"
 
 interface ConfigOption<C extends Canvas> {
   canvas: C
-  scenes: Scene[]
+  scenes: (Scene | typeof Scene)[]
   loads?: { [x: string]: Loader }
   loadScene?: Scene & { preload: Array<string> }
   debug?: boolean
