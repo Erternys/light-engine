@@ -1,7 +1,6 @@
-import { Canvas, Game } from "./core"
+import { Canvas } from "./core"
 import { Scene } from "./gameobjects"
 import { Loader } from "./loaders"
-import { SceneManager } from "./managers"
 
 declare class GlobalEventEmitter {
   public exist(event: string | number): boolean
@@ -72,12 +71,12 @@ export interface VibrationOptions {
 
 export interface ConfigOption<C extends Canvas> {
   canvas: C
-  dev?: boolean
+  scenes: Scene[]
+  loads?: { [x: string]: Loader }
+  loadScene?: Scene & { preload: Array<string> }
   debug?: boolean
   pixel?: boolean
-  load: { [x: string]: Promise<Loader> }
-  loadScene?: Scene & { preload: Array<string> }
-  scene: (g: Game<C>) => SceneManager
+  dev?: boolean
 }
 
 export type CursorCanvas =
