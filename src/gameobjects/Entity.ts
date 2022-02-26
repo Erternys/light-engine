@@ -10,6 +10,7 @@ import Collision from "./Collision"
 import Scene from "./Scene"
 import NodeManager from "../managers/NodeManager"
 import { RGBA } from "../private"
+import { LineStyle } from "../../types/globals"
 
 export default class Entity extends Node<Scene> {
   public box: Box | null = null
@@ -17,7 +18,7 @@ export default class Entity extends Node<Scene> {
   public fillColor: RGBA
   public strokeColor: RGBA
   public src: string
-  public lineWidth = 1
+  public lineStyle: LineStyle
   public alpha = 1
   public fixed = false
   public points: Vector2[]
@@ -34,6 +35,13 @@ export default class Entity extends Node<Scene> {
 
     this.fillColor = "#fff"
     this.strokeColor = "transparent"
+    this.lineStyle = {
+      width: 1,
+      cap: "butt",
+      dash: [],
+      offset: 0,
+      join: "miter",
+    }
   }
   setManager(manager: NodeManager) {
     this.manager = manager

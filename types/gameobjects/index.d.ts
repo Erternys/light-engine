@@ -3,6 +3,7 @@ import { Camera } from "../entities"
 import {
   CursorCanvas,
   EventEmitter,
+  LineStyle,
   RGBA,
   StorageKey,
   VectorValue,
@@ -51,7 +52,7 @@ export class Entity extends Node<Scene> {
   public fillColor: RGBA
   public strokeColor: RGBA
   public src: string
-  public lineWidth: number
+  public lineStyle: LineStyle
   public alpha: number
   public fixed: boolean
   public points: Vector2[]

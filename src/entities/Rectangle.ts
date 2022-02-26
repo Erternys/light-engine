@@ -31,7 +31,7 @@ export default class Rectangle extends Polygon {
       .setOrigin(this.origin.x, this.origin.y)
       .setFillColor(this.fillColor)
       .setStrokeColor(this.strokeColor)
-      .setLineStyle({ width: this.lineWidth })
+      .setLineStyle(this.lineStyle)
       .setMasks(this.group?.mask, this.mask)
       .createPolygon(this.points)
       .draw()

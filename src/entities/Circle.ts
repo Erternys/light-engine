@@ -26,9 +26,7 @@ export default class Circle extends Entity {
       .addAlpha(this.alpha)
       .setFillColor(this.fillColor)
       .setStrokeColor(this.strokeColor)
-      .setLineStyle({
-        width: this.lineWidth,
-      })
+      .setLineStyle(this.lineStyle)
       .setMasks(this.group?.mask, this.mask)
       .createCircle(this.radius)
       .draw()
