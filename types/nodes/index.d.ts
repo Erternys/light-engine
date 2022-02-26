@@ -1,14 +1,7 @@
 import { EventEmitter } from "stream"
 import { Game } from "../core"
-import {
-  Drawer,
-  Gamepad,
-  Keyboard,
-  Mask,
-  Mouse,
-  Scene,
-  Vector2,
-} from "../gameobjects"
+import { Drawer, Mask } from "../drawing"
+import { Gamepad, Keyboard, Mouse, Scene, Vector2 } from "../gameobjects"
 import { AudioManager, NodeManager } from "../managers"
 
 export class GroupNode extends NodeManager {
@@ -25,12 +18,11 @@ export class GroupNode extends NodeManager {
   public init(): void
   public beforeRedraw(delta: number): void
   public redraw(delta: number): void
-  public draw(context: CanvasRenderingContext2D): void
-  public debug(context: CanvasRenderingContext2D, delta: number): void
+  public draw(drawer: Drawer): void
+  public debug(drawer: Drawer, delta: number): void
   public afterRedraw(delta: number): void
 }
 export class Node<P extends Game | Scene> extends EventEmitter {
-  public drawer: Drawer
   public manager: NodeManager
   public group: GroupNode
   public mouse: Mouse
@@ -52,8 +44,8 @@ export class Node<P extends Game | Scene> extends EventEmitter {
   init(): void
   beforeRedraw(delta: number): void
   redraw(delta: number): void
-  draw(context: CanvasRenderingContext2D): void
-  debug(context: CanvasRenderingContext2D, delta: number): void
+  draw(drawer: Drawer): void
+  debug(drawer: Drawer, delta: number): void
   afterRedraw(delta: number): void
   destroy(): void
 

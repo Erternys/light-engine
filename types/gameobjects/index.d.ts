@@ -1,4 +1,3 @@
-import { Frame } from "../animations"
 import { Game } from "../core"
 import { Camera } from "../entities"
 import {
@@ -6,7 +5,6 @@ import {
   EventEmitter,
   RGBA,
   StorageKey,
-  TextStyle,
   VectorValue,
   VibrationOptions,
 } from "../globals"
@@ -47,39 +45,11 @@ export class Collision extends Vector2 {
   constructor(x: number, y: number, collide?: boolean)
   isCollide(): boolean
 }
-
-export class Drawer extends EventEmitter {
-  constructor()
-
-  camera(camera: Camera): this
-  masks(...masks: Mask[]): this
-  position(x: number, y: number): this
-  move(x: number, y: number): this
-  points(points: Vector2[]): this
-  origin(point: Vector2): this
-  radius(r: number): this
-  angle(a: number): this
-  alpha(alpha: number): this
-  fill(color: RGBA): this
-  stroke(color: RGBA): this
-  lineWidth(width: number): this
-  flip(flip: Flip): this
-  image(image: HTMLImageElement, crop?: Frame): this
-  size(width: number, height: number): this
-  text(text: string): this
-  style(style: TextStyle): this
-  reset(): this
-  measureText(context: CanvasRenderingContext2D): {
-    width: number
-    height: number
-  }
-  draw(context: CanvasRenderingContext2D): this
-}
 export class Entity extends Node<Scene> {
   public box: Box | null
 
-  public fillColor: string | number
-  public strokeColor: string | number
+  public fillColor: RGBA
+  public strokeColor: RGBA
   public src: string
   public lineWidth: number
   public alpha: number
@@ -130,15 +100,15 @@ export class Keyboard extends EventEmitter {
   query(...keys: string[]): boolean
   vectorQuery(template: string | string[]): Vector2
 }
-export class Mask extends Drawer {
-  constructor()
-  fix(fixed?: boolean): this
-}
 export class Mouse extends Node<Game> {
   public click: boolean
   public cursor: CursorCanvas
 
   constructor(game: Game)
+}
+export enum SceneStateEnum {
+  Next,
+  Prev,
 }
 export class Scene extends EventEmitter {
   public name: string | number | symbol
@@ -163,7 +133,7 @@ export class Scene extends EventEmitter {
   beforeUpdate(delta: number): void
   update(delta: number): void
   afterUpdate(delta: number): void
-  changeAllow(scene: Scene, state: StateEnum): boolean
+  changeAllow(scene: Scene, state: SceneStateEnum): boolean
   getAudio(name: string): AudioManager | null
   setName(value: string): this
   setGame(value: Game): this

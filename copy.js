@@ -8,6 +8,7 @@ fs.copyFile(
   () => {}
 )
 fs.copyFile("./types/core/index.d.ts", "./core/index.d.ts", () => {})
+fs.copyFile("./types/drawing/index.d.ts", "./drawing/index.d.ts", () => {})
 fs.copyFile("./types/entities/index.d.ts", "./entities/index.d.ts", () => {})
 fs.copyFile(
   "./types/gameobjects/index.d.ts",

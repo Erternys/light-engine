@@ -8,6 +8,7 @@ lib
 *.d.ts
 animations
 core
+drawing
 loaders
 hooks
 managers

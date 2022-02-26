@@ -58,6 +58,13 @@ export interface TextStyle {
     family?: string
   }
 }
+export interface LineStyle {
+  width?: number
+  cap?: "butt" | "round" | "square"
+  dash?: number[]
+  offset?: number
+  join?: "bevel" | "round" | "miter"
+}
 export interface VibrationOptions {
   strongMagnitude?: number
   weakMagnitude?: number

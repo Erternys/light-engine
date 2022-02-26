@@ -1,7 +1,7 @@
 import { Game } from "../core"
-import { Scene, Store } from "../gameobjects"
+import { Scene, Storage, Store } from "../gameobjects"
 import { EventEmitter } from "../globals"
-import { AudioLoader } from "../loaders"
+import { AudioLoader, Loader } from "../loaders"
 import { Node } from "../nodes"
 
 export class Manager extends EventEmitter {
@@ -58,14 +58,11 @@ export class NodeManager extends Manager {
   public getAll(): Node<Scene>[]
 }
 export class ResourceManager extends Manager {
-  public static images: Map<any, HTMLImageElement>
-  public static audios: Map<any, AudioLoader>
-  public static texts: Map<any, Text>
+  public resources: Storage<Loader>
 
-  static add(
-    name: string,
-    resource: HTMLImageElement | AudioLoader | Text
-  ): typeof ResourceManager
+  add(name: string, resource: Loader): this
+  load(...names: string[]): Promise<void>
+  get<T extends Loader>(type: string, name: string): T
 }
 declare class TempSaveManager extends Manager {
   constructor(databaseName: string)
@@ -76,9 +73,6 @@ export class SaveManager extends TempSaveManager {
   constructor()
 }
 export class SceneManager extends Manager {
-  public static create(
-    list: Array<typeof Scene | Scene>
-  ): (game: Game) => SceneManager
   constructor(game: Game, list: Array<typeof Scene | Scene>)
   public add(scene: typeof Scene | Scene): this
   public getFirst(): Scene

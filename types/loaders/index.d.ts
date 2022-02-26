@@ -23,6 +23,6 @@ export class Loader extends EventEmitter {
   load(data: any): Promise<this>
 }
 
-export function Audio(link: string): Promise<AudioLoader>
-export function Font(link: string): Promise<FontLoader>
-export function Image(link: string): Promise<ImageLoader>
+export function Audio(link: string): AudioLoader
+export function Font(link: string): FontLoader
+export function Image(link: string): ImageLoader

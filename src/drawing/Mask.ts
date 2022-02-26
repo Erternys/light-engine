@@ -9,6 +9,9 @@ export default class Mask extends Drawer {
     this.fixed = fixed
     return this
   }
+  getFix() {
+    return this.fixed
+  }
 
   start() {
     this.context.beginPath()

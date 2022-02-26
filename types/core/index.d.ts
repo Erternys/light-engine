@@ -34,12 +34,8 @@ export class Game<C extends Canvas = Canvas> extends EventEmitter {
   public delta: number
   constructor(config: ConfigOption<C>, width?: number, height?: number)
 
-  get width(): number
-  get height(): number
+  width(): number
+  height(): number
   changeScene(name: Scene | string | number): Scene
-  /***
-   * @alias changeScene
-   */
-  playScene(scene: Scene | string | number): Scene
   getAudio(name: string): AudioManager | null
 }

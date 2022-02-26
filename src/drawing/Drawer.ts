@@ -262,7 +262,6 @@ export default class Drawer extends EventEmitter {
   }
 
   reset() {
-    this.offAll("draw")
     this.setAlpha(1)
     this.setAngle(0)
     this.setPosition(0, 0)
@@ -276,5 +275,6 @@ export default class Drawer extends EventEmitter {
     this.setSize(0, 0)
 
     this.objects = []
+    return this
   }
 }
